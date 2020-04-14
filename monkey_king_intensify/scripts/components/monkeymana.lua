@@ -6,7 +6,7 @@ local MonkeyMana = Class(function(self, inst)
 	self.period = 1
 	self.rate = 1
 	self.task = self.inst:DoPeriodicTask(self.period, function(inst)
-		self:DeDelta(self.rate, true)
+		self:DoDelta(self.rate, true)
 	end)
 end)
 
@@ -29,10 +29,10 @@ end
 
 function MonkeyMana:DoDelta(amount, overtime)
 	local old = self.current
-	self.current = self.current + delta
+	self.current = self.current + amount
 	if self.current < 0 then
 		self.current = 0
-	else self.current > self.max then
+	elseif self.current > self.max then
 		self.current = self.max
 	end
 

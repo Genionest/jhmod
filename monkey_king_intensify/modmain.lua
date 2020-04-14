@@ -34,6 +34,8 @@ local mk_cloud_ui = require "widgets/mk_cloud_ui"
 local mk_monkey_ui = require "widgets/mk_monkey_ui"
 local mk_back_ui = require "widgets/mk_back_ui"
 local mk_mana_ui = require "widgets/mk_mana_ui"
+local mk_jgbsp_ui = require "widgets/mk_jgbsp_ui"
+local mk_frozen_ui = require "widgets/mk_frozen_ui"
 
 local function addMKUI(self)
 	if self.owner and self.owner.prefab == 'monkey_king' then
@@ -46,6 +48,10 @@ local function addMKUI(self)
 	        self.mk_monkey_button:SetPosition(-260, 90, 0)
 	        self.mk_back_button = self:AddChild(mk_back_ui(self.owner))
 	        self.mk_back_button:SetPosition(-260, 20, 0)
+	        self.mk_jgbsp_button = self:AddChild(mk_jgbsp_ui(self.owner))
+	    	self.mk_jgbsp_button:SetPosition(-330, 90, 0)
+	    	self.mk_frozen_button = self:AddChild(mk_frozen_ui(self.owner))
+	    	self.mk_frozen_button:SetPosition(-330, 20, 0)
 	    end
         -- mana
         self.mk_mana = self:AddChild(mk_mana_ui(self.owner))
@@ -305,6 +311,11 @@ local function eatWine(inst)
 	end
 end
 
+local function proWine(self)
+	self.max = 10
+	self.current = 10
+end
+
 AddPrefabPostInit("monkey_king", addMana)
 AddPrefabPostInit("monkey_king", setChangeBody)
 if else_enable then
@@ -318,4 +329,5 @@ AddComponentPostInit("health", health_fix)
 AddStategraphPostInit("wilson", changeMkLunge)
 AddPrefabPostInit("monkey_king", changeFireEye)
 AddPrefabPostInit("monkey_king", eatWine)
+AddComponentPostInit("wined", proWine)
 end

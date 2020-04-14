@@ -1,4 +1,4 @@
-name = "Intensify Monkey King"
+name = "Intensify Monkey King(test)"
 description = "intensify monkey king"
 author = "wargon"
 version = "1.004"
