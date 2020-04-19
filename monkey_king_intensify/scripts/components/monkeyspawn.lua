@@ -5,12 +5,13 @@ local MonkeySpawn = Class(function(self, inst)
 
 	inst:AddTag("spawn_monkey")
 	inst:ListenForEvent("death", function()
-		if inst:HasTag("spawn_monkey") then
-			local ms = GetPlayer().components.monkeyspawner
-			if ms then
-				ms:DoDelta(-1)
-			end
-		end
+		self:Back()
+		-- if inst:HasTag("spawn_monkey") then
+			-- local ms = GetPlayer().components.monkeyspawner
+			-- if ms then
+			-- 	ms:DoDelta(-1)
+			-- end
+		-- end
 	end)
 end)
 
@@ -24,12 +25,10 @@ function MonkeySpawn:Back()
 	end
 	local leader = self.inst.components.follower.leader
 	if leader then
-		local beard = SpawnPrefab("monkey_beardhair")
-		leader.components.inventory:GiveItem(beard)
-		leader.components.monkeyspawner:DoDelta(-1)
-		-- ms.num = math.max(0, ms.num-1)
+		-- local beard = SpawnPrefab("monkey_beardhair")
+		-- leader.components.inventory:GiveItem(beard)
+		-- leader.components.monkeyspawner:DoDelta(-1)
 		local inv = self.inst.components.inventory
-		-- self.inst.components.inventory:TransferInventory(leader)
 		for k,v in pairs(inv.itemslots) do
 			if v.prefab ~= "poop" then
 		        leader.components.inventory:GiveItem(inv:RemoveItemBySlot(k))

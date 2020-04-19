@@ -85,9 +85,35 @@ end
 
 function WargRider:SetAllMountRotation()
 	local rot = self.inst.Transform:GetRotation()
+	print("rotation is", rot)
+	print("camera is  ", TheCamera.heading)
 	for _, v in pairs(self.mount) do
 		v.Transform:SetRotation(rot)
 	end
+	-- 135 -135 179 -90
+	-- rot = math.floor(rot)
+	-- if rot == 135 or rot == -135 or rot == 179 or rot == -90 then
+	-- 	self.mount[1].Transform:SetPosition(0.1, 0, 0.1)
+	-- 	self.mount[2].Transform:SetPosition(0, 0, 0)
+	-- else
+	-- 	self.mount[1].Transform:SetPosition(0, 0, 0)
+	-- 	self.mount[2].Transform:SetPosition(0.1, 0, 0.1)
+	-- end
+	local pos = {x=0,y=0,z=0}
+	local camera = TheCamera.heading
+	camera = math.floor(camera)
+	camera = math.fmod(camera, 360)
+	if camera == 0 or camera == 45 then
+		pos.z = .1
+	elseif camera == 90 or camera == 135 then
+		pos.x = .1
+	elseif camera == 180 or camera == 225 then
+		pos.z = -.1
+	elseif camera == 270 or 315 then
+		pos.x = -.1
+	end
+	self.mount[1].Transform:SetPosition(pos.x, pos.y, pos.z)
+	self.mount[2].Transform:SetPosition(0,0,0)
 end
 
 function WargRider:Mount(target)
@@ -106,14 +132,15 @@ function WargRider:Mount(target)
 	self.warg = target
 	self.inst.Physics:Teleport(x, y, z)
 	print("a--2")
-	local fx = SpawnPrefab("ride_warg_fx")
-	-- local fx3 = SpawnPrefab("ride_warg_fx_3")
-	local fx2 = SpawnPrefab("ride_warg_fx_2")
+	local fx = SpawnPrefab("ride_warg_body_fx")
+	local fx2 = SpawnPrefab("ride_warg_head_fx")
 	self.inst:AddChild(fx)
-	-- self.inst:AddChild(fx3)
 	self.inst:AddChild(fx2)
+	-- fx.Transform:SetPosition(-0.1,0,-0.1)
+	-- fx2.Transform:SetPosition(0.1,0,.1)
 	print("a--3")
 	self.mount = {fx, fx2}
+	self:SetAllMountRotation()
 	self.riding = true
 	self.inst.components.locomotor.runspeed = 10
 	self.inst.components.combat:SetRange(5,5)

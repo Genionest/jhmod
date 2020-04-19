@@ -7,6 +7,20 @@ local Widget = require "widgets/widget"
 local Menu = require "widgets/menu"
 local ImageButton = require "widgets/imagebutton"
 
+local function fxNmorph(inst, body)
+	local pos = inst:GetPosition()
+	-- SpawnPrefab("statue_transition").Transform:SetPosition(pos:Get())
+	-- SpawnPrefab("statue_transition_2").Transform:SetPosition(pos:Get())
+	local dx = 3 + math.random()
+	local dz = 3 + math.random()
+	if math.random() < .5 then dx = -dx end
+	if math.random() < .5 then dz = -dz end
+	SpawnPrefab("collapse_small").Transform:SetPosition(pos.x+dx, pos.y, pos.z+dx)
+	local fx = SpawnPrefab("mk_morph_fx")
+	fx.Transform:SetPosition(pos.x+dx, pos.y, pos.z+dx)
+	fx.morph_body = body
+end
+
 local function AddMorph(inst, body)
 	if body ~= inst.components.morph:GetCurrent()
 	and inst.components.driver
@@ -15,13 +29,15 @@ local function AddMorph(inst, body)
 	and not inst.components.rider:IsRiding()
 	and not inst:HasTag("notarget")
 	and not inst:HasTag("ironlord") then
-		inst.components.morph:Morph(body)
+		-- inst.components.morph:Morph(body)
+		fxNmorph(inst, body)
 	end
 end
 
 local function OriginalMorph(inst)
 	if inst.components.morph:GetCurrent() ~= "monkey" then
-		inst.components.morph:UnMorph() 
+		-- inst.components.morph:UnMorph() 
+		fxNmorph(inst, "monkey")
 	end
 end
 
@@ -51,7 +67,10 @@ local mk_morph = Class(Screen, function(self)
 	self.txt0:SetColour(0,0,0,1)
 
 	self.btn1 = self.root:AddChild(ImageButton())
-	self.btn1:SetOnClick(function() AddMorph(GetPlayer(), "bee") end)
+	self.btn1:SetOnClick(function() 
+		AddMorph(GetPlayer(), "bee")
+		TheFrontEnd:PopScreen(self) 
+	end)
 	self.btn1:SetPosition(-160, 0, 0)
 	self.txt1 = self.btn1:AddChild(Text(BUTTONFONT, 40))
 	self.txt1:SetString("蜜蜂")
@@ -59,7 +78,10 @@ local mk_morph = Class(Screen, function(self)
 	self.txt1:SetColour(0,0,0,1)
 
 	self.btn2 = self.root:AddChild(ImageButton())
-	self.btn2:SetOnClick(function() AddMorph(GetPlayer(), "pigman") end)
+	self.btn2:SetOnClick(function() 
+		AddMorph(GetPlayer(), "pigman")
+		TheFrontEnd:PopScreen(self)
+	end)
 	self.btn2:SetPosition(0,0,0)
 	self.txt2 = self.btn2:AddChild(Text(BUTTONFONT, 40))
 	self.txt2:SetString("猪人")
@@ -67,7 +89,10 @@ local mk_morph = Class(Screen, function(self)
 	self.txt2:SetColour(0,0,0,1)
 
 	self.btn3 = self.root:AddChild(ImageButton())
-	self.btn3:SetOnClick(function() AddMorph(GetPlayer(), "merm") end)
+	self.btn3:SetOnClick(function() 
+		AddMorph(GetPlayer(), "merm") 
+		TheFrontEnd:PopScreen(self)
+	end)
 	self.btn3:SetPosition(160, 0, 0)
 	self.txt3 = self.btn3:AddChild(Text(BUTTONFONT, 40))
 	self.txt3:SetString("鱼人")
@@ -75,7 +100,10 @@ local mk_morph = Class(Screen, function(self)
 	self.txt3:SetColour(0,0,0,1)
 
 	self.btn4 = self.root:AddChild(ImageButton())
-	self.btn4:SetOnClick(function() AddMorph(GetPlayer(), "hound") end)
+	self.btn4:SetOnClick(function() 
+		AddMorph(GetPlayer(), "hound") 
+		TheFrontEnd:PopScreen(self)
+	end)
 	self.btn4:SetPosition(-160, -80, 0)
 	self.txt4 = self.btn4:AddChild(Text(BUTTONFONT, 40))
 	self.txt4:SetString("猎犬")
@@ -83,7 +111,10 @@ local mk_morph = Class(Screen, function(self)
 	self.txt4:SetColour(0,0,0,1)
 
 	self.btn5 = self.root:AddChild(ImageButton())
-	self.btn5:SetOnClick(function() AddMorph(GetPlayer(), "spider") end)
+	self.btn5:SetOnClick(function() 
+		AddMorph(GetPlayer(), "spider") 
+		TheFrontEnd:PopScreen(self)
+	end)
 	self.btn5:SetPosition(0, -80, 0)
 	self.txt5 = self.btn5:AddChild(Text(BUTTONFONT, 40))
 	self.txt5:SetString("蜘蛛")
@@ -91,7 +122,10 @@ local mk_morph = Class(Screen, function(self)
 	self.txt5:SetColour(0,0,0,1)
 
 	self.btn6 = self.root:AddChild(ImageButton())
-	self.btn6:SetOnClick(function() OriginalMorph(GetPlayer()) end)
+	self.btn6:SetOnClick(function() 
+		OriginalMorph(GetPlayer()) 
+		TheFrontEnd:PopScreen(self)
+	end)
 	self.btn6:SetPosition(160, -80, 0)
 	self.txt6 = self.btn6:AddChild(Text(BUTTONFONT, 40))
 	self.txt6:SetString("还原")

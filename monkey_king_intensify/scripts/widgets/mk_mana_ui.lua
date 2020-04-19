@@ -2,7 +2,7 @@ local Badge = require "widgets/badge"
 local UIAnim = require "widgets/uianim"
 
 local ManaBadge = Class(Badge, function(self, owner)
-	Badge._ctor(self, "beaver_meter", owner)
+	Badge._ctor(self, "monkey_mana", owner)
 	
 	self.sanityarrow = self.underNumber:AddChild(UIAnim())
 	self.sanityarrow:GetAnimState():SetBank("sanity_arrow")
@@ -23,6 +23,7 @@ function ManaBadge:SetPercent(val, max, penaltypercent)
 	Badge.SetPercent(self, val, max)
 
 	penaltypercent = penaltypercent or 0
+	-- penaltypercent = 0
 	self.topperanim:GetAnimState():SetPercent("anim", 1-penaltypercent)
 end
 

@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<spriter_data scml_version="1.0" generator="BrashMonkey Spriter" generator_version="b5">
+    <folder id="0">
+        <file id="0" name="frame_circle-0.png" width="80" height="84" pivot_x="0" pivot_y="1"/>
+        <file id="1" name="pig_head.png" width="80" height="80" pivot_x="0" pivot_y="1"/>
+        <file id="2" name="bg-0.png" width="64" height="64" pivot_x="0" pivot_y="1"/>
+        <file id="3" name="pig_head-1.png" width="47" height="47" pivot_x="0" pivot_y="1"/>
+        <file id="4" name="monkey_ball.png" width="69" height="69" pivot_x="0" pivot_y="1"/>
+        <file id="5" name="ice.png" width="69" height="69" pivot_x="0" pivot_y="1"/>
+        <file id="6" name="cloud.png" width="69" height="69" pivot_x="0" pivot_y="1"/>
+        <file id="7" name="jgb.png" width="69" height="69" pivot_x="0" pivot_y="1"/>
+        <file id="8" name="firef.png" width="64" height="64" pivot_x="0" pivot_y="1"/>
+        <file id="9" name="coldf.png" width="64" height="64" pivot_x="0" pivot_y="1"/>
+    </folder>
+    <entity id="0" name="mk_skill_ui">
+        <animation id="0" name="morph" length="1000">
+            <mainline>
+                <key id="0">
+                    <object_ref id="0" name="bg-0" folder="0" file="2" abs_x="-0.007928" abs_y="-1.209627" abs_pivot_x="0.507928" abs_pivot_y="0.482633" abs_angle="0" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="2" key="0" z_index="0"/>
+                    <object_ref id="1" name="frame_circle-0" folder="0" file="0" abs_x="0.005605" abs_y="0.001877" abs_pivot_x="0.494395" abs_pivot_y="0.498123" abs_angle="0" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="1"/>
+                    <object_ref id="2" name="pig_head" folder="0" file="1" abs_x="-0.464701" abs_y="-3.556475" abs_pivot_x="0.490911" abs_pivot_y="0.493941" abs_angle="0" abs_scale_x="0.725204" abs_scale_y="0.725204" abs_a="1" timeline="1" key="0" z_index="2"/>
+                </key>
+            </mainline>
+            <timeline id="0" name="frame_circle-0">
+                <key id="0" spin="0">
+                    <object folder="0" file="0" x="0.005605" y="0.001877" pivot_x="0.494395" pivot_y="0.498123" angle="0"/>
+                </key>
+            </timeline>
+            <timeline id="1" name="pig_head">
+                <key id="0" spin="0">
+                    <object folder="0" file="1" x="-0.464701" y="-3.556475" pivot_x="0.490911" pivot_y="0.493941" angle="0" scale_x="0.725204" scale_y="0.725204"/>
+                </key>
+            </timeline>
+            <timeline id="2" name="bg-0">
+                <key id="0" spin="0">
+                    <object folder="0" file="2" x="-0.007928" y="-1.209627" pivot_x="0.507928" pivot_y="0.482633" angle="0"/>
+                </key>
+            </timeline>
+        </animation>
+        <animation id="1" name="monkey" length="1000">
+            <mainline>
+                <key id="0">
+                    <object_ref id="0" name="bg-0" folder="0" file="2" abs_x="-0.007928" abs_y="-1.209627" abs_pivot_x="0.507928" abs_pivot_y="0.482633" abs_angle="0" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="2" key="0" z_index="0"/>
+                    <object_ref id="1" name="frame_circle-0" folder="0" file="0" abs_x="0.005605" abs_y="0.001877" abs_pivot_x="0.494395" abs_pivot_y="0.498123" abs_angle="0" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="1"/>
+                    <object_ref id="2" name="pig_head" folder="0" file="3" abs_x="-0.732081" abs_y="-0.882678" abs_pivot_x="0.490911" abs_pivot_y="0.493941" abs_angle="0" abs_scale_x="1.179299" abs_scale_y="1.179299" abs_a="1" timeline="1" key="0" z_index="2"/>
+                </key>
+            </mainline>
+            <timeline id="0" name="frame_circle-0">
+                <key id="0" spin="0">
+                    <object folder="0" file="0" x="0.005605" y="0.001877" pivot_x="0.494395" pivot_y="0.498123" angle="0"/>
+                </key>
+            </timeline>
+            <timeline id="1" name="pig_head">
+                <key id="0" spin="0">
+                    <object folder="0" file="3" x="-0.732081" y="-0.882678" pivot_x="0.490911" pivot_y="0.493941" angle="0" scale_x="1.179299" scale_y="1.179299"/>
+                </key>
+            </timeline>
+            <timeline id="2" name="bg-0">
+                <key id="0" spin="0">
+                    <object folder="0" file="2" x="-0.007928" y="-1.209627" pivot_x="0.507928" pivot_y="0.482633" angle="0"/>
+                </key>
+            </timeline>
+        </animation>
+        <animation id="2" name="back" length="1000">
+            <mainline>
+                <key id="0">
+                    <object_ref id="0" name="bg-0" folder="0" file="2" abs_x="-0.007928" abs_y="-1.209627" abs_pivot_x="0.507928" abs_pivot_y="0.482633" abs_angle="0" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="2" key="0" z_index="0"/>
+                    <object_ref id="1" name="frame_circle-0" folder="0" file="0" abs_x="0.005605" abs_y="0.001877" abs_pivot_x="0.494395" abs_pivot_y="0.498123" abs_angle="0" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="1"/>
+                    <object_ref id="2" name="pig_head" folder="0" file="4" abs_x="-0.732081" abs_y="-0.882678" abs_pivot_x="0.490911" abs_pivot_y="0.493941" abs_angle="0" abs_scale_x="0.775095" abs_scale_y="0.775095" abs_a="1" timeline="1" key="0" z_index="2"/>
+                </key>
+            </mainline>
+            <timeline id="0" name="frame_circle-0">
+                <key id="0" spin="0">
+                    <object folder="0" file="0" x="0.005605" y="0.001877" pivot_x="0.494395" pivot_y="0.498123" angle="0"/>
+                </key>
+            </timeline>
+            <timeline id="1" name="pig_head">
+                <key id="0" spin="0">
+                    <object folder="0" file="4" x="-0.732081" y="-0.882678" pivot_x="0.490911" pivot_y="0.493941" angle="0" scale_x="0.775095" scale_y="0.775095"/>
+                </key>
+            </timeline>
+            <timeline id="2" name="bg-0">
+                <key id="0" spin="0">
+                    <object folder="0" file="2" x="-0.007928" y="-1.209627" pivot_x="0.507928" pivot_y="0.482633" angle="0"/>
+                </key>
+            </timeline>
+        </animation>
+        <animation id="3" name="frozen" length="1000">
+            <mainline>
+                <key id="0">
+                    <object_ref id="0" name="bg-0" folder="0" file="2" abs_x="-0.007928" abs_y="-1.209627" abs_pivot_x="0.507928" abs_pivot_y="0.482633" abs_angle="0" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="2" key="0" z_index="0"/>
+                    <object_ref id="1" name="pig_head" folder="0" file="5" abs_x="1.336885" abs_y="0.496632" abs_pivot_x="0.490911" abs_pivot_y="0.493941" abs_angle="0" abs_scale_x="0.911675" abs_scale_y="0.911675" abs_a="1" timeline="1" key="0" z_index="1"/>
+                    <object_ref id="2" name="frame_circle-0" folder="0" file="0" abs_x="0.005605" abs_y="0.001877" abs_pivot_x="0.494395" abs_pivot_y="0.498123" abs_angle="0" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="2"/>
+                </key>
+            </mainline>
+            <timeline id="0" name="frame_circle-0">
+                <key id="0" spin="0">
+                    <object folder="0" file="0" x="0.005605" y="0.001877" pivot_x="0.494395" pivot_y="0.498123" angle="0"/>
+                </key>
+            </timeline>
+            <timeline id="1" name="pig_head">
+                <key id="0" spin="0">
+                    <object folder="0" file="5" x="1.336885" y="0.496632" pivot_x="0.490911" pivot_y="0.493941" angle="0" scale_x="0.911675" scale_y="0.911675"/>
+                </key>
+            </timeline>
+            <timeline id="2" name="bg-0">
+                <key id="0" spin="0">
+                    <object folder="0" file="2" x="-0.007928" y="-1.209627" pivot_x="0.507928" pivot_y="0.482633" angle="0"/>
+                </key>
+            </timeline>
+        </animation>
+        <animation id="4" name="cloud" length="1000">
+            <mainline>
+                <key id="0">
+                    <object_ref id="0" name="bg-0" folder="0" file="2" abs_x="-0.007928" abs_y="-1.209627" abs_pivot_x="0.507928" abs_pivot_y="0.482633" abs_angle="0" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="2" key="0" z_index="0"/>
+                    <object_ref id="1" name="frame_circle-0" folder="0" file="0" abs_x="0.005605" abs_y="0.001877" abs_pivot_x="0.494395" abs_pivot_y="0.498123" abs_angle="0" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="1"/>
+                    <object_ref id="2" name="pig_head" folder="0" file="6" abs_x="-0.564256" abs_y="0.496632" abs_pivot_x="0.490911" abs_pivot_y="0.493941" abs_angle="0" abs_scale_x="0.720218" abs_scale_y="0.720218" abs_a="1" timeline="1" key="0" z_index="2"/>
+                </key>
+            </mainline>
+            <timeline id="0" name="frame_circle-0">
+                <key id="0" spin="0">
+                    <object folder="0" file="0" x="0.005605" y="0.001877" pivot_x="0.494395" pivot_y="0.498123" angle="0"/>
+                </key>
+            </timeline>
+            <timeline id="1" name="pig_head">
+                <key id="0" spin="0">
+                    <object folder="0" file="6" x="-0.564256" y="0.496632" pivot_x="0.490911" pivot_y="0.493941" angle="0" scale_x="0.720218" scale_y="0.720218"/>
+                </key>
+            </timeline>
+            <timeline id="2" name="bg-0">
+                <key id="0" spin="0">
+                    <object folder="0" file="2" x="-0.007928" y="-1.209627" pivot_x="0.507928" pivot_y="0.482633" angle="0"/>
+                </key>
+            </timeline>
+        </animation>
+        <animation id="5" name="jgb" length="1000">
+            <mainline>
+                <key id="0">
+                    <object_ref id="0" name="bg-0" folder="0" file="2" abs_x="-0.007928" abs_y="-1.209627" abs_pivot_x="0.507928" abs_pivot_y="0.482633" abs_angle="0" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="2" key="0" z_index="0"/>
+                    <object_ref id="1" name="pig_head" folder="0" file="7" abs_x="-0.564256" abs_y="0.496632" abs_pivot_x="0.490911" abs_pivot_y="0.493941" abs_angle="0" abs_scale_x="0.720218" abs_scale_y="0.720218" abs_a="1" timeline="1" key="0" z_index="1"/>
+                    <object_ref id="2" name="frame_circle-0" folder="0" file="0" abs_x="0.005605" abs_y="0.001877" abs_pivot_x="0.494395" abs_pivot_y="0.498123" abs_angle="0" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="2"/>
+                </key>
+            </mainline>
+            <timeline id="0" name="frame_circle-0">
+                <key id="0" spin="0">
+                    <object folder="0" file="0" x="0.005605" y="0.001877" pivot_x="0.494395" pivot_y="0.498123" angle="0"/>
+                </key>
+            </timeline>
+            <timeline id="1" name="pig_head">
+                <key id="0" spin="0">
+                    <object folder="0" file="7" x="-0.564256" y="0.496632" pivot_x="0.490911" pivot_y="0.493941" angle="0" scale_x="0.720218" scale_y="0.720218"/>
+                </key>
+            </timeline>
+            <timeline id="2" name="bg-0">
+                <key id="0" spin="0">
+                    <object folder="0" file="2" x="-0.007928" y="-1.209627" pivot_x="0.507928" pivot_y="0.482633" angle="0"/>
+                </key>
+            </timeline>
+        </animation>
+        <animation id="6" name="coldf" length="1000">
+            <mainline>
+                <key id="0">
+                    <object_ref id="0" name="bg-0" folder="0" file="2" abs_x="-0.007928" abs_y="-1.209627" abs_pivot_x="0.507928" abs_pivot_y="0.482633" abs_angle="0" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="2" key="0" z_index="0"/>
+                    <object_ref id="1" name="pig_head" folder="0" file="9" abs_x="0.179238" abs_y="-2.105598" abs_pivot_x="0.490911" abs_pivot_y="0.493941" abs_angle="0" abs_scale_x="0.720218" abs_scale_y="0.720218" abs_a="1" timeline="1" key="0" z_index="1"/>
+                    <object_ref id="2" name="frame_circle-0" folder="0" file="0" abs_x="0.005605" abs_y="0.001877" abs_pivot_x="0.494395" abs_pivot_y="0.498123" abs_angle="0" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="2"/>
+                </key>
+            </mainline>
+            <timeline id="0" name="frame_circle-0">
+                <key id="0" spin="0">
+                    <object folder="0" file="0" x="0.005605" y="0.001877" pivot_x="0.494395" pivot_y="0.498123" angle="0"/>
+                </key>
+            </timeline>
+            <timeline id="1" name="pig_head">
+                <key id="0" spin="0">
+                    <object folder="0" file="9" x="0.179238" y="-2.105598" pivot_x="0.490911" pivot_y="0.493941" angle="0" scale_x="0.720218" scale_y="0.720218"/>
+                </key>
+            </timeline>
+            <timeline id="2" name="bg-0">
+                <key id="0" spin="0">
+                    <object folder="0" file="2" x="-0.007928" y="-1.209627" pivot_x="0.507928" pivot_y="0.482633" angle="0"/>
+                </key>
+            </timeline>
+        </animation>
+        <animation id="7" name="firef" length="1000">
+            <mainline>
+                <key id="0">
+                    <object_ref id="0" name="bg-0" folder="0" file="2" abs_x="-0.007928" abs_y="-1.209627" abs_pivot_x="0.507928" abs_pivot_y="0.482633" abs_angle="0" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="2" key="0" z_index="0"/>
+                    <object_ref id="1" name="pig_head" folder="0" file="8" abs_x="0.179238" abs_y="-2.105598" abs_pivot_x="0.490911" abs_pivot_y="0.493941" abs_angle="0" abs_scale_x="0.720218" abs_scale_y="0.720218" abs_a="1" timeline="1" key="0" z_index="1"/>
+                    <object_ref id="2" name="frame_circle-0" folder="0" file="0" abs_x="0.005605" abs_y="0.001877" abs_pivot_x="0.494395" abs_pivot_y="0.498123" abs_angle="0" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="2"/>
+                </key>
+            </mainline>
+            <timeline id="0" name="frame_circle-0">
+                <key id="0" spin="0">
+                    <object folder="0" file="0" x="0.005605" y="0.001877" pivot_x="0.494395" pivot_y="0.498123" angle="0"/>
+                </key>
+            </timeline>
+            <timeline id="1" name="pig_head">
+                <key id="0" spin="0">
+                    <object folder="0" file="8" x="0.179238" y="-2.105598" pivot_x="0.490911" pivot_y="0.493941" angle="0" scale_x="0.720218" scale_y="0.720218"/>
+                </key>
+            </timeline>
+            <timeline id="2" name="bg-0">
+                <key id="0" spin="0">
+                    <object folder="0" file="2" x="-0.007928" y="-1.209627" pivot_x="0.507928" pivot_y="0.482633" angle="0"/>
+                </key>
+            </timeline>
+        </animation>
+        <animation id="8" name="none" length="1000">
+            <mainline>
+                <key id="0">
+                    <object_ref id="0" name="bg-0" folder="0" file="2" abs_x="-0.007928" abs_y="-1.209627" abs_pivot_x="0.507928" abs_pivot_y="0.482633" abs_angle="0" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="1" key="0" z_index="0"/>
+                    <object_ref id="1" name="frame_circle-0" folder="0" file="0" abs_x="0.005605" abs_y="0.001877" abs_pivot_x="0.494395" abs_pivot_y="0.498123" abs_angle="0" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="1"/>
+                </key>
+            </mainline>
+            <timeline id="0" name="frame_circle-0">
+                <key id="0" spin="0">
+                    <object folder="0" file="0" x="0.005605" y="0.001877" pivot_x="0.494395" pivot_y="0.498123" angle="0"/>
+                </key>
+            </timeline>
+            <timeline id="1" name="bg-0">
+                <key id="0" spin="0">
+                    <object folder="0" file="2" x="-0.007928" y="-1.209627" pivot_x="0.507928" pivot_y="0.482633" angle="0"/>
+                </key>
+            </timeline>
+        </animation>
+    </entity>
+</spriter_data>

@@ -24,8 +24,15 @@ local function morphFx(inst, is_back)
 	else
 		inst.components.talker:Say("七十二变")
 	end
-	SpawnPrefab("statue_transition").Transform:SetPosition(inst.Transform:GetWorldPosition())
-	SpawnPrefab("statue_transition_2").Transform:SetPosition(inst.Transform:GetWorldPosition())
+	local pos = inst:GetPosition()
+	SpawnPrefab("statue_transition").Transform:SetPosition(pos:Get())
+	SpawnPrefab("statue_transition_2").Transform:SetPosition(pos:Get())
+	-- local dx = 3 + math.random()
+	-- local dz = 3 + math.random()
+	-- if math.random() < .5 then dx = -dx end
+	-- if math.random() < .5 then dz = -dz end
+	-- SpawnPrefab("collapse_small").Transform:SetPosition(pos.x+dx, pos.y, pos.z+dx)
+	-- SpawnPrefab("mk_morph_fx").Transform:SetPosition(pos.x+dx, pos.y, pos.z+dx)
 end
 
 local tags = {
@@ -173,7 +180,7 @@ end
 function Morph:Morph(body)
 	local old_body = self.morph_cur
 	if old_body ~= body
-	and self.inst.components.monkeymana:EnoughMana(20) then
+	and self.inst.components.monkeymana:GetCurrent()>=20 then
 		self.morph_cur = body
 		handlerTags(self.inst, tags[old_body], false)
 		handlerTags(self.inst, tags[body], true)
@@ -194,15 +201,19 @@ function Morph:Morph(body)
 			self.inst.components.playeractionpicker.leftclickoverride = LeftClickPicker2
 		end
 		self.inst.components.playeractionpicker.rightclickoverride = RightClickPicker
+		-- mana
+		self.inst.components.monkeymana:DoDelta(-20)
 		-- fx
-		morphFx(inst, false)
+		morphFx(self.inst, false)
+		-- ui
+		-- self.inst.components.mkmorphtimer:SetPercent(0)
 	end
 end
 
 function Morph:UnMorph()
 	local old_body = self.morph_cur
 	if old_body ~= "monkey"
-	and self.inst.components.monkeymana:EnoughMana(20) then
+	and self.inst.components.monkeymana:GetCurrent()>=20 then
 		self.morph_cur = "monkey"
 		handlerTags(self.inst, tags[old_body], false)
 		handlerTags(self.inst, tags["monkey"], true)
@@ -214,8 +225,12 @@ function Morph:UnMorph()
 		self.inst.components.playercontroller.actionbuttonoverride = nil
 		self.inst.components.playeractionpicker.leftclickoverride = nil
 		self.inst.components.playeractionpicker.rightclickoverride = nil
+		-- mana
+		self.inst.components.monkeymana:DoDelta(-20)
 		-- fx
 		morphFx(self.inst, true)
+		-- ui
+		-- self.inst.components.mkmorphtimer:SetPercent(0)
 	end
 end
 

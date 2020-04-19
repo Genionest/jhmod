@@ -51,10 +51,14 @@ function MonkeySpawner:Spawn()
 	        SpawnPrefab("statue_transition").Transform:SetPosition(pos:Get())
 	    	SpawnPrefab("statue_transition_2").Transform:SetPosition(pos:Get())
 	        if image:GetIsOnWater() then
-	            image:Remove()
+	            image.components.monkeyspawn:Back()
 	            inst.components.talker:Say("孩儿们不会水")
 	        end
 	        inst.SoundEmitter:PlaySound("dontstarve/maxwell/shadowmax_appear")
+	    	-- fx
+	    	inst:mk_do_magic()
+	    	-- ui
+	    	self.inst.components.mkmonkeytimer:SetPercent(0)
 	    end
     end
 end
@@ -70,6 +74,10 @@ function MonkeySpawner:BackMonkeys()
 			v.components.monkeyspawn:Back()
 		end
 	end
+	-- fx
+	self.inst:mk_do_magic()
+	-- ui
+	self.inst.components.mkbacktimer:SetPercent(0)
 end
 
 function MonkeySpawner:OnSave()

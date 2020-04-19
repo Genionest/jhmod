@@ -44,9 +44,9 @@ local function fxfn()
 	-- anim:SetBank("koalefant")
 	-- anim:SetBuild("koalefant_summer_build")
 	anim:PlayAnimation("idle_loop", true)
-	-- anim:Hide("beefalo_head")
-	-- anim:Hide("beefalo_antler")
-	-- anim:Hide("beefalo_body")
+	anim:Hide("beefalo_head")
+	anim:Hide("beefalo_antler")
+	anim:Hide("beefalo_body")
 	-- anim:SetLayer( 2.5 )
 	inst:AddComponent("wargrideable")
 	return inst
@@ -78,5 +78,5 @@ local function fxfn2()
 end
 
 return Prefab("common/ride_warg", fn, {}),
-	Prefab("common/ride_warg_fx_2", fxfn2, {}),
-	Prefab("common/ride_warg_fx", fxfn, {})
+	Prefab("common/ride_warg_head_fx", fxfn2, {}),
+	Prefab("common/ride_warg_body_fx", fxfn, {})
