@@ -23,6 +23,11 @@ end
 local function proWine(self)
 	self.max = 10
 	self.current = 10
+	local old_fn = self.Add
+	function self:Add(p)
+		self.current = self.current + p
+		old_fn(self, p)
+	end
 end
 
 AddPrefabPostInit("monkey_king", eatWine)

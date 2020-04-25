@@ -8,17 +8,19 @@ local Menu = require "widgets/menu"
 local ImageButton = require "widgets/imagebutton"
 
 local function fxNmorph(inst, body)
-	local pos = inst:GetPosition()
+	-- 先生成分身施法，再变身
+	inst.components.mkskillfx:CloneFx(body)
+	-- local pos = inst:GetPosition()
 	-- SpawnPrefab("statue_transition").Transform:SetPosition(pos:Get())
 	-- SpawnPrefab("statue_transition_2").Transform:SetPosition(pos:Get())
-	local dx = 3 + math.random()
-	local dz = 3 + math.random()
-	if math.random() < .5 then dx = -dx end
-	if math.random() < .5 then dz = -dz end
-	SpawnPrefab("collapse_small").Transform:SetPosition(pos.x+dx, pos.y, pos.z+dx)
-	local fx = SpawnPrefab("mk_morph_fx")
-	fx.Transform:SetPosition(pos.x+dx, pos.y, pos.z+dx)
-	fx.morph_body = body
+	-- local dx = 3 + math.random()
+	-- local dz = 3 + math.random()
+	-- if math.random() < .5 then dx = -dx end
+	-- if math.random() < .5 then dz = -dz end
+	-- SpawnPrefab("collapse_small").Transform:SetPosition(pos.x+dx, pos.y, pos.z+dx)
+	-- local fx = SpawnPrefab("mk_morph_fx")
+	-- fx.Transform:SetPosition(pos.x+dx, pos.y, pos.z+dx)
+	-- fx.morph_body = body
 end
 
 local function AddMorph(inst, body)
@@ -41,8 +43,8 @@ local function OriginalMorph(inst)
 	end
 end
 
-local img_atlas = "images/inventoryiamges.xml"
-local img_atlas2 = "images/inventoryiamges_2.xml"
+-- local img_atlas = "images/inventoryiamges.xml"
+-- local img_atlas2 = "images/inventoryiamges_2.xml"
 
 local mk_morph = Class(Screen, function(self)
 	Screen._ctor(self, "mk_morph")
@@ -58,7 +60,10 @@ local mk_morph = Class(Screen, function(self)
 	self.bg:SetScale(1.5, .5, 1)
 
 	self.btn0 = self.root:AddChild(ImageButton())
-	self.btn0:SetOnClick(function() TheFrontEnd:PopScreen(self) end)
+	self.btn0:SetOnClick(function() 
+		TheFrontEnd:PopScreen(self) 
+		GetPlayer().components.mkskillmanager:Turn(true)
+	end)
 	self.btn0:SetPosition(160, 80, 0)
 	self.btn0:SetScale(.8,.8,.8)
 	self.txt0 = self.btn0:AddChild(Text(BUTTONFONT, 40))

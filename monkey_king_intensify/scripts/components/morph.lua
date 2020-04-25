@@ -24,9 +24,10 @@ local function morphFx(inst, is_back)
 	else
 		inst.components.talker:Say("七十二变")
 	end
-	local pos = inst:GetPosition()
-	SpawnPrefab("statue_transition").Transform:SetPosition(pos:Get())
-	SpawnPrefab("statue_transition_2").Transform:SetPosition(pos:Get())
+	inst.components.mkskillfx:ShadowFx()
+	-- local pos = inst:GetPosition()
+	-- SpawnPrefab("statue_transition").Transform:SetPosition(pos:Get())
+	-- SpawnPrefab("statue_transition_2").Transform:SetPosition(pos:Get())
 	-- local dx = 3 + math.random()
 	-- local dz = 3 + math.random()
 	-- if math.random() < .5 then dx = -dx end

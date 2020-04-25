@@ -31,12 +31,16 @@ local function fn()
 		local pos = inst:GetPosition()
     	SpawnPrefab("collapse_small").Transform:SetPosition(pos:Get())
     	inst.stafffx:Remove()
-    	if inst.morph_body then
+    	if inst.morph_body and inst.monkeyking then
     		if inst.morph_body == "monkey" then
-    			GetPlayer().components.morph:UnMorph()
+                -- GetPlayer().components.morph:UnMorph()
+                inst.monkeyking.components.morph:UnMorph()
     		else
-    			GetPlayer().components.morph:Morph(inst.morph_body)
+                -- GetPlayer().components.morph:Morph(inst.morph_body)
+    			inst.monkeyking.components.morph:Morph(inst.morph_body)
     		end
+            -- GetPlayer().components.mkskillmanager:Turn(true)
+            inst.monkeyking.components.mkskillmanager:Turn(true)
     	end
     	inst:Remove()
     end)

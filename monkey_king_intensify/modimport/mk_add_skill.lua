@@ -1,5 +1,6 @@
+local skill_ui = require "widgets/mk_skill_ui"
+--[[
 local mk_morph = require "screens/mk_morph"
-
 local function skill_fn_common(inst, num)
 	inst.sg:GoToState("mk_do_magic")
 	inst.components.monkeymana:DoDelta(-num)
@@ -126,29 +127,31 @@ local function jgbsp_skill(inst)
         -- mk_do_magic(inst)
     end
 end
+]]
 
 local function add_skillmanager(inst)
 	inst:AddComponent("morph")
 	-- inst:AddComponent("monkeyspawner")
+	inst:AddComponent("mkskilltimer")
 	inst:AddComponent("mkskillmanager")
+	inst:AddComponent("mkskillfx")
 	inst.components.mkskillmanager:SetSkillMana("morph", 20)
 	inst.components.mkskillmanager:SetSkillMana("monkey", 10)
 	inst.components.mkskillmanager:SetSkillMana("back", 20)
 	inst.components.mkskillmanager:SetSkillMana("cloud", 100)
 	inst.components.mkskillmanager:SetSkillMana("frozen", 100)
 	inst.components.mkskillmanager:SetSkillMana("jgbsp", 100)
-	inst.components.mkskillmanager:AddSkill("morph", skill_common(inst,"morph",morph_skill))
-	inst.components.mkskillmanager:AddSkill("monkey", skill_common(inst,"monkey",monkey_skill))
-	inst.components.mkskillmanager:AddSkill("back", skill_common(inst,"back",back_skill))
-	inst.components.mkskillmanager:AddSkill("cloud", skill_common(inst,"cloud",cloud_skill))
-	inst.components.mkskillmanager:AddSkill("frozen", skill_common(inst,"frozen",frozen_skill))
-	inst.components.mkskillmanager:AddSkill("jgbsp", skill_common(inst,"jgbsp",jgbsp_skill))
+	-- inst.components.mkskillmanager:AddSkill("morph", skill_common(inst,"morph",morph_skill))
+	-- inst.components.mkskillmanager:AddSkill("monkey", skill_common(inst,"monkey",monkey_skill))
+	-- inst.components.mkskillmanager:AddSkill("back", skill_common(inst,"back",back_skill))
+	-- inst.components.mkskillmanager:AddSkill("cloud", skill_common(inst,"cloud",cloud_skill))
+	-- inst.components.mkskillmanager:AddSkill("frozen", skill_common(inst,"frozen",frozen_skill))
+	-- inst.components.mkskillmanager:AddSkill("jgbsp", skill_common(inst,"jgbsp",jgbsp_skill))
 end
 
-local skill_ui = require "widgets/mk_skill_ui"
 local function add_skillUI(self)
-	self.mk_skill_ui = self:AddChild(skill_ui())
-	self.mk_skill_ui:SetPosition(190, 20, 0)
+	self.mk_skill_ui = self:AddChild(skill_ui(self.owner))
+	self.mk_skill_ui:SetPosition(-190, 20, 0)
 end
 
 local function fix_primeape(inst)
