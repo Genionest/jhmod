@@ -7,7 +7,7 @@ end)
 -- end)
 
 AddStategraphPostInit("wilson", function(sg)
-	old_fn = sg.states["idle"].onenter
+	local old_fn = sg.states["idle"].onenter
 	sg.states["idle"].onenter = function(inst, pushanim)
 		old_fn(inst, pushanim)
 		if not inst.wantstosneeze 
@@ -24,7 +24,7 @@ AddStategraphPostInit("wilson", function(sg)
 			end
 		end
 	end
-	old_fn2 = sg.states["run_start"].onenter
+	local old_fn2 = sg.states["run_start"].onenter
 	sg.states["run_start"].onenter = function(inst)
 		old_fn2(inst)
 		if inst.components.wargrider
@@ -36,7 +36,7 @@ AddStategraphPostInit("wilson", function(sg)
 			end
 		end
 	end
-	old_fn3 = sg.states["run"].onenter
+	local old_fn3 = sg.states["run"].onenter
 	sg.states["run"].onenter = function(inst)
 		old_fn3(inst)
 		if inst.components.wargrider
@@ -51,7 +51,7 @@ AddStategraphPostInit("wilson", function(sg)
 			end
 		end
 	end
-	old_fn4 = sg.states["run_stop"].onenter
+	local old_fn4 = sg.states["run_stop"].onenter
 	sg.states["run_stop"].onenter = function(inst)
 		old_fn4(inst)
 		if inst.components.wargrider
@@ -66,7 +66,7 @@ AddStategraphPostInit("wilson", function(sg)
 			end
 		end
 	end
-	old_fn5 = sg.states["attack"].onenter
+	local old_fn5 = sg.states["attack"].onenter
 	sg.states["attack"].onenter = function(inst)
 		old_fn5(inst)
 		if inst.components.wargrider

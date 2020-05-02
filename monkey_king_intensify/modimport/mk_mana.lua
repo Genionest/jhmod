@@ -5,6 +5,8 @@ local function add_mk_mana(inst)
 end
 
 local function add_mk_mana_ui(self)
+    -- 不是猴哥不加
+    if self.owner.prefab ~= "monkey_king" then return end
 	self.mk_mana = self:AddChild(mk_mana_ui(self.owner))
     self.mk_mana:SetPosition(-120, 90, 0)
     local mana_cmp = self.owner.components.monkeymana

@@ -39,6 +39,14 @@ function SkillFx:CloneFx(body)
 	fx.Transform:SetPosition(pos.x+dx, pos.y, pos.z+dx)
 	fx.morph_body = body
 	fx.monkeyking = inst
+	if not fx:GetIsOnLand() then
+		local fx2 = SpawnPrefab("mk_morph_fx2")
+		if fx2 then
+			fx.cloud = fx2
+			fx2.entity:SetParent(fx.entity)
+			fx2.Transform:SetPosition(0,0,0)
+		end
+    end
 end
 
 return SkillFx

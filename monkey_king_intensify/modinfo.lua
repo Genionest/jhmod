@@ -1,11 +1,11 @@
-name = "Intensify Monkey King(test)"
+name = "Intensify Monkey King"
 description = "intensify monkey king"
 author = "wargon"
-version = "1.004"
+version = "1.014"
 forumthread = ""
 icon_atlas = "modicon.xml"
 icon = "modicon.tex"
-dont_starve_compatible = true
+dont_starve_compatible = false
 reign_of_giants_compatible = true
 shipwrecked_compatible = true
 hamlet_compatible = true
@@ -37,16 +37,16 @@ end
 configuration_options = 
 {
 
-	{
-		name = "language",
-		label = "Language/语言",
-		options = 
-		{
-			{description = "English", data=true},
-			{description = "中文", data=false},
-		},
-		default = true,
-	},
+	-- {
+	-- 	name = "language",
+	-- 	label = "Language/语言",
+	-- 	options = 
+	-- 	{
+	-- 		{description = "English", data=true},
+	-- 		{description = "中文", data=false},
+	-- 	},
+	-- 	default = true,
+	-- },
 
 	{
 		name = "else_enable",
@@ -58,31 +58,31 @@ configuration_options =
 		default = true,
 	},
 
-	{
-		name = "morph_key",
-		label = "七十二变",
-		options = key_list,
-		default = 0,
-	},
+	-- {
+	-- 	name = "morph_key",
+	-- 	label = "七十二变",
+	-- 	options = key_list,
+	-- 	default = 0,
+	-- },
 
-	{
-		name = "cloud_key",
-		label = "腾云驾雾",
-		options = key_list,
-		default = 0,
-	},
+	-- {
+	-- 	name = "cloud_key",
+	-- 	label = "腾云驾雾",
+	-- 	options = key_list,
+	-- 	default = 0,
+	-- },
 
-	{
-		name = "spawn_key",
-		label = "猴子猴孙",
-		options = key_list,
-		default = 0,
-	},
+	-- {
+	-- 	name = "spawn_key",
+	-- 	label = "猴子猴孙",
+	-- 	options = key_list,
+	-- 	default = 0,
+	-- },
 
-	{
-		name = "back_key",
-		label = "回来吧",
-		options = key_list,
-		default = 0,
-	},
+	-- {
+	-- 	name = "back_key",
+	-- 	label = "回来吧",
+	-- 	options = key_list,
+	-- 	default = 0,
+	-- },
 }

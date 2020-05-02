@@ -21,6 +21,7 @@ local function eatWine(inst)
 end
 
 local function proWine(self)
+	if GetPlayer().prefab ~= "monkey_king" then return end
 	self.max = 10
 	self.current = 10
 	local old_fn = self.Add

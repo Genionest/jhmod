@@ -15,14 +15,15 @@ local function MakeField(name, nature)
 	    anim:PlayAnimation("open")
 	    anim:PushAnimation("idle_loop", true)
 
-	    inst:AddComponent("natureforbid")
+	    inst.persists = false
+	    -- inst:AddComponent("natureforbid")
 	    inst.kill_fx = kill_fx
-	    inst:DoTaskInTime(30, function()
-	    	if inst.owner then
-		    	inst.owner:RemoveTag("monkey_king_"..nature.."_forbid")
-		    end
-	    	inst:Remove()
-	    end)
+	    -- inst:DoTaskInTime(30, function()
+	    -- 	if inst.owner then
+		   --  	inst.owner:RemoveTag("monkey_king_"..nature.."f")
+		   --  end
+	    -- 	inst:Remove()
+	    -- end)
 
 	    return inst
 	end

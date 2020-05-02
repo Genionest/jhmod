@@ -61,5 +61,18 @@ local magic_state = State{
             end),
         },
 }
-AddPrefabPostInit("monkey_king", addMagicFx)
+
+local function fix_idle(sg)
+    local old_fn = sg.states["idle"].onenter
+    sg.states["idle"].onenter = function(inst, ...)
+        if inst.prefab == "monkey_king"
+        and inst.components.mkskillmanager then
+            inst.components.mkskillmanager:Turn(true)
+        end
+        old_fn(inst, ...)
+    end
+end
+-- AddPrefabPostInit("monkey_king", addMagicFx)
 AddStategraphState("wilson", magic_state)
+AddStategraphState("wilsonboating", magic_state)
+AddStategraphPostInit("wilson", fix_idle)

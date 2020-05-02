@@ -11,7 +11,7 @@ local events=
     CommonHandlers.OnFreeze(),
     CommonHandlers.OnAttack(),
     CommonHandlers.OnAttacked(true),
-    CommonHandlers.OnDeath(),
+    -- CommonHandlers.OnDeath(),
     EventHandler("locomote", function(inst, data)
     	-- local is_attacking = inst.sg:HasStateTag("attack")
     	local is_busy = inst.sg:HasStateTag("busy")
@@ -28,6 +28,7 @@ local events=
 			inst.sg:GoToState("run_start")
     	end
     end),
+    EventHandler("wakeup", function(inst) inst.sg:GoToState("wakeup") end),
 }
 
 local states=
@@ -107,29 +108,19 @@ local states=
         },
     },
     
-    State {
-		name = "frozen",
-		tags = {"busy"},
-		
-        onenter = function(inst)
-            inst.AnimState:PlayAnimation("frozen")
-            inst.Physics:Stop()
-        end,
-    },
-    
-    State{
-        name = "death",
-        tags = {"busy"},
+    -- State{
+    --     name = "death",
+    --     tags = {"busy"},
         
-        onenter = function(inst)
-            -- inst.SoundEmitter:PlaySound("dontstarve/pig/grunt")
-            inst.AnimState:PlayAnimation("death")
-            inst.Physics:Stop()
-            RemovePhysicsColliders(inst)            
-            -- inst.components.lootdropper:DropLoot(Vector3(inst.Transform:GetWorldPosition()))            
-        end,
+    --     onenter = function(inst)
+    --         -- inst.SoundEmitter:PlaySound("dontstarve/pig/grunt")
+    --         inst.AnimState:PlayAnimation("death")
+    --         inst.Physics:Stop()
+    --         RemovePhysicsColliders(inst)            
+    --         -- inst.components.lootdropper:DropLoot(Vector3(inst.Transform:GetWorldPosition()))            
+    --     end,
         
-    },
+    -- },
     
     State{
         name = "attack",
@@ -191,6 +182,55 @@ local states=
             EventHandler("animover", function(inst) inst.sg:GoToState("idle") end ),
         },        
     },    
+
+    State{
+        name = "electrocute",
+        tags = {"busy"},
+        onenter = function(inst)
+            inst.Physics:Stop()
+            inst.AnimState:PlayAnimation("hit")
+            inst.fx = SpawnPrefab("shock_fx")
+            inst.fx.Transform:SetRotation(inst.Transform:GetRotation())
+            local pos = inst:GetPosition()
+            inst.fx.Transform:SetPosition(pos.x, pos.y, pos.z)
+        end,
+
+        onexit = function(inst)
+            inst.fx:Remove()
+        end,
+
+        events=
+        {
+            EventHandler("animover", function(inst)
+                inst.sg:GoToState("idle")            
+            end),
+        },
+    },
+
+    State{
+        name = "wakeup",
+
+        onenter = function(inst)
+            inst.components.playercontroller:Enable(false)
+            inst.AnimState:PlayAnimation("sleep_pst")
+            inst.components.health:SetInvincible(true)
+        end,
+        
+        onexit = function(inst)
+            inst.components.playercontroller:Enable(true)
+            inst.components.health:SetInvincible(false)
+        end,
+        
+        events=
+        {
+            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end),
+        },
+
+        -- timeline = {
+        --     TimeEvent(1*FRAMES, function(inst) inst.SoundEmitter:PlaySound(inst.sounds.buzz, "buzz") end)
+        -- },
+
+    },
 }
 
 CommonStates.AddFrozenStates(states)

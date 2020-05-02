@@ -4,7 +4,14 @@ local SkillManager = Class(function(self, inst)
 		none = nil,
 	}
 	self.skill_mana = {
-		none = 0,
+		-- morph = 20,
+		-- monkey = 10,
+		-- back = 20,
+		-- cloud = 100,
+		-- frozen = 100,
+		-- jgbsp = 100,
+		-- coldf = 100,
+		-- firef = 100,
 	}
 	self.can = true
 end)

@@ -32,7 +32,7 @@ function Mk_Sample_UI:IsEnabled()
 end
 
 function Mk_Sample_UI:SetPercent(p)
-    print("mk_"..self.skill.."_ui setpercent:", p)
+    -- print("mk_"..self.skill.."_ui setpercent:", p)
     self.topperanim:GetAnimState():SetPercent("anim", 1-p)
 end
 
