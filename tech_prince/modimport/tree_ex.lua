@@ -639,8 +639,7 @@ local function treeseed_load(inst, data)
     WARGON.seed_load(inst, data)
 end
 
--- GLOBAL.WARGON_TREE_EX = {
-GLOBAL.WARGON.TREE = {
+GLOBAL.WARGON_TREE_EX = {
 -- name, builds, bank, fix_fn, on_chop_fn, on_chop_down_fn, chop_fx, minimap, inspect_fn, stump_loot, growth_stages
     create_trees    = create_trees,
     treeseed_test   = treeseed_test,
@@ -653,4 +652,4 @@ GLOBAL.WARGON.TREE = {
     treeseed_load   = treeseed_load,
 }
 
--- GLOBAL.WARGON.TREE = GLOBAL.WARGON_TREE_EX
+GLOBAL.WARGON.TREE = GLOBAL.WARGON_TREE_EX

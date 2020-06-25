@@ -206,7 +206,7 @@ local function worker_brain()
 		end
 		local function find_tree(item, inst)
 			if item.components.workable 
-			and item.components.workable.action = ACTIONS.CHOP then
+			and item.components.workable.action == ACTIONS.CHOP then
 				if item.components.growable and not item:HasTag("stump")
 				and item.components.growable.stage == 3 then
 					return true
