@@ -1,0 +1,484 @@
+语法错误，local是局域变量，不是全局变量
+当存在语法错误而非一般的变量名错误时，进入游戏会无法选择
+多行注释符内不能有多行注释符
+
+health最大值时maxhealth
+
+ScaleTo(1.3, 1, .7)这是一个有三个变量的函数
+
+不按错误位置找bug
+
+spriter制作动画，先建立一个文件夹file，在文件夹下是mod名文件夹file/item，
+项目里面有图片file/item/item.png，做成的scml文件保存在mod名文件夹下
+file/item/item.scml，然后把file/item文件夹复制到exported文件夹里，现在
+是exported/item，再把scml文件从item文件夹里面拿出来，也就是从
+exported/item/item.scml到exported/item.scml
+17:10 2019/11/6
+
+联机版icon.xml和单机版不兼容，图片不清楚，最好别混用
+17:20 2019/11/6
+
+单机版在scripts/prefabs/里的物体代码，最后返回的是
+return Prefab("common/iventory/xxx", fn, assets, prefabs)
+17:53 2019/11/6
+
+scripts/prefabs/里的物体代码，一定要有MakeInventoryPhysics(inst)
+setBank()，setBuild()，playAnimation()
+17:55 2019/11/6
+
+在log文件里从下往上慢慢找错误记录
+14:44 2019/11/7
+
+jh单机版不能用AddRecipe()
+20:27 2019/11/8
+
+动画光是仿制spriter里左下那几个属性是不够的，具体看scml文件里怎么写，
+最好是在模板上改
+22:54 2019/11/8
+
+要引用其他的图片资源的动画只需要anim就行了，代码里修改相关anim即可
+23:02 2019/11/8
+
+替换法 替换物品皮肤的贴图，手持的装备：setBuild("要改")
+owner.AnimState:OverrideSymbol("xx","要改","xx")，
+assets里面要改是当然的
+14:44 2019/11/10
+
+物品栏皮肤在modmain创建Recipe对象时定义的，就是物品栏图片
+16:51 2019/11/10
+
+创建建筑的Recipe对象时最后还有"name_placer"
+16:52 2019/11/10
+
+建筑栏贴图和物品栏贴图名字必须和物品名字一样，不能乱取
+16:56 2019/11/11
+
+建筑栏贴图文件在modmain里要加载(Assets)一遍，不然不显示
+13:26 2019/11/14
+
+有些物品要兼容dlc3需要在recipe里需要添加GLOBAL.RECIPE_GAME_TYPE.COMMON,
+16:50 2019/11/14
+
+用mod tools来打包inventoryimages里的图片就不会出现
+空白变白色的问题
+16:17 2019/11/15
+
+加载游戏的已有的资源就不要再放anim了，具体物品的脚本里也别加anim进资源表
+15:33 2019/11/18
+
+DoTaskInTime() 的任务列表长度时有限的
+15:40 2019/11/18
+
+饥荒里的函数一般是大写驼峰（开头就大写）
+19:35 2019/11/21
+
+x, y = GetWorld().Map:GetTileCoordsAtPoint(pt.x, pt.y, pt.z)
+返回的x, y表示的是这个pt位置的地皮是第x行，第y列的地皮，与pt位置无关
+14:06 2019/11/27
+
+建筑几何学里的最小格子间距是0.5
+14:34 2019/11/27
+
+地皮网格内的x，y最大值位置是在一个角上
+14:35 2019/11/27
+
+inst:GetPosition()得到的应该是Vector3对象
+inst.Transform:GetWorldPosition()返回的应该是x, y, z三个值
+15:20 2019/11/27
+
+lua里面0好像不表否
+16:08 2019/11/27
+
+进行明知不对的尝试只会浪费时间，更多的时候需要找出那段代码bug了
+18:36 2019/11/27
+
+上面的函数不能调用下面的函数，只能下面的函数调用上面的函数
+17:39 2019/11/28
+
+每次更新要把mod版本也跟新了
+17:50 2019/11/28
+
+有时候给不了物品到物品栏，就需要设置stackable:SetStackSize()这部分
+16:05 2019/12/1
+
+basecapsule的setTerraform函数，ter_t表内的都时{x,z}，每个元素只有
+一个坐标，没有其他的了
+14:44 2019/12/3
+
+if i ~= -2 and j~= -2 then是指i或j都不为-2
+if i ~= -2 or j ~= -2 then 是指i和j不同时为-2
+15:36 2019/12/3
+
+注意嵌套循环的循序，basecapsule里k在最里层，所以第一次i，j，k时，
+k先到1，然后z_chest就变了，所以一个九宫格里原始z_chest坐标的箱子
+只有一个
+15:39 2019/12/3
+
+lua函数对于没有传参的参数，默认为nil
+17:04 2019/12/6
+
+农场的角度是通过inst.Transform:SetRotation( angle )来修改的
+17:54 2019/12/6
+
+scripts/constants.lua文件里有默认的常量
+14:12 2019/12/15
+
+fence_gate要改变动画需要inst.dooranim.AnimState而不是inst.AnimState
+23:13 2019/12/16
+
+lua数组从1开始，所以计数count也要从1开始
+21:56 2019/12/17
+
+饥荒代码里的时间设置是以秒为单位的
+15:40 2019/12/20
+
+直接换anim里面的atlas-0.tex在压缩似乎不现实
+16:06 2019/12/21
+
+解压的scml文件里的其他文件用不到的也别删除，到时候打包不了
+22:58 2019/12/21
+
+游戏开始时会加载prefab里面的assets文件
+13:23 2019/12/28
+
+DLC1里的必须在DLC1里面改，其他也一样
+2:12 2020/1/2
+
+"daytime"事件的监听必须由world来进行，所以格式是
+inst:ListenForEvent( "daytime", function() fn(inst) end , GetWorld())
+15:14 2020/1/2
+
+所有可以种的东西都在prefabs/plantable里
+22:27 2020/1/8
+
+chop_worker_brain.lua里的deployPlant函数里，虽然plant_root和plant_pos都没有，
+但下面的部分还是会return bufferedaction
+22:04 2020/1/9
+
+chop_worker_brain.lua里的deployPlant试验部分里，obj不能去检测inventory，因为
+chop_worker有一个物品栏，是先捡东西进入物品栏，再去种，所以物品栏的东西的一个
+种子会被用掉，但却不会被种出。
+1:00 2020/1/10
+
+placer也是prefab，但是他有placer属性
+1:32 2020/1/10
+
+一切的原因都是因为工具人到了种植地，可种植的判定就为否，所以就不会执行接下来的
+一系列操作。添加三个标签之一也可解决{"NOBLOCK","player","fx"}
+2:04 2020/1/10
+
+打开machine的动作无法在船上进行
+2:42 2020/1/24
+
+没有在prefab里设置physics就不要在SG里调用physics了
+0:04 2020/1/31
+
+不设置setFourFaced()似乎就没有四个朝向
+0:41 2020/1/31
+
+lua可以再列表中放函数，
+a = {function(b) print(b) end}
+a[1](123)
+22:15 2020/2/2
+
+GetModConfigData(config_data)
+不能再modmain外的其他地方使用
+1:27 2020/2/22
+
+要用这种格式 language and "base" or "基地"
+1:49 2020/2/22
+
+return Prefab("xx", fn, assets)
+fn是不能带参数表的
+0:03 2020/3/2
+
+lua里面，a是一个表，a.b和a["b"]是一样的
+0:51 2020/3/2
+
+mangrovetree_short是mangrovetree_tall的树桩，
+mangrovetree_stump是mangrovetree_normal的树状
+mangrovetree_normal是小，mangrovetree_tall是中
+0:34 2020/3/4
+
+类似 true and 4 这种赋值格式，true必须在前面
+1:28 2020/3/4
+
+inspectable.getstatus只能返回大写的，因为是STRINGS里面的
+20:38 2020/3/4
+
+steam社区不能进，因为用steamcommunity工具修改了host，
+把host修复还原就可以了。
+17:03 2020/3/10
+
+帽子的中心点跟headbase
+眼镜的中心点跟face
+衣服的中心点跟torso
+16:32 2020/3/12
+
+如果a是b的spawner，b是c的spawner
+那么保存退出重进之后，a就会重新生成一个b替换原来的b（虽然
+属性一致），但这会导致c失去了它的spawner
+1:10 2020/3/14
+
+源码里有inventoryitem组件和atlasname，imagesname的可以照搬它的贴图
+19:29 2020/3/14
+
+AddLevelPerInit(id, function(level) end)
+id是定义的level的id属性，如“SURVIVAL_DEFAULT”
+20:36 2020/4/2
+
+科学仪器在prefabs/scienceprototyper文件里
+23:08 2020/4/2
+
+科技仪器不仅要有prototyper组件，prototyper.tree还要有
+tag prototyper
+23:42 2020/4/2
+
+位置0,0,0在地皮的一角上可以算是地皮坐标轴的原点。
+也就是说地皮一角上的坐标是可以整除4的
+20:21 2020/4/4
+
+改变level的id是有用的，但改变level的overrides好像没什么用，
+可能是因为设置里保存着数据，无法覆盖。
+20:22 2020/4/4
+
+AddLevelPreInit(level_id, function(level)
+	level = {}这种办法是行不通的
+end)
+21:36 2020/4/4
+
+靠近改recipe.level这种办法只能把level改为0，不然就会报错
+2:17 2020/4/5
+
+StateGraph(name, ...)  这个name是对应生物的name，
+应该是方便AddStateGraphPostInit用的
+0:54 2020/4/6
+
+locomotor组件必须在设置状态图前添加，
+最好放在所有组件添加之后
+1:02 2020/4/6
+
+最好用这种格式来写
+local function makeprefab(...)
+  local function fn()
+    local inst = CreateEntity()
+    ...
+    return inst
+  end
+  return Prefab(..., fn, ...) 
+end
+不然容易报错
+15:51 2020/4/6
+
+光学三原色
+红1，1，1；黄1，1，0；黑0，0，0；白1，1，1；
+16:45 2020/4/6
+
+在sg里添加内容，容易因为进入其他状态而打断
+17:55 2020/4/6
+
+骑牛的关键在于setBank("wilsonbeefalo")让玩家浮起来
+AddOverrideBuild("beefalo_build")让玩家下面显示了牛
+22:27 2020/4/6
+
+AddPrefabPostInit()添加state，AddStategraphPostInit()
+修改state，可能会找不到这个state，所以还是要先判断是否为空
+3:34 2020/4/7
+
+朝向这个东西是由Transform:SetRotation(rot)控制的，
+可以通过Transform:GetRotation()来获得角度
+4:21 2020/4/7
+
+yellowstaff的inventoryitem.altasname是
+images/inventoryimages_2.xml
+16:17 2020/4/7
+
+可以通过这样的方式来获取SG里的一些内容
+AddStategraphPostInit(sg_name, function(sg)
+  sg.states[state_name].onenter
+end)
+17:58 2020/4/7
+
+骑牛之后，要把牛传到0，0，0去，这样重进的时候才不会
+乱传
+3:22 2020/4/8
+
+inst:RemoveChild(child), inst:AddChild(child),
+inst.entity:SetParent(parent.entity)
+3:24 2020/4/8
+
+state里面如果没有inst:PerformBufferedAction()，
+就不会触发actions里的函数
+20:50 2020/4/8
+
+child的原点会被设置成parent的坐标
+21:05 2020/4/8
+
+for i, v in pairs(getmetatable(inst.AnimState).__index) do
+	print(i, type(v))
+end
+这样的方式可以打印任何数据类型
+22:16 2020/4/9
+
+一键GOLBAL应该放在modmain最前面
+2:45 2020/4/11
+
+hook组件的函数时，获取的原函数再加上时第一个要参数得是自身
+AddComponentPostInit("health", function(self)
+  local old_fn = self.DoDelta
+  function self:DoDelta(...) old_fn(self, ...) end
+end
+16:35 2020/4/11
+
+widget，screen这些类定义里第一个函数没inst只有self
+而且定义时不能像组件那样，因为时定义的子类，所以要传父类
+local screen = Class(Screen, function(self) end
+3:12 2020/4/12
+
+获取的图形界面是个类，要实例化
+local screen = require "screen/screen"
+TheFrontEnd:PushScreen(screen())
+3:33 2020/4/12
+
+badge(self, anim, owner) 第二个参数就是其背景图片
+1:27 2020/4/14
+
+如果在订阅的创意工坊mod里进行修改，在线模式下可能会被改回来
+14:59 2020/4/14
+
+图片资源不完整的话，autocompiler.exe就无法打包
+23:09 2020/4/14
+
+mk_sample_ui里定义的self:mk_fn(self.owner)
+然后在mk_back_ui(继承mk_sample_ui)里传入
+self.mk_fn = BackMonkey --BackMonkey(inst) end
+这时候就BackMonkey在调用的时候接受不到self.owner
+只能是在mk_back_ui里定义一个self.mk_fn，
+然后再调用self:mk_fn(self.owner)
+23:40 2020/4/25
+
+OnLoad函数加载时一定要给个默认值
+23:41 2020/4/25
+
+写print来帮助调试的时候，不要只是给函数写个就完了，
+还要想想前后逻辑
+23:56 2020/4/25
+
+a,b是表，那么a = b是指针的赋值
+16:31 2020/4/26
+
+小心nil吧，多判断一下吧
+0:20 2020/4/27
+
+physics:CollidesWith(COLLISION.xx) 与xx发生碰撞
+physics:SetCollisionGroup(COLLISION.xx) 将自己设为xx
+2:59 2020/4/27
+
+玩家的keeponland属性会让玩家留在陆地上（不乘船时）
+15:51 2020/4/27
+
+像定义class，然后function这种的函数，需要self，其他的就不用
+17:05 2020/4/27
+
+state里面如果有循环播放的，由于等不到animqueueover，且不打算
+用animover，可以用inst.sg:SetTimeout(time)，然后在
+ontimeout = function(inst) end 里退出
+3:28 2020/4/28
+
+Image的SetScale(x, y, z) x是长，y是宽，而不是z
+4:12 2020/4/28
+
+hook combat组件的CanTarget函数，由于这个函数是返回bool的，
+所以在hook的函数里要return old_fn(self, ...)
+19:05 2020/4/28
+
+玩家攻击后按移动键会出现移动不了的情况是因为
+run_start, run, run_stop这三个state不全
+19:06 2020/4/28
+
+TheInput():GetScreenPosition()的坐标左下角是0，0
+21:43 2020/4/30
+
+widget:OnControl(control, down) 内是 聚焦且发生 鼠标左键事件或键盘事件
+control == CONTROL_ACCEPT 情况对应的是 聚焦且发生 鼠标左键事件
+2:54 2020/5/1
+
+类名._base就可以获取父类
+例子：Button._base.OnLoseFocus(self)
+3:03 2020/5/1
+
+widget的OnControl(control, down)
+
+brain里的chaseandattack里的距离和combat.retargetfn里的
+搜索距离最好是一样的，或者前者大于后者。
+0:01 2020/5/5
+
+sg里的状态要有相应的触发器来触发。
+22:17 2020/5/5
+
+有replica的记得replica判断不为nil
+14:45 2020/5/7
+
+next(tbl)获取tbl列表的下一个元素，可以判断tbl是否为空
+（一开始就返回nil既为空）
+14:48 2020/5/8
+
+联机的AddPrefabPostInit(prefab, fn)
+fn里要加 if not TheWorld.ismastersim then return inst end
+代码根据情况选择在前还是在后
+16:29 2020/5/8
+
+netvar:set(x)设置的值和原来不一样的话就会自动触发dirty事件，
+无需推送
+17:29 2020/5/8
+
+brain里的Action需要条件支持才能执行，不然就算在执行过程中，
+也会被打断。
+18:30 2020/5/8
+
+AddModRPCHandler(modname, rpcname, fn)
+  fn的第一个参数为inst，就是谁发送的
+  SendModRPCToServer(MOD_RPC[modname][rpcname])
+  就是谁
+21:56 2020/5/8
+
+inspectable的getstatus是对于DESCRIBE的
+1:16 2020/5/10
+
+AddComponentAction("SCENE", "skyhoundpet", test_fn)
+这里的test_fn只能用一种来判断多种动作
+21:58 2020/5/13
+
+statusdisplays是inst.HUD.controls.status（inst是人物）
+1:00 2020/5/15
+
+能用官方的bank，就尽量用官方的bank
+16:03 2020/5/15
+
+尺寸的变化会导致速度的变化
+16:03 2020/5/15
+
+能改函数就不覆盖，能改变量就不该函数
+1:12 2020/5/16
+
+有critter标签的生物才能被喂养
+3:01 2020/5/17
+
+一般用
+inst._mynetvar:set_local(false)
+inst._mynetvar:set(true)
+来保证dirty事件的触发
+1:03 2020/5/18
+
+网络变量和dirty事件的监听一般放在服务端代码，不然可能会影响其他dirty事件
+1:04 2020/5/18
+
+perload在组件加载前，load在组件加载后
+15:26 2020/5/18
+
+brain里只有whilenode里的会循环执行，其他只执行一两次就没了
+12:26 2020/6/26
+
+brain里doaction的return并不会结束当前动作去执行下一个动作，所以对于
+return BufferedAction的不要随便return nil
+12:29 2020/6/26
