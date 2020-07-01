@@ -115,7 +115,7 @@ local function state_run(states, anim, timeline)
 	CommonStates.AddRunStates(states, timelines, run_anim)
 end
 
-local function state_walk(states, anim, timeline)
+local function state_walk(states, anim, timeline, soft)
 	local walk_anim = nil
 	if anim then
 		walk_anim = loco_anim(anim, 'walk')
@@ -130,7 +130,7 @@ local function state_walk(states, anim, timeline)
 		}
 		timelines = change_tbl(timeline, tbl2)
 	end
-	CommonStates.AddWalkStates(states, timelines, walk_anim)
+	CommonStates.AddWalkStates(states, timelines, walk_anim, soft)
 end
 
 local function state_sleep(states, timeline, anim)
@@ -200,7 +200,7 @@ local function add_state(states, state, data)
 		state_run(states, data.anim, data.tl)
 		-- anim 3, timeline 3
 	elseif state == 'walk' then
-		state_walk(states, data.anim, data.tl)
+		state_walk(states, data.anim, data.tl, data.soft)
 		-- anim 3, timeline 3
 	elseif state == 'sleep' then
 		state_sleep(states, data.tl, data.anim)
@@ -305,6 +305,7 @@ local function animal_sg(sg_name)
 		{ACTIONS.GOHOME, 'gohome'},
 		{ACTIONS.EAT, 'eat'},
 		{ACTIONS.PICK, 'pick'},
+		{ACTIONS.TP_PERD_STORE, 'pick'},
 	})
 	local events = {}
 	add_handlers(events, {'step', 'loco', 'sleep', 'frozen'})

@@ -482,3 +482,6 @@ brain里只有whilenode里的会循环执行，其他只执行一两次就没了
 brain里doaction的return并不会结束当前动作去执行下一个动作，所以对于
 return BufferedAction的不要随便return nil
 12:29 2020/6/26
+
+prioritynode 如果刷新较慢可能就会出现问题。
+0:20 2020/6/29

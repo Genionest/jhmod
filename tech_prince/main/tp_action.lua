@@ -91,3 +91,20 @@ add_player_action_sg(hua, "tp_hua_start")
 add_player_action_sg(za, "tp_za")
 add_player_action_sg(ci, "tp_ci_start")
 add_player_action_sg(deng, "give")
+
+local tp_perd_store = Action({})
+tp_perd_store.id = "TP_PERD_STORE"
+tp_perd_store.str = "TP_PERD_STORE"
+tp_perd_store.fn = function(act)
+	-- if act.doer and act.target then
+	print('tp_perd_store', 1)
+	if act.doer then
+		print('tp_perd_store', 2)
+		if act.doer.components.inventory then
+			print('tp_perd_store', 3)
+			act.doer.components.inventory:DropEverything()
+		end
+	end
+	return true
+end
+AddAction(tp_perd_store)

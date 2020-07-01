@@ -456,6 +456,83 @@ local function sign_wan_fn(inst)
 	end)
 end
 
+local function sign_wall_fn(inst)
+	MakeObstaclePhysics(inst, .5)
+	inst.AnimState:PushAnimation("idle")
+end
+
+local function sign_circle_wall_fn(inst)
+	local function set_wall(angle)
+		local radius = 8
+		local pos = inst:GetPosition()
+		pos.x = pos.x + math.cos(angle)*radius
+		pos.z = pos.z + math.sin(angle)*radius
+		local fx = WARGON.make_fx(pos, 'tp_fx_sign_wall')
+		if inst.master then
+			table.insert(inst.master.fxs, fx)
+		end
+	end
+	inst:StartThread(function()
+		local start = math.random(18)
+		for i = 1, 18 do
+			local angle = (start+i) * 10 * PI/180
+			local angle2 = PI + angle
+			set_wall(angle)
+			set_wall(angle2)
+			Sleep(.1)
+		end
+	end)
+	WARGON.do_task(inst, 4, function()
+		inst:Remove()
+	end)
+end
+
+local function sign_line_wall_fn(inst)
+	add_physics(inst)
+	WARGON.do_task(inst, 0, function()
+		inst.Physics:SetMotorVel(5, 0, 0)
+	end)
+	WARGON.do_task(inst, 1, function()
+		inst:Remove()
+	end)
+	WARGON.per_task(inst, .2, function()
+		local fx = WARGON.make_fx(inst, "tp_fx_sign_wall")
+		if inst.master then
+			table.insert(inst.master.fxs, fx)
+		end
+	end)
+end
+
+local function sign_killer_fn(inst)
+	inst.fxs = {}
+	WARGON.do_task(inst, 0, function()
+		for i = 1, 4 do
+			local fx = WARGON.make_fx(inst, "tp_fx_sign_line_wall")
+			fx.Transform:SetRotation(i*90)
+			fx.master = inst
+		end
+		local pt = inst:GetPosition()
+		local circle_fx = WARGON.make_fx(pt, "tp_fx_sign_circle_wall")
+		circle_fx.master = inst
+	end)
+	WARGON.do_task(inst, 4.6, function()
+		WARGON.make_fx(inst, "groundpoundring_fx")
+	end)
+	WARGON.do_task(inst, 5, function()
+		for i, v in pairs(inst.fxs) do
+			v:Remove()
+		end
+		local no_tags = {"epic", "beefalo"}
+		local ents = WARGON.finds(inst, 8, nil, no_tags)
+		for i2, v2 in pairs(ents) do
+			if v2.components.health then
+				v2.components.health:Kill()
+				WARGON.make_fx(v2, "wathgrithr_spirit")
+			end
+		end
+	end)
+end
+
 local function tree_seed_shadow_fn(inst)
 	WARGON.do_task(inst, .2, function()
 		inst:Remove()
@@ -676,4 +753,8 @@ return
 	MakeFx("tp_fx_shadow_line", {}, shadow_line_fn),
 	MakeFx("tp_fx_shadow_line_2", {}, shadow_line_2_fn),
 	MakeFx("tp_fx_shadow_spawn", {}, shadow_spawn_fn),
-	MakeFx("tp_fx_shadow_bat", {}, shadow_bat_fn)
+	MakeFx("tp_fx_shadow_bat", {}, shadow_bat_fn),
+	MakeFx("tp_fx_sign_wall", signs, sign_wall_fn),
+	MakeFx("tp_fx_sign_circle_wall", {}, sign_circle_wall_fn),
+	MakeFx("tp_fx_sign_line_wall", {}, sign_line_wall_fn),
+	MakeFx("tp_fx_sign_killer", {}, sign_killer_fn)

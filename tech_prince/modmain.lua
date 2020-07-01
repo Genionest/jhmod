@@ -9,10 +9,16 @@ PrefabFiles = {
 	"tp_char",
 	"tp_structure",
 	"tp_tree",
+	"tp_tree_seed",
+	"tp_pet",
+	"tp_beefalo",
+	"tp_baby_beefalo",
 	"tp_unreal_wilson",
 	"tp_pig_spirit",
 	"tp_pig_worker",
 	"tp_pig_home",
+	"tp_werepig_king",
+	"tp_sign_rider",
 	"tp_fx",
 	"tp_sparkle_fx",
 	"tp_snow_fx",
@@ -23,12 +29,12 @@ PrefabFiles = {
 
 Assets = {}
 
-local function GlobalUsingMetatable()
-	GLOBAL.setmetatable(env, {__index = function(t, k)
-		return GLOBAL.rawget(GLOBAL, k)
-	end,})
-end
-GlobalUsingMetatable()
+-- local function GlobalUsingMetatable()
+-- 	GLOBAL.setmetatable(env, {__index = function(t, k)
+-- 		return GLOBAL.rawget(GLOBAL, k)
+-- 	end,})
+-- end
+-- GlobalUsingMetatable()
 
 local _G = GLOBAL
 modimport("modimport/wargon.lua")
@@ -85,6 +91,7 @@ local a_t = _G.WARGON.CHECK.check_asset()
 if not a_t.wortox then
 	_G.WARGON.add_asset(Assets, "wortox_soul_heal_fx", "anim")
 end
+_G.WARGON.add_asset(Assets, "tp_strawhat", 'anim')
 
 local scroll_generic = "失落的上古之章"
 local scroll_str = {
@@ -115,13 +122,12 @@ local the_strs = {
 	tp_spear_poison = {'毒矛', '这把矛带着魔力'},
 	tp_spear_shadow = {'影矛', '这把矛带着魔力'},
 	tp_spear_blood = {'血矛', '这把矛带着魔力'},
-	tp_spear_wind = {'风之息', '风起于青萍之末', '风之精灵为你助阵'},
-	tp_strawhat = {'精灵球草帽', '决定就是你了', '草'},
-	tp_strawhat2 = {'精灵球草帽', '草'},
+	tp_spear_wind = {'森林之息', '风起于青萍之末', '风之精灵为你助阵'},
+	tp_strawhat = {'精灵草帽', '决定就是你了'},
+	tp_strawhat2 = {'精灵草帽', '驯师的草帽'},
 	tp_ballhat = {'橄榄球头盔', '给你看看他的真正用法', '就像橄榄球一样'},
 	tp_woodarmor = {'锯齿木甲', '应该这样用才对', '木质板砖'},
 	tp_hambat = {'火腿肉棒', '好棒', '戳破天际'},
-	-- tp_hambat_wall = {'火腿棒', '好棒', nil},
 	tp_staff_trinity = {'三一魔杖', '三份的快乐'},
 	tp_tent = {'大帐篷', '醒了记得修', '睡个好觉'},
 	tp_rocket = {'人造火箭', '准备发射', '戳破天际'},
@@ -153,7 +159,14 @@ local the_strs = {
 	tp_chop_pig_home = {'伐木猪屋', '伐木猪屋'},
 	tp_hack_pig_home = {'砍工猪屋', '砍工猪屋'},
 	tp_farm_pig_home = {'农场猪屋', '农场猪屋'},
-	-- tp_unreal_wilson = {'威尔逊', '威尔逊'},
+	tp_bird_egg = {'威吊的蛋', '放心吧，我不会吃你的'},
+	tp_bird_egg_cracked = {'威吊的蛋', '小鸡快出来'},
+	tp_small_bird = {'威吊的小高鸟', '跟着我'},
+	tp_beefalo = {'威吊的牛', '骑骑'},
+	tp_baby_beefalo = {'威吊的小牛', '它现在还不能骑'},
+	tp_werepig_king = {'野猪王', '谁把他放出来了'},
+	tp_pigking_hat = {'猪王帽子', '必须要有一位猪人王'},
+	tp_sign_rider = {'路牌骑士', '小心她的路牌'},
 }
 for i, v in pairs(the_strs) do
 	_G.WARGON.add_str(i, v[1], v[2], v[3])
@@ -206,40 +219,40 @@ local function set_img(rcp, atlas)
 	rcp.image = atlas..".tex"
 end
 
-local ash = _G.WARGON.add_recipe('tp_ash', {ash=1, beardhair=1}, 'ref', 'none')
-ash.image = "ash.tex"
+-- local ash = _G.WARGON.add_recipe('tp_ash', {ash=1, beardhair=1}, 'ref', 'none')
+-- ash.image = "ash.tex"
 
-local spear_lance = _G.WARGON.add_recipe('tp_spear_lance', {spear=1, tp_ash=5}, 'war', 's_1')
+local spear_lance = _G.WARGON.add_recipe('tp_spear_lance', {spear=1, rope=5}, 'war', 's_1')
 set_img(spear_lance, "spear_forge_lance")
 
-local spear_gungnir = _G.WARGON.add_recipe('tp_spear_gungnir', {spear=1, tp_ash=5}, 'war', 's_1')
+local spear_gungnir = _G.WARGON.add_recipe('tp_spear_gungnir', {spear=1, rope=5}, 'war', 's_1')
 set_img(spear_gungnir, "spear_forge_gungnir")
 
-local spear_wind = _G.WARGON.add_recipe('tp_spear_wind', {spear=1, tp_ash=5}, 'war', 's_2')
+local spear_wind = _G.WARGON.add_recipe('tp_spear_wind', {spear=1, rope=5}, 'war', 's_2')
 set_img(spear_wind, "spear_rose")
 
-local strawhat = _G.WARGON.add_recipe('tp_strawhat', {strawhat=1, tp_ash=5}, 'dre', 'none')
+local strawhat = _G.WARGON.add_recipe('tp_strawhat', {strawhat=1, rope=5}, 'dre', 'none')
 set_img(strawhat, "strawhat_cowboy")
 
-local ballhat = _G.WARGON.add_recipe('tp_ballhat', {footballhat=1, tp_ash=5}, 'war', 's_2')
+local ballhat = _G.WARGON.add_recipe('tp_ballhat', {footballhat=1, rope=5}, 'war', 's_2')
 set_img(ballhat, "footballhat_combathelm")
 
-local wood = _G.WARGON.add_recipe('tp_woodarmor', {armorwood=1, tp_ash=10}, 'war', 's_2')
+local wood = _G.WARGON.add_recipe('tp_woodarmor', {armorwood=1, rope=10}, 'war', 's_2')
 set_img(wood, "armor_wood_fangedcollar")
 
-local ham = _G.WARGON.add_recipe('tp_hambat', {hambat=1, tp_ash=5}, 'war', 's_2')
+local ham = _G.WARGON.add_recipe('tp_hambat', {hambat=1, rope=5}, 'war', 's_2')
 set_img(ham, "ham_bat_spiralcut")
 
-local rocket = _G.WARGON.add_recipe('tp_rocket', {trinket_5=1, tp_ash=5}, 'sci', 's_2')
+local rocket = _G.WARGON.add_recipe('tp_rocket', {trinket_5=1, rope=5}, 'sci', 's_2')
 rocket.image = 'trinket_5.tex'
 
-local cane = _G.WARGON.add_recipe('tp_cane', {cane=1, tp_ash=5}, 'dre', 's_2')
+local cane = _G.WARGON.add_recipe('tp_cane', {cane=1, rope=5}, 'dre', 's_2')
 set_img(cane, "cane_ancient")
 
-local ruinbat = _G.WARGON.add_recipe('tp_ruinbat', {ruins_bat=1, tp_ash=5}, 'anc', 'a_4', {'rog'})
+local ruinbat = _G.WARGON.add_recipe('tp_ruinbat', {ruins_bat=1, rope=5}, 'anc', 'a_4')
 set_img(ruinbat, "ruins_bat_heavy")
 
-local cutlass = _G.WARGON.add_recipe('tp_cutlass', {cutlass=1, tp_ash=5}, 'war', 's_2')
+local cutlass = _G.WARGON.add_recipe('tp_cutlass', {cutlass=1, rope=5}, 'war', 's_2')
 set_img(cutlass, "nightsword_sharp")
 
 local mp_sp = _G.WARGON.add_recipe('morph_sp', {san=5}, "mag", "none")
@@ -266,15 +279,15 @@ chest.atlas = "images/inventoryimages/treasure_chest_sacred.xml"
 chest.image = "treasure_chest_sacred.tex"
 chest.wargon_test = tech_prince_test
 
-local chop_home = _G.WARGON.add_recipe('tp_chop_pig_home', {boars=4}, 'tow', 's_2',
+local chop_home = _G.WARGON.add_recipe('tp_chop_pig_home', {boards=4}, 'far', 's_2',
 	nil, nil, nil, "tp_chop_pig_home_placer")
 chop_home.image = "pighouse.tex"
 
-local hack_home = _G.WARGON.add_recipe('tp_hack_pig_home', {boars=4}, 'tow', 's_2',
+local hack_home = _G.WARGON.add_recipe('tp_hack_pig_home', {boards=4}, 'far', 's_2',
 	nil, nil, nil, "tp_hack_pig_home_placer")
 hack_home.image = "pighouse.tex"
 
-local farm_home = _G.WARGON.add_recipe('tp_farm_pig_home', {boars=4}, 'tow', 's_2',
+local farm_home = _G.WARGON.add_recipe('tp_farm_pig_home', {boards=4}, 'far', 's_2',
 	nil, nil, nil, "tp_farm_pig_home_placer")
 farm_home.image = "pighouse.tex"
 --OBSIDIAN_BENCH

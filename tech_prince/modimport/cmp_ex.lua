@@ -124,15 +124,19 @@ local function add_weapon(inst, dmg, range, fn, fx)
 	check_cmp(inst, "weapon")
 	if dmg then inst.components.weapon:SetDamage(dmg) end
 	if range then
-		local range_atk = range.atk or range[1]
-		local range_hit = range.hit or range[2] or range_atk
-		inst.components.weapon:SetRange(range_atk, range_hit)
+		if type(range) == 'table' then
+			local range_atk = range.atk or range[1]
+			local range_hit = range.hit or range[2] or range_atk
+			inst.components.weapon:SetRange(range_atk, range_hit)
+		else
+			inst.components.weapon:SetRange(range)
+		end
 	end
 	if fn then inst.components.weapon:SetOnAttack(fn~="nil" and fn or nil) end
 	if fx then inst.components.weapon:SetProjectile(fx~="nil" and fx or nil) end
 end
 
-local function add_combat(inst, dmg, per, re, keep, hit, atk, symbol, player)
+local function add_combat(inst, dmg, per, re, keep, hit, atk, symbol, player, range)
 	check_cmp(inst, "combat")
 	if dmg then inst.components.combat:SetDefaultDamage(dmg) end
 	if per then inst.components.combat:SetAttackPeriod(per) end
@@ -142,12 +146,23 @@ local function add_combat(inst, dmg, per, re, keep, hit, atk, symbol, player)
 	if atk then inst.components.combat.onhitotherfn = atk end
 	if symbol then inst.components.combat.hiteffectsymbol = symbol end
 	if player then inst.components.combat.playerdamagepercent = player end
+	if range then 
+		if type(range) == 'table' then
+			inst.components.combat:SetRange(range[1], range[2])
+		else
+			inst.components.combat:SetRange(range) 
+		end
+	end
 end
 
 local function add_health(inst, max, regen, absorb)
 	check_cmp(inst, "health")
 	if max then inst.components.health:SetMaxHealth(max) end
-	if regen and regen.num and regen.per then inst.components.health:StartRegen(regen.num, regen.per) end
+	if regen then
+		local regen_num = regen.num or regen[1]
+		local regen_per = regen.per or regen[2]
+		inst.components.health:StartRegen(regen_num, regen_per) 
+	end
 	if absorb then inst.components.health:SetAbsorptionAmount(absorb) end
 end
 
@@ -374,6 +389,28 @@ local function add_spawner(inst, child, time, occupied, vacate)
 	if vacate then inst.components.spawner.onvacate = vacate end
 end
 
+local function add_worker(inst, action, num)
+	check_cmp(inst, "worker")
+	if action and num then
+		inst.components.worker:SetAction(action, num)
+	end
+end
+
+local function add_hunger(inst, max, rate, over)
+	check_cmp(inst, 'hunger')
+	if max then inst.components.hunger:SetMax(max) end
+	if rate then inst.components.hunger:SetRate(rate) end
+	if over then inst.components.hunger.overridestarvefn = over end
+end
+
+local function add_hatchable(inst, state, crake, hatch, fail)
+	check_cmp(inst, 'hatchable')
+	if state then inst.components.hatchable:SetOnState(state) end
+	if crake then inst.components.hatchable:SetCrackTime(crake) end
+	if hatch then inst.components.hatchable:SetHatchTime(hatch) end
+	if fail then inst.components.hatchable:SetHatchFailTime(fail) end
+end
+
 local function add_component(inst, cmp, data)
 	if cmp == "invitem" then
 		add_inventoryitem(inst, data.atlas, data.img, data.put, data.drop)
@@ -403,7 +440,8 @@ local function add_component(inst, cmp, data)
 	elseif cmp == "weapon" then
 		add_weapon(inst, data.dmg, data.range, data.fn, data.fx)  --range={atk,hit}
 	elseif cmp == "combat" then
-		add_combat(inst, data.dmg, data.per, data.re, data.keep, data.hit, data.atk, data.player)  --re={time,fn}
+		-- dmg, per, re, keep, hit, atk, symbol, player, range
+		add_combat(inst, data.dmg, data.per, data.re, data.keep, data.hit, data.atk, data.symbol, data.player, data.range)  --re={time,fn}
 	elseif cmp == "health" then
 		add_health(inst, data.max, data.regen, data.absorb)  --regen={num,per}
 	elseif cmp == "loco" then
@@ -455,6 +493,12 @@ local function add_component(inst, cmp, data)
 		add_playerprox(inst, data.dist, data.near, data.far)
 	elseif cmp == "spawn" then
 		add_spawner(inst, data.child, data.time, data.occupied, data.vacate)
+	elseif cmp == "worker" then
+		add_worker(inst, data.action, data.num)
+	elseif cmp == "hunger" then
+		add_hunger(inst, data.max, data.rate, data.over)
+	elseif cmp == "hatch" then
+		add_hatchable(inst, data.state, data.crake, data.hatch, data.fail)
 	else
 		check_cmp(inst, cmp)
 	end

@@ -41,12 +41,38 @@ local function home_occupied(inst, child)
 	inst.SoundEmitter:PlaySound("dontstarve_DLC003/creatures/city_pig/pig_in_house_LP", "pigsound")
 	inst.SoundEmitter:PlaySound("dontstarve/common/pighouse_door")
 	home_light_on(inst)
+    if not inst:HasTag("burnt") and child then
+    	if child.components.inventory then
+    		if not inst.components.container:IsFull() then
+                for k, v in pairs(child.components.inventory.itemslots) do
+                    if inst.components.container:IsFull() then
+                    	break
+                    end
+                    local item = child.components.inventory:RemoveItemBySlot(k)
+                    if item then
+                        inst.components.container:GiveItem(item)
+                    end
+                end
+            end
+    	end
+    	WARGON.do_task(inst, 10, function()
+    		if not GetClock():IsNight()
+    		and inst.components.spawner:IsOccupied() then
+				inst.components.spawner:ReleaseChild()
+    		end
+    	end)
+    end
 end
 
 local function home_vacate(inst, child)
 	inst.SoundEmitter:PlaySound("dontstarve/common/pighouse_door")
     inst.SoundEmitter:KillSound("pigsound")
     home_light_off(inst)
+    if not inst:HasTag("burnt") and child then
+    	if child.components.health then
+	        child.components.health:SetPercent(1)
+    	end
+    end
 end
 
 local function home_day_time(inst)
@@ -82,6 +108,18 @@ local function home_on_built(inst, data)
 	inst.AnimState:PushAnimation("idle")
 end
 
+local function home_open(inst)
+	inst.SoundEmitter:PlaySound("dontstarve/wilson/chest_open")
+end
+
+local function home_close(inst)
+	inst.SoundEmitter:PlaySound("dontstarve/wilson/chest_close")
+end
+
+local function home_cont_test(inst)
+	return true
+end
+
 local function MakeHome(name, pig_name)
 	local function fn()
 		local inst = WARGON.make_prefab(homes, nil, home_phy)
@@ -90,6 +128,7 @@ local function MakeHome(name, pig_name)
 			loot = {},
 			work = {act=ACTIONS.HAMMER, num=4, ham=home_hammered, hit=home_hit},
 			spawn = {child=pig_name, time=30*16, occupied=home_occupied, vacate=home_vacate},
+			cont = {widgets={}, num=9, open=home_open, close=home_close, test=home_cont_test},
 		})
 		WARGON.make_map(inst, "pighouse.png")
 		-- falloff, intensity, radius, colour, enable
@@ -98,7 +137,7 @@ local function MakeHome(name, pig_name)
 			burntup = home_burnt_up,
 			onignite = home_onignite,
 			onbuilt = home_on_built,
-			})
+		})
 		WARGON.add_tags(inst, {
 			"structure",
 			})

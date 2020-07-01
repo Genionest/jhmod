@@ -24,8 +24,9 @@ AddPrefabPostInit("sewing_kit", function(inst)
 		old_fn(inst, target, doer)
 		if target:HasTag("tp_tent") then
 			local use = target.components.finiteuses:GetUses()
-			if use+5 <= target.components.finiteuses.total then
-				target.components.finiteuses:SetUses(use+5)
+			local total = target.components.finiteuses.total
+			if use <= target.components.finiteuses.total then
+				target.components.finiteuses:SetUses(math.min(use+5, total))
 			end
 			target.components.fueled:SetPercent(.9)
 		end
@@ -68,4 +69,53 @@ add_prefab_tag("cork", "tp_chop_pig_item")
 add_prefab_tag("livinglog", "tp_chop_pig_item")
 add_prefab_tag("bamboo", "tp_hack_pig_item")
 add_prefab_tag("vine", "tp_hack_pig_item")
-add_prefab_tag("seeds", "tp_farm_pig_item")
+add_prefab_tag("cutgrass", "tp_hack_pig_item")
+-- add_prefab_tag("seeds", "tp_farm_pig_item")
+AddPrefabPostInitAny(function(inst)
+	if string.find(inst.prefab, 'seeds') then
+		inst:AddTag("tp_farm_pig_item")
+	end
+end)
+
+local trees = {
+	"evergreen", "evergreen_sparse",
+	"deciduoustree", "rainforesttree", "teatree",
+	"clawpalmtree", "jungletree", "palmtree", 
+	"gingko_tree",
+}
+for k, v in pairs(trees) do
+	add_prefab_tag(v, 'tp_chop_pig_target')
+end
+
+local hackables = {
+	"bambootree", "bush_vine", "grass_tall",
+}
+for k, v in pairs(hackables) do
+	add_prefab_tag(v, 'tp_hack_pig_target')
+end
+
+local farms = {
+	'fast_farmplot', 'slow_farmplot',
+}
+for k, v in pairs(farms) do
+	add_prefab_tag(v, 'tp_farm_pig_target')
+end
+
+local strawhat_targets = {
+	"pigman", "bunnyman", "perd",
+}
+for k, v in pairs(strawhat_targets) do
+	add_prefab_tag(v, 'tp_strawhat_target')
+end
+add_prefab_tag('perd', 'tp_strawhat_pet')
+
+AddPrefabPostInit('rowboat', function(inst)
+	inst:ListenForEvent('onbuilt', function()
+		if GetPlayer():HasTag("tech_prince") then
+			local sail = SpawnPrefab("sail")
+			local torch = SpawnPrefab("boat_torch")
+			inst.components.container:Equip(sail)
+			inst.components.container:Equip(torch)
+		end
+	end)
+end)

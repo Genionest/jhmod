@@ -8,8 +8,8 @@ local rockets = {"trinkets", "trinkets", "5", "5_water"}
 local canes = {"cane", "cane_ancient", "idle", "idle_water"}
 local cutlasses = {"tp_cutlass", "tp_cutlass", "idle", "idle_water"}
 local signs = {"tp_sign_staff", "tp_sign_staff", "idle", "idle_water"}
-local guns = {"blunderbuss", "blunderbuss", "idle"}
-local acorns = {"acorn", "acorn", "idle"}
+local guns = {"blunderbuss", "blunderbuss", "idle", nil}
+local acorns = {"acorn", "acorn", "idle", nil}
 local swords = {"nightmaresword", "nightsword_sharp", "idle", "idle_water"}
 local spears = {"spear", "spear_bee", "idle", "idle_water"}
 local ice_staffs = {"staffs", "icestaff_bee", "bluestaff", "bluestaff_water"}
@@ -18,7 +18,9 @@ local soft_woods = {"armor_wood_haramaki", "armor_wood_haramaki", "anim", 'idle_
 local pig_books = {"pig_book", "pig_book", "idle", "idle_water"}
 local pig_lamps = {"pig_lamp", "pig_lamp", "idle", "idle_water"}
 local amulets = {"amulets", "amulet_red_occulteye", "redamulet", "redamulet_water"}
-local pinecones = {"pinecone", "pinecone", "idle"}
+local pinecones = {"pinecone", "pinecone", "idle", nil}
+local tall_bird_eggs = {'egg', 'tallbird_egg', 'egg', "idle_water"}
+local pigking_hats = {'beefalohat', 'beefalohat_pigking', 'anim', 'idle_water'}
 
 local function do_area_damage(inst, range, dmg, reason)
 	local owner = inst.components.inventoryitem.owner
@@ -48,14 +50,19 @@ local function hand_unequip(inst, owner)
 end
 
 local function strawhat_equip(inst, owner)
-	WARGON_EQUIP_EX.object_on(owner, "strawhat_cowboy", "swap_hat")
+	-- WARGON_EQUIP_EX.object_on(owner, "strawhat_cowboy", "swap_hat")
+	WARGON_EQUIP_EX.object_on(owner, "tp_strawhat", "swap_object")
 end
 
 local function strawhat_score(inst, giver)
 	local pos = inst:GetPosition()
 	if pos.y <= 0.1 then
-		local guy = WARGON.find(inst, 1, nil, {"character"}, {"player"})
-		if guy then
+		local guy = WARGON.find(inst, 1, nil, {"tp_strawhat_target"}, {"player", "werepig", "merm"})
+		if guy and guy:HasTag("tp_strawhat_pet") then
+			local perd = WARGON.make_spawn(guy, 'tp_perd')
+			guy:Remove()
+			inst:Remove()
+		elseif guy then
 			local item = SpawnPrefab("tp_strawhat2")
 			local percent = inst.components.finiteuses:GetPercent()
 			item.components.fueled:SetPercent(percent)
@@ -89,7 +96,7 @@ end
 local function strawhat_fn(inst)
 	WARGON_CMP_EX.add_cmps(inst, {
 		inspect = {},
-		weapon = {dmg=10},
+		weapon = {dmg=1},
 		finite = {max=TUNING.SPEAR_USES, use=TUNING.SPEAR_USES, fn=on_finish},
 		equip = {equip=strawhat_equip, unequip=hand_unequip},
 		throw = {throw=strawhat_throw},
@@ -224,47 +231,6 @@ local function ham_fn(inst)
 	inst.components.tpthrow.speed = 40
 	inst.OnLoad = ham_onload
 end
-
--- local function ham_dropper_drop(inst)
--- 	local pos = inst:GetPosition()
--- 	inst.Physics:Stop()
--- 	if pos.y <= 0.1 then
--- 		local pt = inst:GetPosition()
--- 	 	local wall = SpawnPrefab("tp_hambat_wall")
--- 	 	wall.components.perishable:SetPercent(inst.components.perishable:GetPercent())
--- 	 	wall.Transform:SetPosition(pt.x, 0, pt.z)
--- 	 	wall.on_drop(wall)
--- 	    if inst.no_drop then
--- 	    	inst.no_drop:Cancel()
--- 	    	inst.no_drop = nil
--- 	    end
--- 		inst:Remove()
--- 	end
--- end
-
--- local function ham_dropper_nodrop(inst)
--- 	local pt = inst:GetPosition()
--- 	local wall = SpawnPrefab("tp_hambat_wall")
---  	wall.components.perishable:SetPercent(inst.components.perishable:GetPercent())
---  	wall.Transform:SetPosition(pt.x, 0, pt.z)
---   	wall.on_drop(wall)
--- 	inst:Remove()
--- end
-
--- local function ham_dropper_fn(inst)
--- 	inst.Physics:ClearCollisionMask()
---     inst.Physics:CollidesWith(COLLISION.GROUND)
---     inst.Physics:CollidesWith(COLLISION.INTWALL)
--- 	WARGON_CMP_EX.add_cmps(inst, {
--- 		inspect = {},
--- 		perish = {time=TUNING.PERISH_MED, spoil="spoiled_food"},
--- 	})
--- 	inst:RemoveComponent("inventoryitem")
--- 	WARGON.add_tags(inst, {"fx", "NOCLICK"})
--- 	inst.Transform:SetScale(1.6, 1.6, 1.6)
--- 	WARGON.per_task(inst, .1, function() ham_dropper_drop(inst) end)
--- 	inst.no_drop = WARGON.do_task(inst, 2, function() ham_dropper_nodrop(inst) end)
--- end
 
 local function staff_trinity_equip(inst, owner)
 	local bank, build = inst.components.tptrinity:GetBuild()
@@ -423,9 +389,22 @@ local function cutlass_equip(inst, owner)
 	if inst.task == nil then
 		inst.task = WARGON.per_task(inst, 6*FRAMES, function()
 			if owner.sg:HasStateTag("moving") then
-				local fx = WARGON.make_fx(owner, "splash_water_sink")
-				local s = .6
-				fx.Transform:SetScale(s,s,s)
+				local pos = inst:GetPosition()
+				if GetWorld().Flooding and GetWorld().Flooding:OnFlood(pos.x, 0, pos.z) then 
+					local fx = WARGON.make_fx(owner, "splash_water_sink")
+					-- local s = .6
+					-- fx.Transform:SetScale(s,s,s)
+					WARGON.set_scale(fx, .6)
+				else
+					local fx = WARGON.make_fx(owner, "splash_footstep")
+					local rot = inst.Transform:GetRotation()
+			        local CameraRight = TheCamera:GetRightVec()
+			        local CameraDown = TheCamera:GetDownVec()
+			        local displacement = CameraRight:Cross(CameraDown) * .15
+			        local pos = pos - displacement 
+			        fx.Transform:SetPosition(pos.x,pos.y, pos.z)
+			        fx.Transform:SetRotation(rot)
+				end
 			end
 		end, 2*FRAMES)
 	end
@@ -781,71 +760,171 @@ local function pig_lamp_fn(inst)
 	inst.components.cooldown:StartCharging()
 end
 
-local function common_treeseed_save(inst, data)
-	WARGON.seed_save(inst, data)
+local function bird_egg_hatched(inst)
+	local bird = WARGON.make_spawn(inst, 'tp_small_bird')
+	bird.sg:GoToState('hatch')
+	inst:Remove()
 end
 
-local function common_treeseed_load(inst, data)
-	WARGON.seed_load(inst, data)
+local function bird_egg_check_hatch(inst)
+	if inst.player_near and inst.components.hatchable.state == 'hatch' then
+		bird_egg_hatched(inst)
+	end
 end
 
-local function common_treeseed_fn(inst)
+local function bird_egg_uncomfy_snd(inst)
+	inst.SoundEmitter:KillSound("uncomfy")
+    if inst.components.hatchable.toohot then
+        inst.SoundEmitter:PlaySound("dontstarve/creatures/egg/egg_hot_steam_LP", "uncomfy")
+    elseif inst.components.hatchable.toocold then
+        inst.SoundEmitter:PlaySound("dontstarve/creatures/egg/egg_cold_shiver_LP", "uncomfy")
+    end
+end
+
+
+local function bird_egg_loot_drop(inst)
+	inst:AddComponent("lootdropper")
+	if inst.components.hatchable.toohot then
+        inst.components.lootdropper:SetLoot({"cookedsmallmeat"})
+    else
+        inst.components.lootdropper:SetLoot({'wetgoop'})
+    end
+    inst.components.lootdropper:DropLoot()
+end
+
+local function bird_egg_hatch_state(inst, state)
+	inst.SoundEmitter:KillSound("uncomfy")
+
+    if inst.components.floatable.onwater then
+    	WARGON.do_task(inst, 15*FRAMES, function()
+    		inst.SoundEmitter:PlaySound("dontstarve/creatures/egg/egg_cold_freeze")
+    	end)
+    	WARGON.do_task(inst, 30*FRAMES, bird_egg_loot_drop)
+        -- inst:DoTaskInTime(15*FRAMES, function() inst.SoundEmitter:PlaySound("dontstarve/creatures/egg/egg_cold_freeze") end)
+        -- inst:DoTaskInTime(30*FRAMES, bird_egg_loot_drop)
+        inst.AnimState:PlayAnimation("idle_cold_water")
+
+        inst:ListenForEvent("animover", function(inst) inst:Remove() end)
+    end
+
+    if state == "crack" then
+        local cracked = WARGON.make_spawn(inst, 'tp_bird_egg_cracked')
+        cracked.AnimState:PlayAnimation("crack")
+        cracked.AnimState:PushAnimation("idle_happy", true)
+        cracked.components.floatable:UpdateAnimations("idle_crack_water", "idle_happy")
+        cracked.SoundEmitter:PlaySound("dontstarve/creatures/egg/egg_hatch_crack")
+        inst:Remove()
+    elseif state == "uncomfy" then
+        if inst.components.hatchable.toohot then
+            inst.AnimState:PlayAnimation("idle_hot", true)
+            inst.components.floatable:UpdateAnimations("idle_hot_water", "idle_hot")
+        elseif inst.components.hatchable.toocold then
+            inst.AnimState:PlayAnimation("idle_cold", true)
+            inst.components.floatable:UpdateAnimations("idle_cold_water", "idle_cold")
+        end
+        -- PlayUncomfySound(inst)
+        bird_egg_uncomfy_snd(inst)
+    elseif state == "comfy" then
+        inst.AnimState:PlayAnimation("idle_happy", true)
+        inst.components.floatable:UpdateAnimations("idle_crack_water", "idle_happy")
+    elseif state == "hatch" then
+        -- CheckHatch(inst)
+        bird_egg_check_hatch(inst)
+    elseif state == "dead" then
+        if inst.components.hatchable.toohot then
+            inst.SoundEmitter:PlaySound("dontstarve/creatures/egg/egg_hot_jump")
+            WARGON.do_task(inst, 20*FRAMES, function()
+            	inst.SoundEmitter:PlaySound("dontstarve/creatures/egg/egg_hot_explo")
+            end)
+            WARGON.do_task(inst, 20*FRAMES, bird_egg_loot_drop)
+            -- inst:DoTaskInTime(20*FRAMES, function() inst.SoundEmitter:PlaySound("dontstarve/creatures/egg/egg_hot_explo") end)
+            -- inst:DoTaskInTime(20*FRAMES, bird_egg_loot_drop)
+            inst.AnimState:PlayAnimation("toohot")
+        elseif inst.components.hatchable.toocold then
+        	WARGON.do_task(inst, 15*FRAMES, function()
+        		inst.SoundEmitter:PlaySound("dontstarve/creatures/egg/egg_cold_freeze")
+        	end)
+        	WARGON.do_task(inst, 30*FRAMES, bird_egg_loot_drop)
+            -- inst:DoTaskInTime(15*FRAMES, function() inst.SoundEmitter:PlaySound("dontstarve/creatures/egg/egg_cold_freeze") end)
+            -- inst:DoTaskInTime(30*FRAMES, bird_egg_loot_drop)
+            inst.AnimState:PlayAnimation("toocold")
+        end
+        
+        inst:ListenForEvent("animover", function(inst) inst:Remove() end)
+    end
+end
+
+local function bird_egg_drop(inst)
+	inst.components.hatchable:StartUpdating()
+	bird_egg_check_hatch(inst)
+	bird_egg_uncomfy_snd(inst)
+    -- PlayUncomfySound(inst)
+end
+
+local function bird_egg_put(inst)
+	inst.components.hatchable:StopUpdating()
+    inst.SoundEmitter:KillSound("uncomfy")
+end
+
+local function bird_egg_fn(inst)
+	MakeInventoryFloatable(inst, "idle_water", "egg")
 	WARGON.CMP.add_cmps(inst, {
-		inspect = {},	
-		stack = {max=TUNING.STACK_SIZE_SMALLITEM},
-	})
-	WARGON.make_burn(inst, "small", TUNING.SMALL_BURNTIME)
-	WARGON.make_prop(inst, "small")
-	WARGON.burn_bait(inst, 3)
-	WARGON.make_blow(inst, TUNING.WINDBLOWN_SCALE_MIN.MEDIUM, TUNING.WINDBLOWN_SCALE_MAX.MEDIUM)
-	WARGON.add_listen(inst, {
-		onignite = WARGON.TREE.treeseed_stop,
-		onextinguish = WARGON.TREE.treeseed_start,
-	})
-	inst.OnSave = common_treeseed_save
-	inst.OnLoad = common_treeseed_load
-end
-
-local function common_deploy_test(inst, pt)
-	return WARGON.TREE.treeseed_test(inst, pt)
-end
-
-local function gingko_deploy(inst, pt)
-	 WARGON.TREE.treeseed_deploy(inst, pt, "tp_gingko_tree")
-end
-
-local function gingko_fn(inst)
-	common_treeseed_fn(inst)
-	WARGON.CMP.add_cmps(inst, {
-		dep = {test=common_deploy_test, deploy=gingko_deploy},
-		trade = {},
-	})
-	inst.tree = "tp_gingko_tree"
-	WARGON.add_tags(inst, {"tp_gingko"})
-end
-
-local function war_tree_seed_deploy(inst, pt)
-	WARGON.TREE.treeseed_deploy(inst, pt, "tp_war_tree")
-end
-
-local function war_tree_seed_fn(inst)
-	common_treeseed_fn(inst)
-	WARGON.CMP.add_cmps(inst, {
-		dep = {test=common_deploy_test, deploy=war_tree_seed_deploy}	
-	})
-	inst.tree = "tp_war_tree"
-end
-
-local function defense_tree_seed_deploy(inst, pt)
-	WARGON.TREE.treeseed_deploy(inst, pt, "tp_defense_tree")
-end
-
-local function defense_tree_seed_fn(inst)
-	common_treeseed_fn(inst)
-	WARGON.CMP.add_cmps(inst, {
-		dep = {test=common_deploy_test, deploy=defense_tree_seed_deploy}
+		inspect = {},
+		hatch = {state=bird_egg_hatch_state, 
+			crake=TUNING.SMALLBIRD_HATCH_CRACK_TIME,
+			-- hatch=TUNING.SMALLBIRD_HATCH_TIME,
+			hatch=12,
+			fail=TUNING.SMALLBIRD_HATCH_FAIL_TIME},
+		invitem = {drop=bird_egg_drop, put=bird_egg_put},
 		})
-	inst.tree = "tp_defense_tree"
+	inst.components.hatchable:StartUpdating()
+	inst.player_near = false
+end
+
+local function bird_egg_cracked_near(inst)
+	bird_egg_check_hatch(inst)
+	inst.player_near = true
+end
+
+local function bird_egg_cracked_far(inst)
+	inst.player_near = false
+end
+
+local function bird_egg_cracked_fn(inst)
+	bird_egg_fn(inst)
+	inst.components.hatchable.state = 'comfy'
+	inst.components.floatable:UpdateAnimations("idle_crack_water", "idle_happy")
+	WARGON.CMP.add_cmps(inst, {
+		near = {dist={4,6}, near=bird_egg_cracked_near, far=bird_egg_cracked_far},
+	})
+end
+
+local function pigking_hat_on_attacked(inst, data)
+	if data.attacker then
+		inst.components.combat:ShareTarget(data.attacker, 30, function(dude)
+			return dude:HasTag('pig') and not dude:HasTag("guard")
+				and not dude:HasTag("werepig") 
+		end, 5)
+	end
+end
+
+local function pigking_hat_equip(inst, owner)
+	WARGON.EQUIP.hat_on(owner, "beefalohat_pigking")
+	owner:ListenForEvent('attacked', pigking_hat_on_attacked)
+	owner:AddTag("pigroyalty")
+end
+
+local function pigking_hat_unequip(inst, owner)
+	WARGON.EQUIP.hat_off(owner)
+	owner:RemoveEventCallback('attacked', pigking_hat_on_attacked)
+	owner:RemoveTag("pigroyalty")
+end
+
+local function pigking_hat_fn(inst)
+	WARGON.CMP.add_cmps(inst, {
+		inspect = {},
+		equip = {slot="head", equip=pigking_hat_equip, unequip=pigking_hat_unequip},
+		})
 end
 
 local function MakeItem(name, anims, item_fn, atlas, img)
@@ -863,13 +942,12 @@ local function MakeItem(name, anims, item_fn, atlas, img)
 end
 
 return 
-	MakeItem("tp_ash", ashs, ash_fn, nil, "ash"),
+	-- MakeItem("tp_ash", ashs, ash_fn, nil, "ash"),
 	MakeItem("tp_strawhat", strawhats, strawhat_fn, "strawhat_cowboy"),
 	MakeItem("tp_strawhat2", strawhats, strawhat2_fn, "strawhat_cowboy"),
 	MakeItem("tp_ballhat", ballhats, ballhat_fn, "footballhat_combathelm"),
 	MakeItem("tp_woodarmor", woods, wood_fn, "armor_wood_fangedcollar"),
 	MakeItem("tp_hambat", hams, ham_fn, "ham_bat_spiralcut"),
-	-- MakeItem("tp_hambat_dropper", hams, ham_dropper_fn, nil, "hambat"),
 	MakeItem("tp_staff_trinity", spears, staff_trinity_fn, "spear_bee"),
 	MakeItem("tp_rocket", rockets, rocket_fn, nil, "trinket_5"),
 	MakeItem("tp_cane", canes, cane_fn, "cane_ancient"),
@@ -882,9 +960,6 @@ return
 	MakeItem("tp_pig_book", pig_books, pig_book_fn, "pig_book"),
 	MakeItem("tp_brave_amulet", amulets, brave_amulet_fn, "amulet_red_occulteye"),
 	MakeItem("tp_pig_lamp", pig_lamps, pig_lamp_fn, "pig_lamp"),
-	MakeItem("tp_gingko", acorns, gingko_fn, nil, 'acorn'),
-	MakePlacer("common/tp_gingko_placer", acorns[1], acorns[2], 'idle_planted'),
-	MakeItem("tp_war_tree_seed", pinecones, war_tree_seed_fn, nil, "pinecone"),
-	MakePlacer("common/tp_war_tree_seed_placer", pinecones[1], pinecones[2], "idle_planted"),
-	MakeItem("tp_defense_tree_seed", acorns, defense_tree_seed_fn, nil, "acorn"),
-	MakePlacer("common/tp_defense_tree_seed_placer", acorns[1], acorns[2], "idle_planted")
+	MakeItem('tp_bird_egg', tall_bird_eggs, bird_egg_fn, nil, 'tallbirdegg'),
+	MakeItem('tp_bird_egg_cracked', tall_bird_eggs, bird_egg_cracked_fn, nil, 'tallbirdegg_cracked'),
+	MakeItem('tp_pigking_hat', pigking_hats, pigking_hat_fn, 'beefalohat_pigking')

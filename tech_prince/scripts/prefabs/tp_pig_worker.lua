@@ -11,7 +11,7 @@ local function pig_on_attacked(inst, data)
 	inst:PushEvent("gohome")
 end
 
-local function pig_on_night(inst, data)
+local function pig_on_night(inst)
 	inst.components.talker:Say("下班啦")
 	inst:PushEvent("gohome")
 end
@@ -26,31 +26,25 @@ local function MakeWorker(name, pig_fn)
 			health = {max=TUNING.PIG_HEALTH},
 			combat = {dmg=TUNING.PIG_DAMAGE, per=TUNING.PIG_ATTACK_PERIOD},
 			talk = {talk=pig_on_talk, size=35, font=TALKINGFONT, offset=Vector3(0,-400,0)},
-			inv = {},
+			inv = {slots=9},
 		})
 		WARGON.make_poi(inst)
 		WARGON.make_burn(inst, "c_med", "pig_torso")
 		WARGON.make_free(inst, "c_med", 'pig_torso')
 		WARGON.add_tags(inst, {
-			"character", "scarytoprey", "tp_pig_worker",
+			"character", "scarytoprey", "tp_pig_worker", "tp_should_work",
 		})
-		inst.AnimState:Show("HAT")
-		inst.AnimState:Show("HAIR_HAT")
-		inst.AnimState:Hide("HAIR_NOHAT")
-		inst.AnimState:Hide("HAIR")
-		-- inst:AddComponent("wargonbrain")
-		-- inst.components.wargonbrain:AddTags({
-		-- 	"leash", "on_fire", "wander", "go_home", "pick_up",
-		-- })
 		WARGON.add_listen(inst, {
 			attacked = pig_on_attacked,
-			nighttime = pig_on_night,
 		})
+		inst:ListenForEvent('nighttime', function()
+			pig_on_night(inst)
+		end, GetWorld())
 		if pig_fn then
 			pig_fn(inst)
 		end
-		inst:SetBrain(WARGON.BRAIN.worker_brain())
-		inst:SetStateGraph("SGtp_worker_pig")
+		inst:SetBrain(require "brains/tp_pig_worker_brain")
+		inst:SetStateGraph("SGtp_pig_worker")
 
 		return inst
 	end
@@ -60,46 +54,19 @@ end
 local function chop_pig_fn(inst)
 	inst:AddTag("tp_chop_pig")
 	inst.brain_pick_tags = {'tp_chop_pig_item'}
-	-- inst.components.wargonbrain:AddTag("chop")
-	-- inst.components.wargonbrain.pick_tags = {'tp_chop_pig_item'}
-	inst.AnimState:OverrideSymbol("swap_hat", "hat_straw", "swap_hat")
+	WARGON.EQUIP.hat_on(inst, "hat_catcoon")
 end
 
 local function hack_pig_fn(inst)
 	inst:AddTag("tp_hack_pig")
 	inst.brain_pick_tags = {'tp_hack_pig_item'}
-	-- inst.components.wargonbrain:AddTag("hack")
-	-- inst.components.wargonbrain.pick_tags = {'tp_hack_pig_item'}
-	inst.AnimState:OverrideSymbol("swap_hat", "hat_straw", "swap_hat")
+	WARGON.EQUIP.hat_on(inst, "hat_rain")
 end
-
--- local function is_farm(item, inst)
--- 	if item.prefab == "fast_farmplot" or item.prefab == "slow_farmplot" then
--- 		if item.components.grower and item.components.grower:IsEmpty() then
--- 			return true
--- 		end
--- 	end
--- end
-
--- local function do_farm(inst)
--- 	local target = WARGON.find(inst, 20, is_farm, nil, {"burnt", "fire"})
--- 	if target then
--- 		local seed = inst.components.inventory:FindItem(function(item)
--- 			return string.find(item.prefab, "seeds")
--- 		end)
--- 		if seed then
--- 			return BufferedAction(inst, target, ACTIONS.PLANT, seed)
--- 		end
--- 	end
--- end
 
 local function farm_pig_fn(inst)
 	inst:AddTag("tp_farm_pig")
 	inst.brain_pick_tags = {'tp_farm_pig_item'}
-	-- inst.components.wargonbrain:AddTag("speical")
-	-- inst.components.wargonbrain.pick_tags = {'tp_farm_pig_item'}
-	-- inst.components.wargonbrain:SetBehaviour("speical", do_farm)
-	inst.AnimState:OverrideSymbol("swap_hat", "hat_straw", "swap_hat")
+	WARGON.EQUIP.hat_on(inst, "hat_straw")
 end
 
 return

@@ -5,6 +5,7 @@ local hams = {"ham_bat", "ham_bat", "idle"}
 local ham_phy = {.5, nil}
 local benchs = {"workbench_obsidian", "workbench_obsidian", "idle"}
 local bench_phy = {2, 1.2}
+local bench_map = 'workbench_obsidian.png'
 local boxes = {"chest", "treasure_chest_sacred", "closed"}
 local box_map = {'treasure_chest', 'png'}
 
@@ -107,38 +108,6 @@ local function tent_fn(inst)
 	-- inst.tent_colour = {r=.1, g=.1, b=.1}
 end
 
--- local function ham_on(inst)
--- 	local item = SpawnPrefab("tp_hambat")
--- 	item.components.perishable:SetPercent(inst.components.perishable:GetPercent())
--- 	item.Transform:SetPosition(inst:GetPosition():Get())
--- 	SpawnPrefab("collapse_big").Transform:SetPosition(inst.Transform:GetWorldPosition())
--- 	inst:Remove()
--- end
-
--- local function ham_on_drop(inst)
--- 	inst.components.groundpounder:GroundPound()
--- 	local perishable = inst.components.perishable
--- 	if perishable:IsFresh() then
--- 		perishable:SetPercent(.49)
--- 	elseif perishable:IsStale() then
--- 		perishable:SetPercent(.15)
--- 	elseif perishable:IsSpoiled() then
--- 		perishable.perishremainingtime = 1
--- 	end
---     -- GetPlayer().components.playercontroller:ShakeCamera(inst, "FULL", 0.7, 0.02, 2, 40)
--- end
-
--- local function ham_fn(inst)
--- 	WARGON_CMP_EX.add_cmps(inst, {
--- 		inspect = {},
--- 		machine = {time=0, on=ham_on},
--- 		perish = {time=TUNING.PERISH_MED, spoil="spoiled_food"},
--- 		pounder = {destroy=true, rings={dmg=0, destroy=1}, num=1},
--- 	})
--- 	inst.Transform:SetScale(1.6,1.6,1.6)
--- 	inst.on_drop = ham_on_drop
--- end
-
 local function bench_fn(inst)
 	
 end
@@ -232,10 +201,19 @@ local function chest_fn(inst)
 		itemlose = chest_item_lose,
 	})
 	MakeSnowCovered(inst, 0.01)	
-	-- WARGON.make_burn(inst, 'small', nil, nil, true)
-	-- WARGON.make_prop(inst, 'small')
 	inst.OnSave = chest_save
 	inst.OnLoad = chest_load
+end
+
+local function bench_fn(inst)
+	WARGON.CMP.add_cmps(inst, {
+		inspect = {},
+		-- near = {near=bench_near, far=bench_far},
+	})
+	WARGON.add_tags(inst, {
+		'structure',
+	})
+	
 end
 
 local function MakeStructure(name, anims, structure_fn, phy, map)
@@ -258,7 +236,6 @@ local function MakeStructure(name, anims, structure_fn, phy, map)
 end
 
 return 
-	-- MakeStructure("tp_hambat_wall", hams, ham_fn, ham_phy),
 	MakeStructure("tp_tent", tents, tent_fn, tent_phy, tent_map),
 	MakePlacer("common/tp_tent_placer", tents[1], tents[2], tents[3], nil, nil, nil, 1.2),
 	MakeStructure("tp_chest", boxes, chest_fn, nil, box_map),

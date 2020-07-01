@@ -563,6 +563,12 @@ local function is_monster(inst)
 		or inst:HasTag("spider_monkey")
 end
 
+local function play_snd(inst, snd)
+	if inst.SoundEmitter then
+		inst.SoundEmitter:PlaySound(snd)
+	end
+end
+
 GLOBAL.WARGON = {
 	add_asset 			= add_asset,
 	add_recipe 			= add_recipe,
@@ -616,4 +622,5 @@ GLOBAL.WARGON = {
 	get_tile 			= get_tile,
 	can_deploy 			= can_deploy,
 	is_monster 			= is_monster,
+	play_snd 			= play_snd,
 }
