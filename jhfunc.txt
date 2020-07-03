@@ -344,6 +344,10 @@ inst.components.trader.onaccept = function
 inst.components.trader.onrefuse = function
   -- 这两个函数在定义时有三个参数inst, giver(给予者), item(给予品)
 
+设置火山祭献物品
+inst:AddComponent("appeasement")
+inst.components.appeasement.appeasementvalue = value
+
 添加掉落物（战利品）属性
 inst:AddComponent("lootdropper")
 设置战利品掉落随机列表
@@ -828,4 +832,11 @@ gel 凝胶
 populate 布局到库中
 stall 车位
 profile 轮廓
-bait 诱饵
+friction 摩擦力
+appeasement 缓和
+fuse 雷管，导火线
+explosive 爆炸性的
+particle 粒子
+emitter 发射器
+quantity 数量
+hostile 敌对的
