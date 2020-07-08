@@ -17,35 +17,28 @@ add_player_sg(State{
 	tags = {"busy"},
 	onenter = function(inst)
 		inst:PerformBufferedAction()
-
-		inst.components.locomotor:Stop()
-        inst.Physics:Stop()
-        inst.AnimState:PlayAnimation("idle_inaction_sanity")
-        WARGON.make_fx(inst, "boat_death")
+        inst.sg:GoToState("science_morphed")
     end,
-    timeline=
-    {
-        TimeEvent(13*FRAMES, function(inst)
-            WARGON.make_fx(inst, "beefalo_transform_fx")
-        end),
-    },
-	events = {
-		EventHandler("animover", function(inst)
-			inst.sg:GoToState("idle")
-		end),
-	},
 })
 
 add_player_sg(State{
     name = "science_morph2",
     tags = {"busy"},
     onenter = function(inst)
+        inst.sg:GoToState("science_morphed")
+    end,
+})
 
+add_player_sg(State{
+    name = "science_morphed",
+    tags = {"busy"},
+    onenter = function(inst)
         inst.components.locomotor:Stop()
         inst.Physics:Stop()
         inst.AnimState:PlayAnimation("idle_inaction_sanity")
-
-        WARGON.make_fx(inst, "boat_death")
+        -- WARGON.make_fx(inst, "boat_death")
+        WARGON.make_fx(inst, "sanity_raise")
+        WARGON.make_fx(inst, "tp_fx_shadow_spiral_point")
     end,
     timeline=
     {
@@ -59,6 +52,29 @@ add_player_sg(State{
         end),
     },
 })
+
+-- add_player_sg(State{
+--     name = "science_morphing"
+--     tags = {"busy"},
+--     onenter = function(inst)
+--         inst.components.locomotor:Stop()
+--         inst.Physics:Stop()
+--         inst.AnimState:PlayAnimation("teleport")
+--     end,    
+--     events = {
+--         EventHandler("animover", function(inst)
+--             inst.sg:GoToState("science_morphed")
+--         end),
+--     },
+-- })
+
+-- add_player_sg(State{
+--     name = "science_morphed",
+--     tags = {"busy"},
+--     onenter = function(inst)
+
+--     end,
+-- })
 
 add_player_sg(State{
 	name = "tp_call_beast",
@@ -109,6 +125,39 @@ add_player_sg(State{
 			inst.sg:GoToState("idle")
 		end),
 	},
+})
+
+add_player_sg(State{
+    name = "tp_spawn_beefalo",
+    tags = {"busy"},
+    onenter = function(inst)
+        inst.components.locomotor:Stop()
+        inst.AnimState:PlayAnimation("horn")
+        inst.AnimState:OverrideSymbol("horn01", "horn", "horn01")
+        inst.AnimState:Show("ARM_normal")
+    end,
+    
+    onexit = function(inst)
+        if inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS) then
+            inst.AnimState:Show("ARM_carry") 
+            inst.AnimState:Hide("ARM_normal")
+        end
+    end,
+    
+    timeline=
+    {
+        TimeEvent(21*FRAMES, function(inst)
+            inst.SoundEmitter:PlaySound("dontstarve/common/horn_beefalo")
+            inst:PerformBufferedAction()
+        end),
+    },
+    
+    events=
+    {
+        EventHandler("animover", function(inst)
+            inst.sg:GoToState("idle")
+        end),
+    },
 })
 
 add_player_sg(State{
@@ -351,4 +400,118 @@ add_player_sg_post(function(sg)
             -- cloud3.Transform:SetPosition(pt.x+offset.x, 2,pt.z+offset.z)
         end
     end) )
+end)
+
+WARGON.SG.add_sg_post("dragonfly", function(sg)
+    local old_timeline = sg.states["taunt"].timeline
+    table.insert(old_timeline, TimeEvent(0*FRAMES, function(inst)
+        local delay = 0.0
+        for i = 1, 10 do
+            inst:DoTaskInTime(delay, function(inst)
+                local target = inst.components.combat.target or inst
+                local pos = Vector3(target.Transform:GetWorldPosition())
+                local x, y, z = TUNING.VOLCANOBOOK_FIRERAIN_RADIUS * UnitRand() + pos.x, pos.y, TUNING.VOLCANOBOOK_FIRERAIN_RADIUS * UnitRand() + pos.z
+                local firerain = SpawnPrefab("firerain")
+                firerain.Transform:SetPosition(x, y, z)
+                firerain:StartStep()
+            end)
+            delay = delay + TUNING.VOLCANOBOOK_FIRERAIN_DELAY
+        end
+    end) )
+end)
+
+WARGON.SG.add_sg_post("moose", function(sg)
+    local old_timeline = sg.states["disarm"].timeline
+    table.insert(old_timeline, TimeEvent(15*FRAMES, function(inst)
+        local function getspawnlocation(inst, target)
+            local tarPos = target:GetPosition()
+            local pos = inst:GetPosition()
+            local vec = tarPos - pos
+            vec = vec:Normalize()
+            local dist = pos:Dist(tarPos)
+            return pos + (vec * (dist * .15))
+        end
+        local target = inst.components.combat.target
+        if target and target.components.inventory then
+            target.components.inventory:DropEverything()
+            local tornado = SpawnPrefab("tornado")
+            tornado.WINDSTAFF_CASTER = inst
+            local totalRadius = target.Physics and target.Physics:GetRadius() or 0.5 + tornado.Physics:GetRadius() + 0.5
+            local targetPos = target:GetPosition() + (TheCamera:GetDownVec() * totalRadius)
+            tornado.Transform:SetPosition(getspawnlocation(inst, target):Get())
+            tornado.components.knownlocations:RememberLocation("target", targetPos)
+        end
+    end) )
+end)
+
+WARGON.SG.add_sg_post("bearger", function(sg)
+    local old_timeline = sg.states["pound"].timeline
+    table.insert(old_timeline, TimeEvent(25*FRAMES, function(inst)
+        local x, y, z = inst:GetPosition():Get()
+        local ents = TheSim:FindEntities(x, y, z, 12, nil, {
+                "FX", "NOCLICK", "DECOR", "INLIMBO", "groundpoundimmune"
+            })
+        if ents then
+            for k2,v2 in pairs(ents) do
+                if v2 and v2.components.health and not v2.components.health:IsDead() and 
+                inst.components.combat:CanTarget(v2) then
+                    -- inst.components.combat:DoAttack(v2, nil, nil, nil, 1)
+                    local dmg = inst.components.combat.defaultdamage
+                    v2.components.combat:GetAttacked(inst, dmg, nil, nil)
+                end
+            end
+        end
+    end) )
+end)
+
+WARGON.SG.add_sg_post("tigershark", function(sg)
+    sg.state["fallwarn"] = State{
+        name = "fallwarn",
+        tags = {"busy", "specialattack"},
+
+        onenter = function(inst)
+            inst.sg:SetTimeout(34*FRAMES)
+
+            inst.Physics:Stop()
+
+            local tar = inst:GetTarget()
+            local pos = WARGON.around_land(inst, 100)
+            if not pos then
+                pos = tar or inst:GetPosition()
+            end
+
+            pos.y = 45
+            inst.Transform:SetPosition(pos:Get())
+
+            local shadow = SpawnPrefab("tigersharkshadow")
+            shadow:Ground_Fall()
+            local heading = TheCamera:GetHeading()
+            local rotation = 180 - heading
+
+            if inst.AnimState:GetCurrentFacing() == FACING_LEFT then
+                rotation = rotation + 180
+            end
+
+            if rotation < 0 then
+                rotation = rotation + 360
+            end
+
+            shadow.Transform:SetRotation(rotation)
+            local x,y,z = inst:GetPosition():Get()
+            shadow.Transform:SetPosition(x,0,z)
+        end,
+
+        ontimeout = function(inst)
+            inst:Show()
+
+            if inst:GetIsOnWater() then
+                inst:MakeWater()
+                local pos = inst:GetPosition()
+                pos.y = 45
+                inst.Transform:SetPosition(pos:Get())
+            end
+
+            inst.sg:GoToState("fall")
+        end,
+    }
 end)

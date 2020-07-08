@@ -247,10 +247,11 @@ end
 local function spear_thunder_fn(inst)
 	WARGON.CMP.add_cmps(inst, {
 		inspect = {},
-		weapon = {dmg=34, fn=spear_thunder_weapon_fn},
+		weapon = {dmg=34*.75, fn=spear_thunder_weapon_fn},
 		finite = {max=TUNING.SPEAR_USES, use=TUNING.SPEAR_USES, fn=on_finish},
 		equip = {equip=spear_thunder_equip, unequip=hand_unequip},
 	})
+	inst.components.weapon:SetElectric()
 	inst:AddComponent("tpproj")
 	inst.components.tpproj:SetSpeed(25)
 	inst.components.tpproj:SetOnThrownFn(spear_thunder_throw)
@@ -321,9 +322,9 @@ local function spear_poison_fn(inst)
 				end
 				do_area(inst, 1.5, area_poison)
 				do_area_damage(inst, 1.5, 10, "tp_spear_poison")
-				local fx = WARGON.make_fx(inst, "spat_splat_fx")
-				local s = .5
-				fx.Transform:SetScale(s,s,s)
+				local fx = WARGON.make_fx(inst, "tp_fx_poison_bubble")
+				-- local s = .5
+				-- fx.Transform:SetScale(s,s,s)
 				Sleep(0.1)
 			end
 		end)

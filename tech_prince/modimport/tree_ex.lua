@@ -1,5 +1,5 @@
 -- args: name, builds, bank, fix_fn, on_chop_fn, on_chop_down_fn, chop_fx, minimap, inspect_fn, stump_loot, growth_stages
-local function create_trees(tree_name, tree_builds, tree_bank, tree_fix_fn, tree_on_chop_fn, tree_on_chop_down_fn, tree_chop_fx, tree_minimap, tree_inspect_fn, tree_stump_loot, tree_growth_stages)
+local function create_trees(tree_name, tree_builds, tree_bank, tree_fix_fn, tree_on_chop_fn, tree_on_chop_down_fn, tree_chop_fx, tree_minimap, tree_inspect_fn, tree_stump_loot, tree_growth_stages, tree_on_burnt_fn)
 
 local builds = tree_builds or 
 {
@@ -105,6 +105,10 @@ local function OnBurnt(inst, imm)
 			inst.components.workable:SetOnWorkCallback(nil)
 			inst.components.workable:SetOnFinishCallback(chop_down_burnt_tree)
 		end
+
+        if tree_on_burnt_fn then
+            tree_on_burnt_fn(inst)
+        end
 	end
 		
 	if imm then
@@ -568,7 +572,8 @@ end
 
 ----------------------- treeseeds ------------------------------
 local no_tags = {'NOBLOCK', "player", 'FX'}
-local function treeseed_test(inst, pt)
+local function treeseed_test(inst, pt, dist)
+    local dist = dist or 2
     local ok = WARGON.on_land(inst, pt)
     local tiletype = WARGON.get_tile(pt)
     ok = ok and tiletype ~= GROUND.ROCKY and tiletype ~= GROUND.ROAD 
@@ -577,7 +582,7 @@ local function treeseed_test(inst, pt)
     and tiletype ~= GROUND.CARPET and tiletype ~= GROUND.CHECKER 
     and tiletype < GROUND.UNDERGROUND
     if ok then
-        local can = WARGON.can_deploy(inst, pt, 4, no_tags, 2)
+        local can = WARGON.can_deploy(inst, pt, dist+2, no_tags, dist)
         return can
     end
     return false
@@ -640,7 +645,7 @@ local function treeseed_load(inst, data)
 end
 
 GLOBAL.WARGON_TREE_EX = {
--- name, builds, bank, fix_fn, on_chop_fn, on_chop_down_fn, chop_fx, minimap, inspect_fn, stump_loot, growth_stages
+-- name, builds, bank, fix_fn, on_chop_fn, on_chop_down_fn, chop_fx, minimap, inspect_fn, stump_loot, growth_stages, on_burnt_fn
     create_trees    = create_trees,
     treeseed_test   = treeseed_test,
     treeseed_grow   = treeseed_grow,

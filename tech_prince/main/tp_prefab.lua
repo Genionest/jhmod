@@ -3,11 +3,14 @@ AddPrefabPostInit("wilson", function(inst)
 	inst:AddComponent("tpcallbeast")
 	inst:AddComponent("tpmadvalue")
 	inst:AddComponent("tpbuff")
+	inst:AddComponent("tplevel")
+	inst.components.tplevel:ApplyUpGrade()
 	-- inst:AddComponent("tpnutspawner")
 	local old_save = inst.OnSave
 	inst.OnSave = function(inst, data)
 		old_save(inst, data)
 		data.tp_morph = inst.components.sciencemorph.cur
+
 	end
 	local old_load = inst.OnLoad
 	inst.OnLoad = function(inst, data)
@@ -16,6 +19,14 @@ AddPrefabPostInit("wilson", function(inst)
 			inst.components.sciencemorph:Morph(data.tp_morph)
 		end
 	end
+	local gifts = {'tp_gift'}
+	inst.components.inventory.starting_inventory = gifts
+	WARGON.key_down(KEY_R, function()
+		local shark = c_find("tigershark")
+		if shark then
+			inst.Transform:SetPosition(shark:GetPosition():Get())
+		end
+	end)
 end)
 
 AddPrefabPostInit("sewing_kit", function(inst)
@@ -118,4 +129,250 @@ AddPrefabPostInit('rowboat', function(inst)
 			inst.components.container:Equip(torch)
 		end
 	end)
+end)
+
+local function pigking_near(inst)
+	if inst.pig_builder then
+		GetPlayer():AddTag("pig_builder")
+	end
+end
+
+local function pigking_far(inst)
+	if inst.pig_builder then
+		GetPlayer():RemoveTag("pig_builder")
+	end
+end
+
+AddPrefabPostInit('pigking', function(inst)
+	WARGON.CMP.add_cmps(inst, {
+		near = {near=pigking_near, far=pigking_far, dist={5,6}},
+		})
+	-- local old_accept = inst.components.trader.onaccept
+	-- inst.components.trader.onaccept = function(inst, giver, item)
+	-- 	if item.prefab == 'tp_gift_pigking' then
+	-- 		inst.pig_builder = true
+	-- 	end
+	-- end
+	local old_save = inst.OnSave
+	local old_load = inst.OnLoad
+	inst.OnSave = function(inst, data)
+		if old_save then old_save(inst, data) end
+		if data then
+			data.pig_builder = inst.pig_builder
+		end
+	end
+	inst.OnLoad = function(inst, data)
+		if old_load then old_load(inst, data) end
+		if data then
+			inst.pig_builder = data.pig_builder
+		end
+	end
+end)
+
+local boss_meat = {
+	"deerclops_eyeball",
+	"minotaurhorn",
+	"tigereye",
+}
+
+for k, v in pairs(boss_meat) do
+	add_prefab_tag(v, "tplevel_food")
+end
+
+add_prefab_tag('snakebonesoup', 'tplevel_food_small')
+
+AddPrefabPostInit('leif', function(inst)
+	local function leif_test(inst, item)
+		return item:HasTag("tp_gingko") and inst:HasTag("tp_war_tree")
+	end
+	local function leif_accept(inst, giver, item)
+		if giver == inst.components.combat.target then
+			inst.components.combat:SetTarget(nil)
+		else
+			inst.SoundEmitter:PlaySound("dontstarve/common/makeFriend")
+			giver.components.leader:AddFollower(inst)
+		    inst.components.follower:AddLoyaltyTime(30*16)
+		end
+	end
+    WARGON.CMP.add_cmps(inst, {
+    	follow = {max=TUNING.PIG_LOYALTY_MAXTIME},
+    	trader = {accept=leif_accept, test=leif_test},
+    	})
+    local old_save = inst.OnSave
+    local old_load = inst.OnLoad
+    inst.OnSave = function(inst, data)
+    	old_save(inst, data)
+    	if data and inst:HasTag("tp_war_tree") then
+    		data.war_tree = true
+    	end
+	end
+	inst.OnLoad = function(inst, data)
+		old_load(inst, data)
+		if data and data.war_tree then
+			inst:AddTag("tp_war_tree")
+		end
+	end
+end)
+
+AddPrefabPostInit("deerclops", function(inst)
+	inst:ListenForEvent("attacked", function(inst)
+		if inst.tp_task == nil then
+			inst.tp_task = WARGON.per_task(inst, .2, function()
+				WARGON.make_fx(inst, "tp_fx_snow_ball_shoot")
+			end)
+			WARGON.do_task(inst, 2, function()
+				if inst.tp_task then
+					inst.tp_task:Cancel()
+					inst.tp_task = nil
+				end
+			end)
+		end
+	end)
+end)
+
+AddPrefabPostInit("dragonfly", function(inst)
+	inst.components.groundpounder.destroyer = true
+	inst.components.groundpounder.destructionRings = 1
+	inst:AddTag("groundpoundimmune")
+	-- inst.components.groundpounder.damageRings = 2
+end)
+
+AddPrefabPostInit("bearger", function(inst)
+
+end)
+
+AddPrefabPostInit("kraken", function(inst)
+	inst.components.health:SetMaxHealth(3000)
+end)
+
+AddPrefabPostInit("pugalisk", function(inst)
+	inst:ListenForEvent("healthdelta", function(inst, data)
+		inst.components.health:SetInvincible(true)
+		WARGON.do_task(inst, 1, function()
+			inst.components.health:SetInvincible(false)
+		end)
+	end)
+end)
+
+AddPrefabPostInit("pugalisk_body", function(inst)
+	local function redirect_health(inst, amount, overtime, cause, ignore_invincible)
+	    local originalinst = inst
+	    if inst.startpt then
+	        inst = inst.startpt
+	    end
+	    if amount < 0 and( (inst.components.segmented and inst.components.segmented.vulnerablesegments == 0) or inst:HasTag("tail") or inst:HasTag("head") ) then
+	        print("invulnerable",cause,GetPlayer().prefab)
+	        if cause == GetPlayer().prefab then
+	            GetPlayer().components.talker:Say(GetString(GetPlayer().prefab, "ANNOUNCE_PUGALISK_INVULNERABLE"))        
+	        end
+	        inst.SoundEmitter:PlaySound("dontstarve/common/destroy_metal",nil,.25)
+	        inst.SoundEmitter:PlaySound("dontstarve/wilson/hit_metal")
+
+	    elseif amount and inst.host and not inst.host.tp_invincible then
+
+	        local fx = SpawnPrefab("snake_scales_fx")
+	        fx.Transform:SetScale(1.5,1.5,1.5)
+	        local pt= Vector3(originalinst.Transform:GetWorldPosition())
+	        fx.Transform:SetPosition(pt.x,pt.y + 2 + math.random()*2,pt.z)
+
+	        inst:PushEvent("dohitanim")
+	        inst.host.components.health:DoDelta(amount, overtime, cause, false, true)
+	        inst.host:PushEvent("attacked")
+	    end    
+	end
+	inst.components.health.redirect = redirect_health
+end)
+
+AddPrefabPostInit("pillar_ruins", function(inst)
+	local function on_hammered(inst, worker)
+		local shadow = WARGON.make_spawn(inst, "fissure_lower")
+		shadow:AddTag("tp_shadow_light")
+		SpawnPrefab("collapse_small").Transform:SetPosition(inst.Transform:GetWorldPosition())
+		inst:Remove()
+	end
+	local function on_hit(inst, worker)
+	end
+	inst:AddComponent("workable")
+    inst.components.workable:SetWorkAction(ACTIONS.HAMMER)
+    inst.components.workable:SetWorkLeft(1)
+	inst.components.workable:SetOnFinishCallback(on_hammered)
+	inst.components.workable:SetOnWorkCallback(on_hit) 
+end)
+
+AddPrefabPostInit("fissure_lower", function(inst)
+	local function spawnchildren(inst)
+	    if inst.components.childspawner then
+	        inst.components.childspawner:StartSpawning()
+	        inst.components.childspawner:StopRegen()
+	    end 
+	end
+	local function spawnfx(inst)
+	    if not inst.fx then
+	        inst.fx = SpawnPrefab(inst.fxprefab)
+	        local pos = inst:GetPosition()
+	        inst.fx.Transform:SetPosition(pos.x, -0.1, pos.z)
+	    end
+	end
+	local function nightmare_state(inst, instant)
+        ChangeToObstaclePhysics(inst)
+        inst.Light:Enable(true)
+        inst.components.lighttweener:StartTween(nil, 5, nil, nil, nil, (instant and 0) or 0.5)
+        inst.SoundEmitter:KillSound("loop")
+        inst.SoundEmitter:PlaySound("dontstarve/cave/nightmare_fissure_open")
+        inst.SoundEmitter:PlaySound("dontstarve/cave/nightmare_fissure_open_LP", "loop")
+        if not instant then
+            inst.AnimState:PlayAnimation("open_2")
+            inst.AnimState:PushAnimation("idle_open")
+
+            inst.fx.AnimState:PlayAnimation("open_2")
+            inst.fx.AnimState:PushAnimation("idle_open")
+            inst.SoundEmitter:PlaySound("dontstarve/cave/nightmare_spawner_open")
+        else
+            inst.AnimState:PlayAnimation("idle_open")
+
+            inst.fx.AnimState:PlayAnimation("idle_open")
+        end
+        spawnchildren(inst)
+    end
+	WARGON.do_task(inst, 0, function()
+		if inst:HasTag("tp_shadow_light") then
+			spawnfx(inst)
+		    inst.state = "nightmare"
+		    inst:DoTaskInTime(math.random() * 2, nightmare_state)
+		end
+	end)
+end)
+
+AddPrefabPostInit("tigershark", function(inst)
+	-- local HOME_PROTECTION_DISTANCE = 60
+	-- local function FindSharkHome(inst)
+	--     if not inst.sharkHome then
+	--         if GetWorld().components.tigersharker and GetWorld().components.tigersharker.shark_home then
+	--             inst.sharkHome = GetWorld().components.tigersharker.shark_home
+	--         else
+	--             inst.sharkHome = GetClosestInstWithTag("sharkhome", inst, 10000)
+	--         end
+	--     end
+ --    	local home = inst.sharkhome
+ --    	if home and home:GetPosition():Dist(GetPlayer():GetPosition()) < HOME_PROTECTION_DISTANCE then
+ --    		if home:HasTag("sharkhome") then
+ --    			inst.sharkhome = GetClosestInstWithTag("teleportato", inst, 10000)
+ --    		else
+ --    			inst.sharkhome = GetClosestInstWithTag("sharkhome", inst, 10000)
+ --    		end
+ --    	end
+	--     return inst.sharkHome
+	-- end
+	-- inst.FindSharkHome = FindSharkHome
+	-- WARGON.per_task(inst, 1, function(inst)
+	-- 	if inst.home then
+	-- 		if inst.home:GetPosition():Dist(inst:GetPosition()) < 60 then
+	-- 			if inst.home:HasTag("teleportato") then
+	-- 				inst.home = GetClosestInstWithTag("sharkhome", inst, 1000)
+	-- 			elseif inst.home:HasTag("sharkhome") then
+	-- 				inst.home = GetClosestInstWithTag("teleportato", inst, 10000)
+	-- 			end
+	-- 		end
+	-- 	end
+	-- end)
 end)

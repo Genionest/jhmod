@@ -1,5 +1,6 @@
 local acorns = {"acorn", "acorn", "idle", nil}
 local pinecones = {"pinecone", "pinecone", "idle", nil}
+local gingkos = {"tp_gingko", "tp_gingko", "idle", nil}
 
 local function common_treeseed_save(inst, data)
 	WARGON.seed_save(inst, data)
@@ -27,7 +28,7 @@ local function common_treeseed_fn(inst)
 end
 
 local function common_deploy_test(inst, pt)
-	return WARGON.TREE.treeseed_test(inst, pt)
+	return WARGON.TREE.treeseed_test(inst, pt, 4)
 end
 
 local function gingko_deploy(inst, pt)
@@ -83,8 +84,8 @@ local function MakeItem(name, anims, item_fn, atlas, img)
 end
 
 return 
-	MakeItem("tp_gingko", acorns, gingko_fn, nil, 'acorn'),
-	MakePlacer("common/tp_gingko_placer", acorns[1], acorns[2], 'idle_planted'),
+	MakeItem("tp_gingko", gingkos, gingko_fn, 'tp_gingko'),
+	MakePlacer("common/tp_gingko_placer", gingkos[1], gingkos[2], 'idle_planted'),
 	MakeItem("tp_war_tree_seed", pinecones, war_tree_seed_fn, nil, "pinecone"),
 	MakePlacer("common/tp_war_tree_seed_placer", pinecones[1], pinecones[2], "idle_planted"),
 	MakeItem("tp_defense_tree_seed", acorns, defense_tree_seed_fn, nil, "acorn"),

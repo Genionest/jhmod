@@ -168,6 +168,16 @@ local function volcanofn(inst, reader)
     return true 
 end
 
+local function pigkingfn(inst, reader)
+    local pigking = find('pigking')
+    if pigking then
+        local pos = WARGON.around_land(pigking, 2)
+        if pos then
+            reader.Transform:SetPosition(pos:Get())
+        end
+    end
+end
+
 GLOBAL.WARGON_SCROLL_FN = {
     tentacle    = tentaclesfn,
     bird        = birdsfn,

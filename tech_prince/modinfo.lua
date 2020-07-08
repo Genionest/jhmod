@@ -2,8 +2,8 @@ name = "Tech Prince"
 description = "Tech Prince"
 author = "wargon"
 version = "1.000"
-
 forumthread = ""
+priority = -5
 api_version = 6
 
 icon_atlas = "images/modicon.xml"

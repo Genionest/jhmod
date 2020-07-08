@@ -145,17 +145,73 @@ local function poison_atk(inst, target, damage)
     end 
 end
 
-local function MakeChar(name, anims, randloot, block_poison, atk_fn, colour)
+local function pig_fire_fn(inst)
+	WARGON.do_task(inst, 0, function()
+		inst.task = WARGON.per_task(inst, .2, function()
+			if inst.sg:HasStateTag("moving") then
+				WARGON.make_fx(inst, "dragoon_charge_fx")
+			end
+		end)
+		inst.fx = SpawnPrefab("torchfire")
+		inst:AddChild(inst.fx)
+		inst.fx.Transform:SetPosition(0, 0, 0)
+		-- inst.fx:AddTag("INTERIOR_LIMBO_IMMUNE")
+	 --    local follower = inst.fx.entity:AddFollower()
+		-- follower:FollowSymbol( inst.GUID, "arm", 0, 2, 0 )
+	end)
+end
+
+local function pig_ice_fn(inst)
+	WARGON.do_task(inst, 0, function()
+		inst.task = WARGON.per_task(inst, .2, function()
+			if inst.sg:HasStateTag("moving") then
+				WARGON.make_fx(inst, "icespike_fx_"..math.random(1,4))
+			end
+		end)
+		inst.fx = SpawnPrefab("tp_snow_fx")
+		WARGON.set_scale(inst.fx, 2)
+		inst:AddChild(inst.fx)
+		inst.fx.Transform:SetPosition(-1, 2, 0)
+		-- inst.fx:AddTag("INTERIOR_LIMBO_IMMUNE")
+	 --    local follower = inst.fx.entity:AddFollower()
+		-- follower:FollowSymbol( inst.GUID, "arm", 0, 2, 0 )
+	end)
+end
+
+local function pig_poison_fn(inst)
+	WARGON.do_task(inst, 0, function()
+		inst.task = WARGON.per_task(inst, .2, function()
+			if inst.sg:HasStateTag("moving") then
+				local fx = WARGON.make_fx(inst, "poisonbubble_short")
+				WARGON.do_task(fx, 1, function()
+					fx:Remove()
+				end)
+			end
+		end)
+		inst.fx = SpawnPrefab("poisonbubble")
+		inst:AddChild(inst.fx)
+		inst.fx.Transform:SetPosition(0, 0, 0)
+		-- inst.task = WARGON.do_task(inst, .1, function()
+		-- 	local fx = WARGON.make_fx(inst, "poisonbubble")
+		-- 	WARGON.do_task(fx, 1, function()
+		-- 		fx:Remove()
+		-- 	end)
+		-- end)
+	end)
+end	
+
+local function MakeChar(name, anims, randloot, block_poison, atk_fn, colour, pig_fn)
 	local function fn()
 		local inst = WARGON.make_prefab(anims, nil, pig_phy, pig_shadow, 4)
 		local ddebug = WARGON.add_print
 		WARGON_CMP_EX.add_cmps(inst, {
-			talk = {talk=pig_talk},
+			talk = {talk=pig_talk, colour=colour},
 			loco = {run=5, walk=3},
 			eater = {typ='all', hor=true},
 			combat = {symbol='pig_torso', dmg=TUNING.PIG_DAMAGE, per=TUNING.PIG_ATTACK_PERIOD,
 				keep=pig_keep, re={time=3, fn=pig_retarget}, atk=atk_fn},
-			follow = {max = TUNING.PIG_LOYALTY_MAXTIME},
+			-- follow = {max = TUNING.PIG_LOYALTY_MAXTIME},
+			follow = {},
 			health = {max=TUNING.PIG_HEALTH},
 			inv = {},
 			loot = {rand=randloot, ranum=1},
@@ -165,7 +221,9 @@ local function MakeChar(name, anims, randloot, block_poison, atk_fn, colour)
 			inspect = {},
 		})
 		if not block_poison then WARGON.make_poi(inst) end
-		WARGON.add_tags(inst, {'character', 'tp_pig', 'scarytopery'})
+		WARGON.add_tags(inst, {
+			'character', "werepig", 'tp_pig', 'scarytopery', name
+		})
 		inst.AnimState:Hide('hat')
 		WARGON.make_burn(inst, 'med', 'pig_torso')
 		WARGON.make_free(inst, 'med', 'pig_torso')
@@ -177,12 +235,15 @@ local function MakeChar(name, anims, randloot, block_poison, atk_fn, colour)
 		inst:SetBrain(WARGON_BRAIN_EX.member_brain(true, 'player'))
 		inst:SetStateGraph("SGtp_pig")
 
+		if pig_fn then pig_fn(inst) end
+
 		return inst
 	end
 
 	return Prefab("common/character/"..name, fn, {})
 end
 
-return MakeChar("tp_pig_fire", pigs, fire_randloot, false, fire_atk, {1, .1, .1, 1}),
-	MakeChar("tp_pig_ice", pigs, ice_randloot, false, ice_atk, {.1, .1, 1, 1}),
-	MakeChar("tp_pig_poison", pigs, poison_randloot, false, poison_atk, {.1, 1, .1, 1})
+return 
+	MakeChar("tp_pig_fire", pigs, fire_randloot, false, fire_atk, {1, .1, .1, 1}, pig_fire_fn),
+	MakeChar("tp_pig_ice", pigs, ice_randloot, false, ice_atk, {.1, .1, 1, 1}, pig_ice_fn),
+	MakeChar("tp_pig_poison", pigs, poison_randloot, false, poison_atk, {.1, 1, .1, 1}, pig_poison_fn)

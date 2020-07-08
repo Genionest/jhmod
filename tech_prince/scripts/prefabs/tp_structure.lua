@@ -1,13 +1,13 @@
 local tents = {"tent", "tent_circus", "idle"}
 local tent_phy = {1, nil}
-local tent_map = {'tent', 'png'}
+local tent_map = 'tent_circus.tex'
 local hams = {"ham_bat", "ham_bat", "idle"}
 local ham_phy = {.5, nil}
 local benchs = {"workbench_obsidian", "workbench_obsidian", "idle"}
 local bench_phy = {2, 1.2}
 local bench_map = 'workbench_obsidian.png'
 local boxes = {"chest", "treasure_chest_sacred", "closed"}
-local box_map = {'treasure_chest', 'png'}
+local box_map = 'treasure_chest_sacred.tex'
 
 local function tent_ham(inst, worker)
 	if inst:HasTag("fire") and inst.components.burnable then
@@ -126,10 +126,8 @@ local function chest_close_update(inst)
 		"livinglog", "cutreeds", "flint",
 	}
 	local container = inst.components.container
-	-- container:RemoveAllItems()
 	for i = 1, 9 do
 		local item = SpawnPrefab(items[i])
-		-- container:GiveItem(item, i)
 		container.slots[i] = item
 	end
 end
@@ -151,8 +149,6 @@ local function chest_ham(inst, worker)
 		inst.components.burnable:Extinguish()
 	end
 	inst.components.lootdropper:DropLoot()
-	-- if inst.components.container then inst.components.container:DropEverything() end
-	-- SpawnPrefab("collapse_small").Transform:SetPosition(inst.Transform:GetWorldPosition())
 	WARGON.make_fx(inst, "collapse_small")
 	inst.SoundEmitter:PlaySound("dontstarve/common/destroy_wood")	
 	inst:Remove()
@@ -163,7 +159,6 @@ local function chest_hit(inst, worker)
 		inst.AnimState:PlayAnimation("hit")
 		inst.AnimState:PushAnimation("closed", true)
 		if inst.components.container then 
-			-- inst.components.container:DropEverything()
 			inst.components.container:Close()
 		end
 	end
@@ -205,16 +200,58 @@ local function chest_fn(inst)
 	inst.OnLoad = chest_load
 end
 
-local function bench_fn(inst)
-	WARGON.CMP.add_cmps(inst, {
-		inspect = {},
-		-- near = {near=bench_near, far=bench_far},
-	})
-	WARGON.add_tags(inst, {
-		'structure',
-	})
+-- local bench_slotpos = {	Vector3(0,64+32+8+4,0), 
+-- 					Vector3(0,32+4,0),
+-- 					Vector3(0,-(32+4),0), 
+-- 					Vector3(0,-(64+32+8+4),0)}
+
+-- local bench_widgetbuttoninfo = {
+-- 	text = STRINGS.ACTIONS.COOK.SMELT,
+-- 	position = Vector3(0, -165, 0),
+-- 	fn = function(inst)
+-- 		inst.components.melter:StartCooking()	
+-- 	end,
 	
-end
+-- 	validfn = function(inst)
+-- 		return inst.components.melter:CanCook()
+-- 	end,
+-- }
+
+-- -- slotpos, bank, build, pos, align
+-- local bench_widgets = {
+-- 	bench_slotpos, "ui_cookpot_1x4", "ui_cookpot_1x4", Vector3(200,0,0), 100
+-- }
+
+-- local function bench_open(inst)
+
+-- local function bench_fn(inst)
+-- 	WARGON.CMP.add_cmps(inst, {
+-- 		inspect = {},
+-- 		near = {near=bench_near, far=bench_far},
+-- 		loot = {},
+-- 		work = {act=ACTIONS.HAMMER, num=4, hit=bench_on_hit, ham=bench_on_ham},
+-- 		-- num, open, close, widgets, test
+-- 		cont = {num=4, open=bench_open, close=bench_close, widgets=bench_widgets,
+-- 			test=bench_cont_test},
+-- 		flood = {start=bench_flood_start, stop=bench_flood_stop,
+-- 			effect="shock_machines_fx",
+-- 			sound="dontstarve_DLC002/creatures/jellyfish/electric_land"},
+-- 	})
+-- 	WARGON.add_tags(inst, {
+-- 		'structure',
+-- 	})
+-- 	inst.components.container.widgetbuttoninfo = bench_widgetbuttoninfo
+--     inst.components.container.acceptsstacks = false
+
+-- 	inst:AddComponent("tpmelter")
+--     inst.components.tpmelter.onstartcooking = startcookfn
+--     inst.components.tpmelter.oncontinuecooking = continuecookfn
+--     inst.components.tpmelter.oncontinuedone = continuedonefn
+--     inst.components.tpmelter.ondonecooking = donecookfn
+--     inst.components.tpmelter.onharvest = harvestfn
+--     inst.components.tpmelter.onspoil = spoilfn
+	
+-- end
 
 local function MakeStructure(name, anims, structure_fn, phy, map)
 	local function fn()

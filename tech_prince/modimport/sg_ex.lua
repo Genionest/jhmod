@@ -277,6 +277,7 @@ local function sp_player_build_sg_fn(sg)
 		bigfoot_sp 	= "tp_spawn",
 		morph_sp 	= "science_morph",
 		callbeast_sp = "tp_call_beasts",
+		beefalo_sp = "tp_spawn_beefalo",
 	}
 	local old_handler = sg.actionhandlers[ACTIONS.BUILD].deststate
     sg.actionhandlers[ACTIONS.BUILD].deststate = function(inst, action)
@@ -399,6 +400,13 @@ local function member_sg(sg_name)
 					inst.components.combat:DoAttack()
 					inst.sg:RemoveStateTag('attack')
 					inst.sg:RemoveStateTag('busy')
+					if inst:HasTag("tp_pig_fire") then
+						inst.components.talker:Say("炎拳")
+					elseif inst:HasTag("tp_pig_ice") then
+						inst.components.talker:Say("为了巫妖王")
+					elseif inst:HasTag("tp_pig_poison") then
+						inst.components.talker:Say("主宰")
+					end
 				end},
 			},
 		}},

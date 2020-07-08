@@ -1,4 +1,4 @@
-local homes = {"pig_house", "pig_house", "idle"}
+local homes = {"pig_house", "pighouse_logcabin", "idle"}
 local home_phy = {"obs", 1, nil}
 
 local function home_hammered(inst, worker)
@@ -130,7 +130,7 @@ local function MakeHome(name, pig_name)
 			spawn = {child=pig_name, time=30*16, occupied=home_occupied, vacate=home_vacate},
 			cont = {widgets={}, num=9, open=home_open, close=home_close, test=home_cont_test},
 		})
-		WARGON.make_map(inst, "pighouse.png")
+		WARGON.make_map(inst, "pighouse_logcabin.tex")
 		-- falloff, intensity, radius, colour, enable
 		WARGON.make_light(inst, 1, .5, 1, {180/255, 195/255, 50/255}, false)
 		WARGON.add_listen(inst, {

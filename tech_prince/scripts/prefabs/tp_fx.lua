@@ -1,3 +1,5 @@
+local easing = require("easing")
+
 local chop_leafs = {"pine_needles", "pine_needles", "chop"}
 local fall_leafs = {"pine_needles", "pine_needles", "fall"}
 local chop_jungles = {"chop_jungle", "chop_jungle", "chop"}
@@ -18,7 +20,12 @@ local acorns = {"acorn", "acorn", "idle"}
 local pinecones = {"pinecone", "pinecone", "idle"}
 local jungletreeseeds = {"jungletreeseed", "jungletreeseeds", "idle"}
 local teatree_nuts = {"teatree_nut", "teatree_nut", "idle"}
--- local boat_hits = {"boat_hit_debris", "boat_hit_debris", ""}
+local poison_holes = {'poison_hole', 'poison_hole', 'pop'}
+local spores = {"tp_spore", "tp_spore", "cough_out"} -- idle_flight_loop, flight_cycle, land
+local spore_blues = {"tp_spore_blue", "tp_spore_blue", 'cough_out'}
+local has_alloys = {"tp_has_alloy", "tp_has_alloy", "idle"}
+local stafflights = {"star", "star", "appear"}
+local snow_balls = {"firefighter_projectile", "firefighter_projectile", "spin_loop", nil}
 local logs = {"log", "log", "idle"}
 
 local function animover_fn(inst, over_fn)
@@ -34,11 +41,25 @@ end
 local function add_physics(inst, phy)
 	if phy == 'inv' then
 		MakeInventoryPhysics(inst)
+	elseif phy == 'obs' then
+		MakeObstaclePhysics(inst, .5)
 	else
 		MakeCharacterPhysics(inst, 1, .5)
 	end
 	inst.Physics:ClearCollisionMask()
 	inst.Physics:CollidesWith(COLLISION.GROUND)
+end
+
+local function make_dmg(inst, target, attacker, damage)
+	if target and target:IsValid() and target.components.health
+	and not target.components.health:IsDead() and target.components.combat then
+		local x1,y1,z1 = inst:GetPosition():Get()
+		local x2,y2,z2 = target:GetPosition():Get()
+		if (x1-x2)<.1 and (z1-z2)<.1 then
+			target.components.combat:GetAttacked(attacker, damage or 0, inst, inst.prefab)
+			return true
+		end
+	end
 end
 
 local function leaf_fn(inst)
@@ -51,7 +72,7 @@ local function leaf_line_fn(inst)
 	WARGON.per_task(inst, .1, function()
 		WARGON.make_fx(inst, "tp_fx_leaf_"..math.random(4))
 		if inst.owner then
-			WARGON.area_dmg(inst, 1.5, inst.owner, 20, "tp_fx_leaf")
+			WARGON.area_dmg(inst, 1.5, inst.owner, 10, "tp_fx_leaf")
 		end
 	end)
 	WARGON.do_task(inst, .4, function()
@@ -318,6 +339,9 @@ local function moose_fn(inst)
 end
 
 local function ham_ground_pound_fn(inst)
+	WARGON.CMP.add_cmps(inst, {
+		combat = {dmg=1},
+		})
     WARGON.do_task(inst, 0, function()
     	WARGON.make_fx(inst, "tp_fx_many_small_meat")
     	local fx = WARGON.make_fx(inst, "groundpoundring_fx")
@@ -410,6 +434,68 @@ local function sign_circle_fn(inst)
 		end
 	end)
 	WARGON.do_task(inst, 4, function()
+		inst:Remove()
+	end)
+end
+
+local function sign_2_fn(inst)
+	common_fn(inst)
+end
+
+local function sign_surround_fn(inst)
+	inst.AnimState:PlayAnimation("idle")
+	add_physics(inst)
+	inst.Physics:SetMotorVel(0, 0, 10)
+	inst.task = WARGON.per_task(inst, 0, function()
+		if inst.master then
+			inst:ForceFacePoint(inst.master:GetPosition())
+			if inst:IsNear(inst.master, 10) then
+				inst.Physics:SetMotorVel(0, 0, 20)
+			end
+		else
+			inst:Remove()
+		end
+	end)
+	WARGON.do_task(inst, 3, function()
+		if inst.task then
+			inst.task:Cancel()
+			inst.task = nil
+		end
+		inst.task = WARGON.per_task(inst, 0, function()
+			inst.Physics:SetMotorVel(10, 0, 0)
+			if inst.target then
+				inst:ForceFacePoint(inst.target:GetPosition())
+				if make_dmg(inst, inst.target, inst.master, 50) then
+					WARGON.make_fx(inst, "boat_hit_fx_raft_log")
+					inst:Remove()
+				end
+			else
+				inst:Remove()
+			end
+		end)
+	end)
+	WARGON.per_task(inst, .2, function()
+		local fx = WARGON.make_fx(inst, 'tp_fx_sign_2')
+		-- fx.AnimState:PlayAnimation('idle')
+		fx.AnimState:SetMultColour(1, 1, 1, .5)
+	end)
+end
+
+local function sign_three_fn(inst)
+	WARGON.do_task(inst, 0, function()
+		local pos = inst:GetPosition()
+		for i = 1, 3 do
+			local angle = PI/180 * i * 360/3
+			local radius = 1
+			local pt = pos
+			pt.x = pt.x + math.cos(angle) * radius
+			pt.z = pt.z + math.sin(angle) * radius
+			local fx = WARGON.make_fx(pt, "tp_fx_sign_surround")
+			fx.master = inst.master
+			fx.target = inst.target
+		end
+	end)
+	WARGON.do_task(inst, .1, function()
 		inst:Remove()
 	end)
 end
@@ -700,6 +786,239 @@ local function shadow_bat_fn(inst)
 	end)
 end
 
+local function shadow_spiral_fn(inst)
+	add_physics(inst)
+	WARGON.do_task(inst, 0, function()
+		inst.Physics:SetMotorVel(0, 0, 15)
+	end)
+	WARGON.per_task(inst, 0, function()
+		if inst.master then
+			local pos = inst.master:GetPosition()
+			inst:ForceFacePoint(pos)
+		end
+	end)
+	WARGON.per_task(inst, .1, function()
+		WARGON.make_fx(inst, 'tp_shadow_fx')
+	end)
+	WARGON.do_task(inst, 3, function()
+		inst:Remove()
+	end)
+end
+
+local function shadow_spiral_point_fn(inst)
+	WARGON.do_task(inst, 0, function()
+		local x, y, z = inst:GetPosition():Get()
+		for i = -1, 1, 2 do
+			local fx = SpawnPrefab('tp_fx_shadow_spiral')
+			fx.Transform:SetPosition(x+i, y, z)
+			fx.master = inst
+		end
+	end)
+	WARGON.do_task(inst, 3.1, function()
+		inst:Remove()
+	end)
+end
+
+local function poison_bubble_fn(inst)
+	inst.AnimState:Hide('Layer 165')
+	common_fn(inst)
+end
+
+local function spore_fn(inst)
+	add_physics(inst)
+	inst.scale = 2
+	inst.height = 0
+	WARGON.do_task(inst, 0, function()
+		local pt = inst:GetPosition()
+		inst.Transform:SetPosition(pt.x, inst.height, pt.z)
+		WARGON.set_scale(inst, inst.scale)
+		inst.AnimState:PushAnimation('idle_flight_loop')
+		inst.task = WARGON.per_task(inst, 1, function()
+			inst.Physics:SetMotorVel(math.random(2), 0, math.random(2))
+			if inst.master then
+				if not inst:IsNear(inst.master, 2) then
+					inst:ForceFacePoint(inst.master:GetPosition())
+					inst.Physics:SetMotorVel(math.random(2), 0, 0)
+				end
+			end
+		end)
+	end)
+	inst.kill = function(inst)
+		if inst.task then
+			inst.task:Cancel()
+			inst.task = nil
+		end
+		if inst.task2 then
+			inst.task2:Cancel()
+			inst.task2 = nil
+		end
+		inst.AnimState:PlayAnimation("land", false)
+		inst:ListenForEvent("animover", function()
+			inst:Remove()
+		end)
+	end
+end
+
+local function spore_three_fn(inst)
+	inst.fxs = {}
+	inst.num = 3
+	WARGON.do_task(inst, 0, function()
+		local pos = inst:GetPosition()
+		local pts = WARGON.get_divide_point(inst, inst.num)
+		for i = 1, inst.num do
+			local fx = nil
+			if inst:HasTag('spore_blue') then
+				fx = SpawnPrefab("tp_fx_spore_blue")
+			else
+				fx = SpawnPrefab("tp_fx_spore")
+			end
+			fx.Transform:SetPosition(pts[i]:Get())
+			fx.master = inst
+			fx.scale = i
+			if i == 1 then
+				inst.height = 4
+			elseif i == 3 then
+				inst.height = 1.5
+			end
+			table.insert(inst.fxs, fx)
+		end
+	end)
+	inst.kill = function(inst)
+		for k, v in pairs(inst.fxs) do
+			v:kill(v)
+		end
+		inst:Remove()
+	end
+end
+
+local function has_alloy_fn(inst)
+	WARGON.set_scale(inst, 2)
+end
+
+local function boss_spirit_fn(inst)
+	inst.AnimState:PushAnimation("idle_loop", true)
+	add_physics(inst)
+	WARGON.do_task(inst, 1, function()
+		inst.Physics:SetMotorVel(5, 0, 0)
+		WARGON.do_task(inst, 2, function()
+			inst.Physics:SetMotorVel(10, 0, 0)
+		end)
+		if inst.target then
+			WARGON.per_task(inst, 0, function()
+				inst:ForceFacePoint(inst.target:GetPosition())
+				if inst.target and inst.target:IsValid() then
+					local x1,y1,z1 = inst:GetPosition():Get()
+					local x2,y2,z2 = inst.target:GetPosition():Get()
+					if (x1-x2)<.1 and (z1-z2)<.1 then
+						inst.AnimState:PlayAnimation("disapper")
+						WARGON.do_task(inst, .5, function()
+							inst:Remove()
+						end)
+					end
+				end
+			end)
+			WARGON.per_task(inst, .1, function()
+				WARGON.make_fx(inst, "tp_fx_boss_spirit_shadow")
+			end)
+		end
+	end)
+end
+
+local function boss_spirit_shadow_fn(inst)
+	inst.AnimState:PlayAnimation("idle_loop", false)
+	-- inst.AnimState:PushAnimation("disapper", false)
+	inst.AnimState:SetMultColour(1, 1, 1, .5)
+	-- inst:ListenForEvent("animqueueover", function()
+	-- 	inst:Remove()
+	-- end)
+	inst.scale = 1
+	WARGON.per_task(inst, .1, function()
+		inst.scale = math.max(.1, inst.scale-1)
+		WARGON.set_scale(inst, inst.scale)
+	end)
+	WARGON.do_task(inst, 1, function()
+		inst:Remove()
+	end)
+end
+
+local function snow_ball_hit(inst)
+	local dist = 4
+	local x,y,z = inst:GetPosition():Get()
+	local ents = TheSim:FindEntities(x,y,z, dist, nil, 
+		{"FX", "DECOR", "INLIMBO", "deerclops"})
+	for k,v in pairs(ents) do
+		if v then
+			print("testing",v.prefab)
+			if v.components.burnable then
+				print("testing 2",v.prefab)
+				if v.components.burnable:IsBurning() then
+					print("testing 3",v.prefab)
+					v.components.burnable:Extinguish(true, TUNING.FIRESUPPRESSOR_EXTINGUISH_HEAT_PERCENT)
+				elseif v.components.burnable:IsSmoldering() then
+					print("testing 4",v.prefab)
+					v.components.burnable:Extinguish(true)
+				end
+			end
+			if v.components.freezable then
+				print("testing 5",v.prefab)
+				v.components.freezable:AddColdness(2) 
+			end
+			if v.components.temperature then
+				print("testing 6",v.prefab)
+				local temp = v.components.temperature:GetCurrent()
+        		v.components.temperature:SetTemperature(temp - TUNING.FIRE_SUPPRESSOR_TEMP_REDUCTION)
+			end
+		end
+	end
+	inst.SoundEmitter:PlaySound("dontstarve_DLC001/common/firesupressor_impact")
+	SpawnPrefab("splash_snow_fx").Transform:SetPosition(inst:GetPosition():Get())	
+	inst:Remove()
+end
+
+local function snow_ball_fn(inst)
+	local physics = inst.entity:AddPhysics()
+    physics:SetMass(1)
+    physics:SetCapsule(0.2, 0.2)
+    inst.Physics:SetFriction(10)
+    inst.Physics:SetDamping(5)
+    inst.Physics:SetCollisionGroup(COLLISION.CHARACTERS)
+    inst.Physics:ClearCollisionMask()
+    inst.Physics:CollidesWith(GetWorldCollision())
+    inst.Physics:CollidesWith(COLLISION.INTWALL)
+
+    inst:AddComponent("locomotor")
+	inst:AddComponent("complexprojectile")
+	inst.components.complexprojectile:SetOnHit(snow_ball_hit)
+	inst.components.complexprojectile.yOffset = 2.5
+end
+
+local function snow_ball_shoot_fn(inst)
+	local function launch_projectile(inst, targetpos)
+		local x, y, z = inst.Transform:GetWorldPosition()
+	    local projectile = SpawnPrefab("tp_fx_snow_ball")
+	    projectile.Transform:SetPosition(x, y, z)
+	    local dx = targetpos.x - x
+	    local dz = targetpos.z - z
+	    local rangesq = dx * dx + dz * dz
+	    local maxrange = TUNING.FIRE_DETECTOR_RANGE
+	    local speed = easing.linear(rangesq, 15, 3, maxrange * maxrange)
+	    projectile.components.complexprojectile:SetHorizontalSpeed(speed)
+	    projectile.components.complexprojectile:SetGravity(-25)
+	    projectile.components.complexprojectile:Launch(targetpos, inst, inst)
+	    projectile.owner = inst
+	end
+	WARGON.do_task(inst, 0, function()
+		local pt = inst:GetPosition()
+		inst.Transform:SetPosition(pt.x, 4, pt.z)
+		local pos = WARGON.around_land(inst, 
+			math.random(TUNING.FIRE_DETECTOR_RANGE/2)+math.random())
+		if pos then
+			launch_projectile(inst, pos)
+		end
+		inst:Remove()
+	end)
+end
+
 local function MakeFx(name, anims, fx_fn)
 	local function fn()
 		local inst = WARGON.make_prefab(anims)
@@ -739,6 +1058,9 @@ return
 	MakeFx("tp_fx_sign_circle_point", {}, sign_circle_point_fn),
 	MakeFx("tp_fx_sign_circle", {}, sign_circle_fn),
 	MakeFx("tp_fx_sign_wan", {}, sign_wan_fn),
+	MakeFx("tp_fx_sign_2", signs, sign_2_fn),
+	MakeFx("tp_fx_sign_surround", signs, sign_surround_fn),
+	MakeFx("tp_fx_sign_three", {}, sign_three_fn),
 	MakeFx("tp_fx_tree_seed_shadow_1", acorns, tree_seed_shadow_fn),
 	MakeFx("tp_fx_tree_seed_shadow_2", pinecones, tree_seed_shadow_fn),
 	MakeFx("tp_fx_tree_seed_shadow_3", jungletreeseeds, tree_seed_shadow_fn),
@@ -757,4 +1079,15 @@ return
 	MakeFx("tp_fx_sign_wall", signs, sign_wall_fn),
 	MakeFx("tp_fx_sign_circle_wall", {}, sign_circle_wall_fn),
 	MakeFx("tp_fx_sign_line_wall", {}, sign_line_wall_fn),
-	MakeFx("tp_fx_sign_killer", {}, sign_killer_fn)
+	MakeFx("tp_fx_sign_killer", {}, sign_killer_fn),
+	MakeFx("tp_fx_shadow_spiral", {}, shadow_spiral_fn),
+	MakeFx("tp_fx_shadow_spiral_point", {}, shadow_spiral_point_fn),
+	MakeFx("tp_fx_poison_bubble", poison_holes, poison_bubble_fn),
+	MakeFx("tp_fx_spore", spores, spore_fn),
+	MakeFx("tp_fx_spore_blue", spore_blues, spore_fn),
+	MakeFx("tp_fx_spore_three", {}, spore_three_fn),
+	MakeFx("tp_fx_has_alloy", has_alloys, has_alloy_fn),
+	MakeFx("tp_fx_boss_spirit", stafflights, boss_spirit_fn),
+	MakeFx("tp_fx_boss_spirit_shadow", stafflights, boss_spirit_shadow_fn),
+	MakeFx("tp_fx_snow_ball", snow_balls, snow_ball_fn),
+	MakeFx("tp_fx_snow_ball_shoot", {}, snow_ball_shoot_fn)

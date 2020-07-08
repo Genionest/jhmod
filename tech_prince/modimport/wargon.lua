@@ -49,7 +49,8 @@ local function add_recipe(name, ingd, tab, tech, game, atlas, img, placer)
 		ham = rg_type.PORKLAND,
 	}
 	local game_type = {}
-	if game == "com" then
+	-- if game == "com" then
+	if type(game) == 'string' then
 		game_type = game_tbl[game]
 	elseif game == nil then
 		game_type = game_tbl.com
@@ -64,13 +65,23 @@ local function add_recipe(name, ingd, tab, tech, game, atlas, img, placer)
 		elseif i == "max_hp" then i = CHARACTER_INGREDIENT.MAX_HEALTH
 		elseif i == 'san' then i = CHARACTER_INGREDIENT.SANITY
 		elseif i == "max_san" then i = CHARACTER_INGREDIENT.MAX_SANITY end
-		table.insert(ingredients, GLOBAL.Ingredient(i, v))
+		if type(v) == "table" then
+			local ingd = GLOBAL.Ingredient(i, v[1], v[2])
+			ingd.image = v[3]
+			table.insert(ingredients, ingd)
+		else
+			table.insert(ingredients, GLOBAL.Ingredient(i, v))
+		end
 	end
 	local rcp = GLOBAL.Recipe(name, ingredients, tab_tbl[tab], tech_tbl[tech], game_type, placer)
 	if atlas then rcp.atlas = "images/"..atlas..".xml" end
 	if img then rcp.image = img..'.tex' end
 
 	return rcp
+end
+
+local function add_map(atlas)
+	AddMinimapAtlas("images/"..atlas..".xml")  
 end
 
 local function add_print(str, x)
@@ -534,7 +545,7 @@ end
 
 local function can_deploy(inst, pt, range, no_tags, dist)
 	local ents = WARGON.finds(pt, range, nil, no_tags)
-	local min = inst.components.deployable and inst.components.deployable.min_spacing or dist
+	local min = dist or inst.components.deployable and inst.components.deployable.min_spacing
 	for k, v in pairs(ents) do
 		if v ~= inst and v:IsValid() and v.entity:IsVisible()
 		and not v.components.placer and v.parent == nil then
@@ -569,9 +580,31 @@ local function play_snd(inst, snd)
 	end
 end
 
+local function get_divide_point(inst, n, r)
+	local pos = nil
+	if inst.GetPosition then
+		pos = inst:GetPosition()
+	elseif inst.Get then
+		pos = inst
+	end
+	if pos then
+		local pts = {}
+		local radius = r or 1
+		for i = 1, n do
+			local angle = PI/180 * 360/n * i
+			local pt = pos
+			pt.x = pt.x + math.cos(angle)*radius
+			pt.z = pt.z + math.sin(angle)*radius
+			table.insert(pts, pt)
+		end
+		return pts
+	end
+end
+
 GLOBAL.WARGON = {
 	add_asset 			= add_asset,
 	add_recipe 			= add_recipe,
+	add_map				= add_map,
 	add_print 			= add_print,
 	add_str 			= add_str,
 	add_tags 			= add_tags,
@@ -623,4 +656,5 @@ GLOBAL.WARGON = {
 	can_deploy 			= can_deploy,
 	is_monster 			= is_monster,
 	play_snd 			= play_snd,
+	get_divide_point 	= get_divide_point,
 }

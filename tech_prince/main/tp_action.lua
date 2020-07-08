@@ -1,8 +1,9 @@
 local function add_player_action_sg(action, state, noboating)
     AddAction(action)
     AddStategraphActionHandler("wilson", ActionHandler(action, state))
-    if noboating then return end
-    AddStategraphActionHandler("wilsonboating", ActionHandler(action, state))
+    if not noboating then
+	    AddStategraphActionHandler("wilsonboating", ActionHandler(action, state))
+    end
 end
 
 local reng = Action({},0, false, true, 20, true)
@@ -97,14 +98,34 @@ tp_perd_store.id = "TP_PERD_STORE"
 tp_perd_store.str = "TP_PERD_STORE"
 tp_perd_store.fn = function(act)
 	-- if act.doer and act.target then
-	print('tp_perd_store', 1)
 	if act.doer then
-		print('tp_perd_store', 2)
 		if act.doer.components.inventory then
-			print('tp_perd_store', 3)
 			act.doer.components.inventory:DropEverything()
 		end
 	end
 	return true
 end
 AddAction(tp_perd_store)
+
+local tp_change = Action({}, 2.5)
+tp_change.id = "TP_CHANGE"
+tp_change.str = "改变"
+tp_change.fn = function(act)
+	if act.target then
+		if act.target.components.tpbepot then
+			act.target.components.tpbepot:BePot()
+		elseif act.target.components.tpbebird then
+			act.target.components.tpbebird:BeBird()
+		end
+		return true
+	end
+end
+add_player_action_sg(tp_change, "give")
+
+local old_fn = ACTIONS.HARVEST.fn
+ACTIONS.HARVEST.fn = function(act)
+	if act.target.components.tpmelter then
+		return act.target.components.tpmelter:Harvest(act.doer)
+	end
+	return old_fn(act)
+end

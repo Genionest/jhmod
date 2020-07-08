@@ -507,3 +507,22 @@ return BufferedAction的不要随便return nil
 
 prioritynode 如果刷新较慢可能就会出现问题。
 0:20 2020/6/29
+
+不反编译基本不能通过文件夹得到正确的图层
+19:25 2020/7/4
+
+buildrename输入和输出都选同一个build就行了
+16:17 2020/7/6
+
+一个prefab如果不是child那么spawnrecord产生的就会多出一个，
+因为之前的还是存在的
+16:19 2020/7/6
+
+背包的OverrideSymbol("swap_body", "swap_backpack", "backpack")
+必须在OverrideSymbol("swap_body", "backpack_rabbit", "swap_body")前面
+不然会覆盖掉背包的图层
+20:15 2020/7/6
+
+combat:DoAttack()必须要在攻击范围内才会造成伤害，设有target参数，
+也是会判断target是否在攻击范围内
+23:56 2020/7/6

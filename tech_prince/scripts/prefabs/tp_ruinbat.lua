@@ -69,6 +69,8 @@ local function ruinbat_uplevel(inst, data)
 	if data and data.victim then
 		if bosses[data.victim.prefab] and inst:HasTag("tp_ruinbat") then
 			WARGON.make_fx(data.victim, "wathgrithr_spirit")
+			local fx = WARGON.make_fx(data.victim, "tp_fx_boss_spirit")
+			fx.target = inst
 			local new = SpawnPrefab("tp_ruinbat_"..data.victim.prefab)
 			inst.components.inventory:GiveItem(new)
 			local weapon = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)

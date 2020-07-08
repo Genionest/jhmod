@@ -14,15 +14,24 @@ end
 local function sign_rider_combat_keep(inst, target)
 	return inst.components.combat:CanTarget(target)
        and not target:HasTag("beefalo")
+       and not target:HasTag("player")
 end
 
 local function sign_rider_on_hit(inst, data)
-	inst.components.combat:SetTarget(data.attacker)
-    inst.components.combat:ShareTarget(data.attacker, 30, function(dude)
-    	return dude:HasTag("beefalo")
-    		and not dude:IsInLimbo()
-    		and not (dude.components.health:IsDead() or dude:HasTag("player"))
-    end, 5)
+	if data.attacker then
+		inst.components.combat:SetTarget(data.attacker)
+	    inst.components.combat:ShareTarget(data.attacker, 30, function(dude)
+	    	return dude:HasTag("beefalo")
+	    		and not dude:IsInLimbo()
+	    		and not (dude.components.health:IsDead() or dude:HasTag("player"))
+	    end, 5)
+	    if math.random() < .5 then
+	    	print("tp_fx_sign_three")
+	    	local fx = WARGON.make_fx(inst, "tp_fx_sign_three")
+	    	fx.master = inst
+	    	fx.target = data.attacker
+	    end
+	end
 end
 
 local function sign_rider_san_aoe(inst, observer)

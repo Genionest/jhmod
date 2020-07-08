@@ -411,6 +411,19 @@ local function add_hatchable(inst, state, crake, hatch, fail)
 	if fail then inst.components.hatchable:SetHatchFailTime(fail) end
 end
 
+local function add_floodable(inst, start, stop, effect, sound)
+	check_cmp(inst, 'floodable')
+	if start then inst.components.floodable.onStartFlooded = start end
+	if stop then inst.components.floodable.onStopFlooded = stop end
+	if effect then inst.components.floodable.floodEffect = effect end
+	if sound then inst.components.floodable.sound = sound end
+end
+
+local function add_tiletracker(inst, water)
+	check_cmp(inst, "tiletracker")
+	if water then inst.components.tiletracker:SetOnWaterChangeFn(water) end
+end
+
 local function add_component(inst, cmp, data)
 	if cmp == "invitem" then
 		add_inventoryitem(inst, data.atlas, data.img, data.put, data.drop)
@@ -499,6 +512,10 @@ local function add_component(inst, cmp, data)
 		add_hunger(inst, data.max, data.rate, data.over)
 	elseif cmp == "hatch" then
 		add_hatchable(inst, data.state, data.crake, data.hatch, data.fail)
+	elseif cmp == "flood" then
+		add_floodable(inst, data.start, data.stop, data.effect, data.sound)
+	elseif cmp == "tile" then
+		add_tiletracker(inst, data.water)
 	else
 		check_cmp(inst, cmp)
 	end

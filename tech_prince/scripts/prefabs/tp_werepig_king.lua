@@ -60,6 +60,7 @@ local function fn()
 		san_aoe = {fn=werepig_king_san_aoe},
 		inspect = {},
 		tpwerepigspawner = {},
+		leader = {},
 		})
 	-- WARGON.make_map(inst, 'tent.png')
 	WARGON.add_tags(inst, {

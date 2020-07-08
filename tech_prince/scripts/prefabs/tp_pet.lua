@@ -1,7 +1,7 @@
-local small_birds = {'smallbird', 'smallbird_basic', 'idle'}
+local small_birds = {'smallbird', 'tp_small_bird', 'idle'}
 local small_bird_phy = {'char', 10, .25}
 local small_bird_shadow = {1.25, .75}
-local teen_birds = {'tallbird', 'tallbird_teen_build', 'idle'}
+local teen_birds = {'tallbird', 'tp_teen_bird', 'idle'}
 local teen_bird_phy = {'char', 10, .25}
 local teen_bird_shadow = {2.75, 1}
 
@@ -158,6 +158,7 @@ local function bird_fn(inst, fn)
 		})
 
 	if fn then fn(inst) end
+	-- inst.AnimState:SetMultColour(1, .1, .1, 1)
     inst:SetBrain(require 'brains/tp_small_bird_brain')
 end
 
@@ -212,19 +213,45 @@ local function small_bird_fn(inst)
 		-- 	keep=bird_combat_keep},
 		-- loot = {loot={'smallmeat'}},
 		eat = {test=small_bird_eater_test},
-		cont = {widgets = {
-			small_bird_slotpos, "ui_cookpot_1x4", 
-			"ui_cookpot_1x4", Vector3(200,0,0), 100
-		}, num=4, open=small_bird_open, close=small_bird_close},
+		-- cont = {widgets = {
+		-- 	small_bird_slotpos, "ui_cookpot_1x4", 
+		-- 	"ui_cookpot_1x4", Vector3(200,0,0), 100
+		-- }, num=4, open=small_bird_open, close=small_bird_close},
 		})
+	local growth_stages = {
+        {name="small", time = TUNING.SMALLBIRD_GROW_TIME, fn = function() end },
+        {name="tall", fn = function() inst.sg:GoToState("growup") end}
+    }
+
+	inst:AddComponent("growable")
+    inst.components.growable.stages = growth_stages
+    inst.components.growable:SetStage(1)
+    inst.components.growable:StartGrowing()
+
 	inst:SetStateGraph('SGtp_small_bird')
+end
+
+local function teen_use(inst)
+	inst.sg:GoToState("sleep")
+	WARGON.do_task(inst, 1, function()
+		WARGON.make_fx(inst, "collapse_small")
+		inst.components.tpbepot:BePot()
+		-- inst.components.machine:TurnOff()
+		-- print("machine", inst.components.machine.ison)
+	end)
+	-- WARGON.do_task(inst, 0, function()
+	-- end)
+end
+
+local function teen_use_test(inst)
+	return true
 end
 
 local function teen_bird_fn(inst)
 	bird_fn(inst)
+	WARGON.set_scale(inst, .8)
 	inst.AnimState:Hide('beakfull')
 	inst:AddTag("teenbird")
-	inst:SetStateGraph('SGtp_teen_bird')
 	inst.Physics:SetCylinder(.5, 1)
 	WARGON.make_burn(inst, 'c_large', 'head')
 	WARGON.make_free(inst, 'c_med', 'head')
@@ -235,10 +262,13 @@ local function teen_bird_fn(inst)
 			over=function() end},
 		combat = {symbol='head', range=TUNING.TEENBIRD_ATTACK_RANGE,
 			re={time=3, fn=bird_combat_re}},
-		-- loot = {loot={'meat'}},
+		loot = {loot={'meat'}},
+		-- machine = {on=teen_use, time=.5},
+		-- use = {use=teen_use, test=teen_use_test},
+		tpbepot = {},
 		-- cont = {},
 		})
-	inst:SetStateGraph('SGtp_teen_bird')
+	inst:SetStateGraph('SGtallbird')
 end
 
 local function MakePet(name, anims, phys, shadows, faced, pet_fn)

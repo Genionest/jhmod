@@ -24,8 +24,27 @@ function TpWerePigSpawner:AddFollower(follower)
 	end
 end
 
+function TpWerePigSpawner:SpawnJack()
+	local inst = self.inst
+	local pigs = {
+		"tp_pig_fire", "tp_pig_ice", "tp_pig_poison",
+	}
+	for i, v in pairs(pigs) do
+		if self.inst.components.leader:CountFollowers(v) == 0 then
+			local pos = WARGON.around_land(self.inst, 15)
+			if pos and WARGON.on_land(inst, pos) then
+				local pigman = WARGON.make_spawn(pos, v)
+				self.inst.components.leader:AddFollower(pigman)
+				WARGON.make_fx(pos, 'statue_transition')
+				WARGON.make_fx(pos, 'statue_transition_2')
+			end
+		end
+	end
+end
+
 function TpWerePigSpawner:Spawn()
 	local inst = self.inst
+	self:SpawnJack()
 	if self.num_followers >= 5 then
 		return
 	end
@@ -35,9 +54,7 @@ function TpWerePigSpawner:Spawn()
 		pig.components.werebeast:SetWere()
 		self:AddFollower(pig)
 		pig.sg:GoToState('howl')
-		WARGON.make_fx(pos, 'statue_transition')
-		WARGON.make_fx(pos, 'statue_transition_2')
-	end
+	end	
 end
 
 function TpWerePigSpawner:BeastPig()
@@ -49,6 +66,13 @@ function TpWerePigSpawner:BeastPig()
 			v.components.werebeast:SetWere()
 		end
 	end
+	-- local ents2 = WARGON.finds(inst, 15, {'tp_pig'})
+	-- for i2, v2 in pairs(ents2) do
+	-- 	if v2.components.follower and v2.components.follower.leader ~= self.inst then
+	-- 		self.inst.components.leader:AddFollower(v2)
+	-- 	    v2.components.follower:AddLoyaltyTime(1000)
+	-- 	end
+	-- end
 end
 
 function TpWerePigSpawner:OnSave()

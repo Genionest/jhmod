@@ -5,10 +5,54 @@ local function add_trees(new_trees)
 	end
 end
 
+local function kill_fx(inst)
+	if inst.fx then
+		inst.fx:kill(inst.fx)
+		inst.fx = nil
+	end
+end
+
+local function spawn_fx(inst)
+	if not inst.fx then
+		inst.fx = WARGON.make_fx(inst, "tp_fx_spore_three")
+		inst.fx.num = inst.components.growable.stage
+	end
+end
+
+local function spawn_blue_fx(inst)
+	if not inst.fx then
+		inst.fx = WARGON.make_fx(inst, "tp_fx_spore_three")
+		inst.fx.num = inst.components.growable.stage
+		inst:AddTag("spore_blue")
+	end
+end
+
+local function growth_tree(inst, last_stage, stage)
+	kill_fx(inst)
+	spawn_fx(inst)
+end
+
+local function on_ignite_tree(inst)
+	kill_fx(inst)
+end
+
+local function on_extinguish_tree(inst)
+	spawn_fx(inst)
+end
+
+local function growth_gingko(inst, last_stage, stage)
+	kill_fx(inst)
+	spawn_blue_fx(inst)
+end
+
+local function on_extinguish_gingko(inst)
+	spawn_blue_fx(inst)
+end
+
 local gingko_builds =
 {
 	normal = {
-		file="claw_tree_build",
+		file="tp_gingko_tree",
 		prefab_name="tp_gingko_tree",
 		normal_loot = {"log", "log", "tp_gingko"}, -- "jungletreeseed"
 		short_loot = {"log"},
@@ -16,17 +60,27 @@ local gingko_builds =
 	},
 }
 local function gingko_fn(inst)
+	WARGON.do_task(inst, 0, function()
+		spawn_blue_fx(inst)
+	end)
+	WARGON.add_listen(inst, {
+		onignite = on_ignite_tree,
+		onextinguish = on_extinguish_gingko,
+		})
+	inst.components.growable:SetOnGrowthFn(growth_gingko)
 end
 
 local function gingko_on_chop(inst)
 end
 
 local function gingko_on_chop_down(inst)
+	kill_fx(inst)
+	WARGON.make_fx(inst, "fall_mangrove_blue")
 end
 
--- name, builds, bank, fix_fn, on_chop_fn, on_chop_down_fn, chop_fx, minimap, inspect_fn, stump_loot, growth_stages
+-- name, builds, bank, fix_fn, on_chop_fn, on_chop_down_fn, chop_fx, minimap, inspect_fn, stump_loot, growth_stages, on_burnt_fn
 local gingko_trees = 
-WARGON.TREE.create_trees("tp_gingko_tree", gingko_builds, "clawtree", gingko_fn, gingko_on_chop, gingko_on_chop_down, "chop_mangrove_blue", "claw_tree.png", "nil")
+WARGON.TREE.create_trees("tp_gingko_tree", gingko_builds, "clawtree", gingko_fn, gingko_on_chop, gingko_on_chop_down, "chop_mangrove_blue", "tp_gingko_tree.tex", "nil")
 
 local war_tree_builds = {
 	normal = {
@@ -57,6 +111,13 @@ local function war_tree_trader_accept(inst, giver, item)
 	leif.components.combat.hitrange = leif.components.combat.hitrange*scale
 	leif.components.combat.attackrange = leif.components.combat.attackrange*scale
 	leif.sg:GoToState('spawn')
+
+	leif:AddTag("tp_war_tree")
+	leif.SoundEmitter:PlaySound("dontstarve/common/makeFriend")
+	giver.components.leader:AddFollower(leif)
+    leif.components.follower:AddLoyaltyTime(30*16)
+	
+	kill_fx(inst)
 	inst:Remove()
 end
 
@@ -65,12 +126,21 @@ local function war_tree_fn(inst)
 	WARGON.CMP.add_cmps(inst, {
 		trader = {test=war_tree_trader_test, accept=war_tree_trader_accept},	
 	})
+	WARGON.do_task(inst, 0, function()
+		spawn_fx(inst)
+	end)
+	WARGON.add_listen(inst, {
+		onignite = on_ignite_tree,
+		onextinguish = on_extinguish_tree,
+		})
+	inst.components.growable:SetOnGrowthFn(growth_tree)
 end
 
 local function war_tree_on_chop(inst)
 end
 
 local function war_tree_on_chop_down(inst)
+	kill_fx(inst)
 end
 
 local war_trees = 
@@ -88,6 +158,7 @@ local defense_tree_builds = {
 
 local function defense_tree_spawn_nuter(inst, enemy)
 	local pt = inst:GetPosition()
+	WARGON.make_fx(inst, "bramblefx")
 	-- for i = 1, math.random(2) do
 		local pos = WARGON.around_land(inst, math.random(3))
 		if pos then
@@ -111,13 +182,14 @@ local function defense_tree_spawn_nuter(inst, enemy)
 end
 
 local function defense_tree_target(item, inst)
-	return WARGON.is_monster(item)
+	return WARGON.is_monster(item) or item:HasTag("werepig")
 end
 
 local function defense_tree_near(inst)
 	if inst.task == nil then
 		inst.task = WARGON.per_task(inst, 3, function()
-			if inst.components.growable.stage >= 3 then
+			if inst.components.growable.stage >= 3
+			and not (inst:HasTag("fire") or inst:HasTag("burnt")) then
 				local nuts = WARGON.finds(inst, 20, {"birchnutdrake", "tp_defense_tree_nut"})
 				local num = 0
 				for k, v in pairs(nuts) do
@@ -151,7 +223,14 @@ local function defense_tree_fn(inst)
 	WARGON.CMP.add_cmps(inst, {
 		near = {dist={12,15}, near=defense_tree_near, far=defense_tree_far}	
 	})
-	
+	WARGON.do_task(inst, 0, function()
+		spawn_fx(inst)
+	end)
+	WARGON.add_listen(inst, {
+		onignite = on_ignite_tree,
+		onextinguish = on_extinguish_tree,
+		})
+	inst.components.growable:SetOnGrowthFn(growth_tree)
 end
 
 local function defense_tree_on_chop(inst)
@@ -162,6 +241,7 @@ local function defense_tree_on_chop_down(inst)
 		inst.task:Cancel()
 		inst.task = nil
 	end
+	kill_fx(inst)
 end
 
 local defense_trees = 

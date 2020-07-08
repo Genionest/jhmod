@@ -31,13 +31,17 @@ AddClassPostConstruct("widgets/itemtile", function(self)
 	local UIAnim = require "widgets/uianim"
 	if self.item.components.tprecharge then
 		self.tp_recharge_frame = self:AddChild(UIAnim())
-		self.tp_recharge_frame:GetAnimState():SetBank("recharge_meter")
+		-- self.tp_recharge_frame:GetAnimState():SetBank("recharge_meter")
+		-- self.tp_recharge_frame:GetAnimState():SetBuild("recharge_meter")
+		self.tp_recharge_frame:GetAnimState():SetBank("recharge_meter_wargon")
 		self.tp_recharge_frame:GetAnimState():SetBuild("recharge_meter_wargon")
 		self.tp_recharge_frame:GetAnimState():PlayAnimation("frame")
 		self.tp_recharge_frame:Hide()
 
 		self.tp_recharge = self:AddChild(UIAnim())
-		self.tp_recharge:GetAnimState():SetBank("recharge_meter")
+		-- self.tp_recharge:GetAnimState():SetBank("recharge_meter")
+		-- self.tp_recharge:GetAnimState():SetBuild("recharge_meter")
+		self.tp_recharge:GetAnimState():SetBank("recharge_meter_wargon")
 		self.tp_recharge:GetAnimState():SetBuild("recharge_meter_wargon")
 		self.tp_recharge:SetClickable(false)
 
@@ -77,5 +81,53 @@ AddClassPostConstruct("widgets/itemtile", function(self)
 		if self.tp_recharge_frame then
 			self.tp_recharge_frame:Hide()
 		end
+	end
+end)
+
+AddClassPostConstruct('widgets/recipepopup', function(self)
+	local old_refresh = self.Refresh
+	function self:Refresh()
+		old_refresh(self)
+		if self.recipe then
+			for k, v in pairs(self.recipe.ingredients) do
+				if v.image then
+					local ing = self.ing[k]
+					ing.ing:SetTexture(v.atlas, v.image)
+				end
+			end
+		end
+	end
+end)
+
+AddClassPostConstruct("brains/leifbrain", function(self)
+	require "behaviours/chaseandattack"
+	require "behaviours/runaway"
+	require "behaviours/wander"
+	require "behaviours/doaction"
+	require "behaviours/attackwall"
+	require "behaviours/follow"
+
+	local MIN_FOLLOW_DIST = 2
+	local TARGET_FOLLOW_DIST = 5
+	local MAX_FOLLOW_DIST = 9
+
+	local function GetLeader(inst)
+	    return inst.components.follower.leader 
+	end
+
+	function self:OnStart()
+
+	    local clock = GetClock()
+
+	    local root =
+	        PriorityNode(
+	        {
+	            AttackWall(self.inst),
+	            ChaseAndAttack(self.inst),
+	            Follow(self.inst, GetLeader, MIN_FOLLOW_DIST, TARGET_FOLLOW_DIST, MAX_FOLLOW_DIST),
+	            Wander(self.inst)            
+	        },1)
+	    
+	    self.bt = BT(self.inst, root)
 	end
 end)

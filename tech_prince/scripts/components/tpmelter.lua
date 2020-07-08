@@ -1,40 +1,46 @@
 --local cooking = require("smelting")
+local Melter = require "components/melter"
 
-local TpMelter = Class(function(self, inst)
-    self.inst = inst
-    self.cooking = false
-    self.done = false
-    
-    self.product = nil
-    self.product_spoilage = nil
-    self.recipes = nil
-    self.default_recipe = nil
-    self.spoiledproduct = "alloy"
-    self.maketastyfood = nil
-    
-    self.min_num_for_cook = 4
-    self.max_num_for_cook = 4
-
-    self.cookername = nil
-
-    -- stuff to make warly's special recipes possible
-    self.specialcookername = nil	-- a special cookername to check first before falling back to cookername default
-    self.productcooker = nil		-- hold on to the cookername that is cooking the current product
-
-    self.inst:AddTag("stewer")
+local TpMelter = Class(Melter, function(self, inst)
+	Melter._ctor(self, inst)
+	self.spoiledproduct = "tp_alloy"
 end)
 
-local function dospoil(inst)
-	if inst.components.tpmelter and inst.components.tpmelter.onspoil then
-		inst.components.tpmelter.onspoil(inst)
-	end
+-- local TpMelter = Class(function(self, inst)
+--     self.inst = inst
+--     self.cooking = false
+--     self.done = false
+    
+--     self.product = nil
+--     self.product_spoilage = nil
+--     self.recipes = nil
+--     self.default_recipe = nil
+--     self.spoiledproduct = "tp_alloy"
+--     self.maketastyfood = nil
+    
+--     self.min_num_for_cook = 4
+--     self.max_num_for_cook = 4
 
-    if inst.components.tpmelter.spoiltask then
-        inst.components.tpmelter.spoiltask:Cancel()
-        inst.components.tpmelter.spoiltask = nil
-        inst.components.tpmelter.spoiltargettime = nil
-    end
-end
+--     self.cookername = nil
+
+--     -- stuff to make warly's special recipes possible
+--     self.specialcookername = nil	-- a special cookername to check first before falling back to cookername default
+--     self.productcooker = nil		-- hold on to the cookername that is cooking the current product
+
+--     self.inst:AddTag("stewer")
+-- end)
+
+-- local function dospoil(inst)
+-- 	if inst.components.tpmelter and inst.components.tpmelter.onspoil then
+-- 		inst.components.tpmelter.onspoil(inst)
+-- 	end
+
+--     if inst.components.tpmelter.spoiltask then
+--         inst.components.tpmelter.spoiltask:Cancel()
+--         inst.components.tpmelter.spoiltask = nil
+--         inst.components.tpmelter.spoiltargettime = nil
+--     end
+-- end
 
 local function dostew(inst)
 	local stewercmp = inst.components.tpmelter
@@ -61,25 +67,25 @@ local function dostew(inst)
 	stewercmp.cooking = nil
 end
 
-function TpMelter:SetCookerName(_name)
-	self.cookername = _name
-end
+-- function TpMelter:SetCookerName(_name)
+-- 	self.cookername = _name
+-- end
 
-function TpMelter:GetTimeToCook()
-	if self.cooking then
-		return self.targettime - GetTime()
-	end
-	return 0
-end
+-- function TpMelter:GetTimeToCook()
+-- 	if self.cooking then
+-- 		return self.targettime - GetTime()
+-- 	end
+-- 	return 0
+-- end
 
 
-function TpMelter:CanCook()
-	local num = 0
-	for k,v in pairs (self.inst.components.container.slots) do
-		num = num + 1 
-	end
-	return num >= self.min_num_for_cook and num <= self.max_num_for_cook
-end
+-- function TpMelter:CanCook()
+-- 	local num = 0
+-- 	for k,v in pairs (self.inst.components.container.slots) do
+-- 		num = num + 1 
+-- 	end
+-- 	return num >= self.min_num_for_cook and num <= self.max_num_for_cook
+-- end
 
 
 function TpMelter:StartCooking()
@@ -117,7 +123,7 @@ function TpMelter:StartCooking()
 				self.productcooker = cooker
 			end
  			]]
-			self.product = "alloy"
+			self.product = "tp_alloy"
 			local cooktime = 0.2
 			self.productcooker = self.inst.prefab
 			
@@ -133,31 +139,31 @@ function TpMelter:StartCooking()
 	end
 end
 
-function TpMelter:OnSave()
-    local time = GetTime()
-    if self.cooking then
-		local data = {}
-		data.cooking = true
-		data.product = self.product
-		data.productcooker = self.productcooker
-		data.product_spoilage = self.product_spoilage
-		if self.targettime and self.targettime > time then
-			data.time = self.targettime - time
-		end
-		return data
-    elseif self.done then
-		local data = {}
-		data.product = self.product
-		data.productcooker = self.productcooker
-		data.product_spoilage = self.product_spoilage
-		if self.spoiltargettime and self.spoiltargettime > time then
-			data.spoiltime = self.spoiltargettime - time
-		end
-		data.timesincefinish = -(GetTime() - (self.targettime or 0))
-		data.done = true
-		return data		
-    end
-end
+-- function TpMelter:OnSave()
+--     local time = GetTime()
+--     if self.cooking then
+-- 		local data = {}
+-- 		data.cooking = true
+-- 		data.product = self.product
+-- 		data.productcooker = self.productcooker
+-- 		data.product_spoilage = self.product_spoilage
+-- 		if self.targettime and self.targettime > time then
+-- 			data.time = self.targettime - time
+-- 		end
+-- 		return data
+--     elseif self.done then
+-- 		local data = {}
+-- 		data.product = self.product
+-- 		data.productcooker = self.productcooker
+-- 		data.product_spoilage = self.product_spoilage
+-- 		if self.spoiltargettime and self.spoiltargettime > time then
+-- 			data.spoiltime = self.spoiltargettime - time
+-- 		end
+-- 		data.timesincefinish = -(GetTime() - (self.targettime or 0))
+-- 		data.done = true
+-- 		return data		
+--     end
+-- end
 
 function TpMelter:OnLoad(data)
     --self.produce = data.produce
@@ -201,66 +207,66 @@ function TpMelter:OnLoad(data)
     end
 end
 
-function TpMelter:GetDebugString()
-    local str = nil
+-- function TpMelter:GetDebugString()
+--     local str = nil
     
-	if self.cooking then 
-		str = "COOKING" 
-	elseif self.done then
-		str = "FULL"
-	else
-		str = "EMPTY"
-	end
-    if self.targettime then
-        str = str.." ("..tostring(self.targettime - GetTime())..")"
-    end
+-- 	if self.cooking then 
+-- 		str = "COOKING" 
+-- 	elseif self.done then
+-- 		str = "FULL"
+-- 	else
+-- 		str = "EMPTY"
+-- 	end
+--     if self.targettime then
+--         str = str.." ("..tostring(self.targettime - GetTime())..")"
+--     end
     
-    if self.product then
-		str = str.. " ".. self.product
-    end
+--     if self.product then
+-- 		str = str.. " ".. self.product
+--     end
     
-    if self.product_spoilage then
-		str = str.."("..self.product_spoilage..")"
-    end
+--     if self.product_spoilage then
+-- 		str = str.."("..self.product_spoilage..")"
+--     end
     
-	return str
-end
+-- 	return str
+-- end
 
-function TpMelter:CollectSceneActions(doer, actions, right)
-	if not doer.components.rider or not doer.components.rider:IsRiding() then
-		if not self.inst:HasTag("burnt") then
-		    if self.done then
-		        table.insert(actions, ACTIONS.HARVEST)
-		    elseif right and self:CanCook() then
-				table.insert(actions, ACTIONS.COOK)
-		    end
-		end
-	end
-end
+-- function TpMelter:CollectSceneActions(doer, actions, right)
+-- 	if not doer.components.rider or not doer.components.rider:IsRiding() then
+-- 		if not self.inst:HasTag("burnt") then
+-- 		    if self.done then
+-- 		        table.insert(actions, ACTIONS.HARVEST)
+-- 		    elseif right and self:CanCook() then
+-- 				table.insert(actions, ACTIONS.COOK)
+-- 		    end
+-- 		end
+-- 	end
+-- end
 
-function TpMelter:IsDone()
-	return self.done
-end
+-- function TpMelter:IsDone()
+-- 	return self.done
+-- end
 
-function TpMelter:StopCooking(reason)
-	if self.task then
-		self.task:Cancel()
-		self.task = nil
-	end
-	if self.spoiltask then
-		self.spoiltask:Cancel()
-		self.spoiltask = nil
-	end
-	if self.product and reason and reason == "fire" then
-		local prod = SpawnPrefab(self.product)
-		if prod then
-			prod.Transform:SetPosition(self.inst.Transform:GetWorldPosition())
-			prod:DoTaskInTime(0, function(prod) prod.Physics:Stop() end)
-		end
-	end
-	self.product = nil
-	self.targettime = nil
-end
+-- function TpMelter:StopCooking(reason)
+-- 	if self.task then
+-- 		self.task:Cancel()
+-- 		self.task = nil
+-- 	end
+-- 	if self.spoiltask then
+-- 		self.spoiltask:Cancel()
+-- 		self.spoiltask = nil
+-- 	end
+-- 	if self.product and reason and reason == "fire" then
+-- 		local prod = SpawnPrefab(self.product)
+-- 		if prod then
+-- 			prod.Transform:SetPosition(self.inst.Transform:GetWorldPosition())
+-- 			prod:DoTaskInTime(0, function(prod) prod.Physics:Stop() end)
+-- 		end
+-- 	end
+-- 	self.product = nil
+-- 	self.targettime = nil
+-- end
 
 
 function TpMelter:Harvest( harvester )
@@ -273,7 +279,7 @@ function TpMelter:Harvest( harvester )
 		if self.product then
 			if harvester and harvester.components.inventory then
 				local loot = nil
-				loot = SpawnPrefab("alloy")
+				loot = SpawnPrefab("tp_alloy")
 				--[[
 				if self.product ~= "spoiledfood" then
 					loot = SpawnPrefab(self.product)
