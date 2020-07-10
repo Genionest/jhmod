@@ -200,7 +200,7 @@ local function pig_poison_fn(inst)
 	end)
 end	
 
-local function MakeChar(name, anims, randloot, block_poison, atk_fn, colour, pig_fn)
+local function MakeChar(name, anims, randloot, nature, atk_fn, colour, pig_fn)
 	local function fn()
 		local inst = WARGON.make_prefab(anims, nil, pig_phy, pig_shadow, 4)
 		local ddebug = WARGON.add_print
@@ -220,13 +220,19 @@ local function MakeChar(name, anims, randloot, block_poison, atk_fn, colour, pig
 			sleep = {resist=2},
 			inspect = {},
 		})
-		if not block_poison then WARGON.make_poi(inst) end
 		WARGON.add_tags(inst, {
 			'character', "werepig", 'tp_pig', 'scarytopery', name
 		})
 		inst.AnimState:Hide('hat')
-		WARGON.make_burn(inst, 'med', 'pig_torso')
-		WARGON.make_free(inst, 'med', 'pig_torso')
+		if nature ~= "poison" then 
+			WARGON.make_poi(inst) 
+		end
+		if nature ~= "fire" then 
+			WARGON.make_burn(inst, 'c_med', 'pig_torso')
+		end
+		if nature ~= "ice" then
+			WARGON.make_free(inst, 'c_med', 'pig_torso')
+		end
 		WARGON.add_listen(inst, {
 			attacked = pig_attacked,
 			newcombattarget = pig_newcombattarget,
@@ -244,6 +250,6 @@ local function MakeChar(name, anims, randloot, block_poison, atk_fn, colour, pig
 end
 
 return 
-	MakeChar("tp_pig_fire", pigs, fire_randloot, false, fire_atk, {1, .1, .1, 1}, pig_fire_fn),
-	MakeChar("tp_pig_ice", pigs, ice_randloot, false, ice_atk, {.1, .1, 1, 1}, pig_ice_fn),
-	MakeChar("tp_pig_poison", pigs, poison_randloot, false, poison_atk, {.1, 1, .1, 1}, pig_poison_fn)
+	MakeChar("tp_pig_fire", pigs, fire_randloot, "fire", fire_atk, {1, .1, .1, 1}, pig_fire_fn),
+	MakeChar("tp_pig_ice", pigs, ice_randloot, "ice", ice_atk, {.1, .1, 1, 1}, pig_ice_fn),
+	MakeChar("tp_pig_poison", pigs, poison_randloot, "poison", poison_atk, {.1, 1, .1, 1}, pig_poison_fn)

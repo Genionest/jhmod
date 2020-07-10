@@ -3,23 +3,6 @@ require "stategraphs/SGBeefalo"
 
 local assets=
 {
-    -- Asset("ANIM", "anim/beefalo_basic.zip"),
-    -- Asset("ANIM", "anim/beefalo_actions.zip"),
-    -- Asset("ANIM", "anim/beefalo_actions_domestic.zip"),
-    -- Asset("ANIM", "anim/beefalo_actions_quirky.zip"),
-    
-    -- Asset("ANIM", "anim/beefalo_build.zip"),
-    -- Asset("ANIM", "anim/beefalo_shaved_build.zip"),
-    -- Asset("ANIM", "anim/beefalo_baby_build.zip"),
-
-    -- Asset("ANIM", "anim/beefalo_domesticated.zip"),
-    -- Asset("ANIM", "anim/beefalo_personality_docile.zip"),
-    -- Asset("ANIM", "anim/beefalo_personality_ornery.zip"),
-    -- Asset("ANIM", "anim/beefalo_personality_pudgy.zip"),
-
-    -- Asset("ANIM", "anim/beefalo_fx.zip"),
-
-    -- Asset("SOUND", "sound/beefalo.fsb"),
 }
 
 local prefabs =
@@ -61,17 +44,17 @@ local tendencies =
 
     ORNERY =
     {
-        build = "beefalo_personality_ornery",
+        build = "beefalo_build",
     },
 
     RIDER =
     {
-        build = "beefalo_personality_docile",
+        build = "beefalo_build",
     },
 
     PUDGY =
     {
-        build = "beefalo_personality_pudgy",
+        build = "beefalo_build",
         customactivatefn = function(inst)
             inst:AddComponent("sanityaura")
             inst.components.sanityaura.aura = TUNING.SANITYAURA_TINY
@@ -86,8 +69,8 @@ local tendencies =
 local function ApplyBuildOverrides(inst, animstate)
     local herd = inst.components.herdmember and inst.components.herdmember:GetHerd()
     local basebuild = (inst:HasTag("baby") and "beefalo_baby_build")
-            or (inst.components.beard.bits == 0 and "beefalo_shaved_build")
-            or (inst.components.domesticatable:IsDomesticated() and "beefalo_domesticated")
+            or (inst.components.beard.bits == 0 and "beefalo_build")
+            or (inst.components.domesticatable:IsDomesticated() and "beefalo_build")
             or "beefalo_build"
     if animstate ~= nil and animstate ~= inst.AnimState then
         animstate:AddOverrideBuild(basebuild)
@@ -97,7 +80,8 @@ local function ApplyBuildOverrides(inst, animstate)
 
     if (herd and herd.components.mood and herd.components.mood:IsInMood())
         or (inst.components.mood and inst.components.mood:IsInMood()) then
-        animstate:Show("HEAT")
+        -- animstate:Show("HEAT")
+        animstate:Hide("HEAT")
     else
         animstate:Hide("HEAT")
     end
@@ -106,7 +90,7 @@ local function ApplyBuildOverrides(inst, animstate)
         animstate:AddOverrideBuild(tendencies[inst.tendency].build)
     elseif animstate == inst.AnimState then
         -- this presumes that all the face builds have the same symbols
-        animstate:ClearOverrideBuild("beefalo_personality_docile")
+        animstate:ClearOverrideBuild("beefalo_build")
     end
 end
 
@@ -115,7 +99,7 @@ local function ClearBuildOverrides(inst, animstate)
         animstate:ClearOverrideBuild("beefalo_build")
     end
     -- this presumes that all the face builds have the same symbols
-    animstate:ClearOverrideBuild("beefalo_personality_docile")
+    animstate:ClearOverrideBuild("beefalo_build")
 end
 
 local function OnEnterMood(inst)
@@ -214,11 +198,12 @@ end
 
 
 local function CanShaveTest(inst)
-    if inst.components.sleeper:IsAsleep() then
-        return true
-    else
-        return false, "AWAKEBEEFALO"
-    end
+    -- if inst.components.sleeper:IsAsleep() then
+    --     return true
+    -- else
+    --     return false, "AWAKEBEEFALO"
+    -- end
+    return false
 end
 
 local function OnShaved(inst)
@@ -588,6 +573,7 @@ local function fn(Sim)
     anim:SetBank("beefalo")
     anim:SetBuild("beefalo_build")
     anim:PlayAnimation("idle_loop", true)
+    -- anim:OverrideSymbol("swap_saddle", "strawhat_cowboy", "swap_hat")
     
     inst:AddTag("animal")
     inst:AddTag("largecreature")

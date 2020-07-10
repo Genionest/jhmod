@@ -40,7 +40,7 @@ local function bird_trader_test(inst, item)
     end
 end
 
-local function bird_trader_accept(ints, giver, item)
+local function bird_trader_accept(inst, giver, item)
 	if inst.components.sleeper then
         inst.components.sleeper:WakeUp()
     end
@@ -96,14 +96,14 @@ end
 local function bird_combat_re(inst)
 	local notags = {"FX", "NOCLICK","INLIMBO"}
     return WARGON.find(inst, TUNING.TEENBIRD_TARGET_DIST, function(guy)
-        if inst.components.combat:CanTarget(guy)  and (not guy.LightWatcher or guy.LightWatcher:IsInLight()) then
+        if inst.components.combat:CanTarget(guy) then
             return guy:HasTag("monster")
         end
     end, nil, notags)
 end
 
 local function bird_combat_keep(inst, target)
-    return inst.components.combat:CanTarget(target) and (not target.LightWatcher or target.LightWatcher:IsInLight())
+    return inst.components.combat:CanTarget(target)
 end
 
 local function bird_on_attacked(inst, data)
@@ -158,21 +158,8 @@ local function bird_fn(inst, fn)
 		})
 
 	if fn then fn(inst) end
-	-- inst.AnimState:SetMultColour(1, .1, .1, 1)
     inst:SetBrain(require 'brains/tp_small_bird_brain')
 end
-
--- local function small_bird_combat_re(inst)
--- 	if inst:HasTag('springbird') then
--- 		return false
--- 	end
--- end
-
--- local function small_bird_combat_keep(inst, target)
--- 	if inst:HasTag('spring_bird') then
--- 		return false
--- 	end
--- end
 
 local function small_bird_eater_test(inst, item)
 	return (item.components.edible.foodtype == "SEEDS") 
@@ -180,22 +167,22 @@ local function small_bird_eater_test(inst, item)
 end
 
 -- slotpos, bank, build, pos, align
-local small_bird_slotpos = {
-	Vector3(0,64+32+8+4,0), 
-	Vector3(0,32+4,0),
-	Vector3(0,-(32+4),0), 
-	Vector3(0,-(64+32+8+4),0),
-}
+-- local small_bird_slotpos = {
+-- 	Vector3(0,64+32+8+4,0), 
+-- 	Vector3(0,32+4,0),
+-- 	Vector3(0,-(32+4),0), 
+-- 	Vector3(0,-(64+32+8+4),0),
+-- }
 
-local function small_bird_open(inst)
-	inst.SoundEmitter:PlaySound("dontstarve/creatures/smallbird/wings")
-	inst.brain:Stop()
-end
+-- local function small_bird_open(inst)
+-- 	inst.SoundEmitter:PlaySound("dontstarve/creatures/smallbird/wings")
+-- 	inst.brain:Stop()
+-- end
 
-local function small_bird_close(inst)
-	inst.SoundEmitter:PlaySound("dontstarve/creatures/smallbird/wings")
-	inst.brain:Start()
-end
+-- local function small_bird_close(inst)
+-- 	inst.SoundEmitter:PlaySound("dontstarve/creatures/smallbird/wings")
+-- 	inst.brain:Start()
+-- end
 
 local function small_bird_fn(inst)
 	bird_fn(inst)
@@ -207,19 +194,11 @@ local function small_bird_fn(inst)
 		hunger = {max=TUNING.SMALLBIRD_HUNGER, 
 			rate=TUNING.SMALLBIRD_HUNGER/TUNING.SMALLBIRD_STARVE_TIME, 
 			over=function() end},
-		-- combat = {symbol='head', range={TUNING.SMALLBIRD_ATTACK_RANGE},
-		-- 	dmg=TUNING.SMALLBIRD_DAMAGE, per=TUNING.SMALLBIRD_ATTACK_PERIOD,
-		-- 	re={time=3, fn=bird_combat_re},
-		-- 	keep=bird_combat_keep},
-		-- loot = {loot={'smallmeat'}},
 		eat = {test=small_bird_eater_test},
-		-- cont = {widgets = {
-		-- 	small_bird_slotpos, "ui_cookpot_1x4", 
-		-- 	"ui_cookpot_1x4", Vector3(200,0,0), 100
-		-- }, num=4, open=small_bird_open, close=small_bird_close},
 		})
 	local growth_stages = {
-        {name="small", time = TUNING.SMALLBIRD_GROW_TIME, fn = function() end },
+        -- {name="small", time = TUNING.SMALLBIRD_GROW_TIME, fn = function() end },
+        {name="small", time = function() return 10 end, fn = function() end },
         {name="tall", fn = function() inst.sg:GoToState("growup") end}
     }
 
@@ -229,22 +208,6 @@ local function small_bird_fn(inst)
     inst.components.growable:StartGrowing()
 
 	inst:SetStateGraph('SGtp_small_bird')
-end
-
-local function teen_use(inst)
-	inst.sg:GoToState("sleep")
-	WARGON.do_task(inst, 1, function()
-		WARGON.make_fx(inst, "collapse_small")
-		inst.components.tpbepot:BePot()
-		-- inst.components.machine:TurnOff()
-		-- print("machine", inst.components.machine.ison)
-	end)
-	-- WARGON.do_task(inst, 0, function()
-	-- end)
-end
-
-local function teen_use_test(inst)
-	return true
 end
 
 local function teen_bird_fn(inst)
@@ -263,10 +226,7 @@ local function teen_bird_fn(inst)
 		combat = {symbol='head', range=TUNING.TEENBIRD_ATTACK_RANGE,
 			re={time=3, fn=bird_combat_re}},
 		loot = {loot={'meat'}},
-		-- machine = {on=teen_use, time=.5},
-		-- use = {use=teen_use, test=teen_use_test},
 		tpbepot = {},
-		-- cont = {},
 		})
 	inst:SetStateGraph('SGtallbird')
 end

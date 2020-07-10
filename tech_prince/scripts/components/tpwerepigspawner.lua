@@ -42,9 +42,9 @@ function TpWerePigSpawner:SpawnJack()
 	end
 end
 
-function TpWerePigSpawner:Spawn()
+function TpWerePigSpawner:SpawnWere()
 	local inst = self.inst
-	self:SpawnJack()
+	-- self:SpawnJack()
 	if self.num_followers >= 5 then
 		return
 	end
@@ -54,7 +54,35 @@ function TpWerePigSpawner:Spawn()
 		pig.components.werebeast:SetWere()
 		self:AddFollower(pig)
 		pig.sg:GoToState('howl')
+		WARGON.make_fx(pos, 'statue_transition')
+		WARGON.make_fx(pos, 'statue_transition_2')
 	end	
+end
+
+function TpWerePigSpawner:CallNear(pigs)
+	local inst = self.inst
+	for k, v in pairs(pigs) do
+		if k and not k:IsNear(inst, 30) then
+			print("TpWerePigSpawner", k.prefab)
+			local pos = WARGON.around_land(inst, 10)
+			if pos and WARGON.on_land(inst, pos) then
+				k.Transform:SetPosition(pos:Get())
+				WARGON.make_fx(pos, 'statue_transition')
+				WARGON.make_fx(pos, 'statue_transition_2')
+			end
+		end
+	end
+end
+
+function TpWerePigSpawner:Defense()
+	self:CallNear(self.followers)
+	self:CallNear(self.inst.components.leader.followers)
+end
+
+function TpWerePigSpawner:Spawn()
+	self:SpawnJack()
+	self:SpawnWere()
+	self:Defense()
 end
 
 function TpWerePigSpawner:BeastPig()

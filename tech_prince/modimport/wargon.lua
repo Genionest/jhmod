@@ -31,6 +31,7 @@ local function add_recipe(name, ingd, tab, tech, game, atlas, img, placer)
 		s_1 = g_tech.SCIENCE_ONE,
 		s_2 = g_tech.SCIENCE_TWO,
 		s_3 = g_tech.SCIENCE_THREE,
+		s_9 = {SCIENCE=9},
 		m_2 = g_tech.MAGIC_TWO,
 		m_3 = g_tech.MAGIC_THREE,
 		a_2 = g_tech.ANCIENT_TWO,
@@ -73,7 +74,7 @@ local function add_recipe(name, ingd, tab, tech, game, atlas, img, placer)
 			table.insert(ingredients, GLOBAL.Ingredient(i, v))
 		end
 	end
-	local rcp = GLOBAL.Recipe(name, ingredients, tab_tbl[tab], tech_tbl[tech], game_type, placer)
+	local rcp = GLOBAL.Recipe(name, ingredients, tab_tbl[tab] or tab, tech_tbl[tech], game_type, placer)
 	if atlas then rcp.atlas = "images/"..atlas..".xml" end
 	if img then rcp.image = img..'.tex' end
 
@@ -601,6 +602,10 @@ local function get_divide_point(inst, n, r)
 	end
 end
 
+local function get_config(key)
+	return GetModConfigData(key)
+end
+
 GLOBAL.WARGON = {
 	add_asset 			= add_asset,
 	add_recipe 			= add_recipe,
@@ -657,4 +662,5 @@ GLOBAL.WARGON = {
 	is_monster 			= is_monster,
 	play_snd 			= play_snd,
 	get_divide_point 	= get_divide_point,
+	get_config 			= get_config,
 }

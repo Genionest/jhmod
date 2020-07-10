@@ -1,6 +1,8 @@
 local pack_crabs = {"backpack1", "backpack_crab", "anim", "idle_water"}
 local pack_dragonflys = {"backpack1", "backpack_dragonfly", "anim", "idle_water"}
 local pack_rabbits = {'backpack1', 'backpack_rabbit', 'anim', 'idle_water'}
+local pack_beefalos = {'backpack1', 'backpack_beefalo', 'anim', 'idle_water'}
+local pack_catcoons = {'backpack1', 'backpack_catcoon', 'anim', 'idle_water'}
 
 local function onopen(inst)
 	inst.SoundEmitter:PlaySound("dontstarve/wilson/backpack_open", "open")
@@ -174,7 +176,51 @@ local function rabbit_fn(inst)
     inst.components.equippable.walkspeedmult = .25
 end
 
+local function beefalo_equip(inst, owner)
+    common_equip(owner, "backpack_beefalo")
+    owner:AddTag('beefalo')
+end
+
+local function beefalo_unequip(inst, owner)
+    local hat =  owner.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
+    if not (hat and hat.prefab == "beefalohat") then
+        owner:RemoveTag('beefalo')
+    end
+end
+
+local function beefalo_fn(inst)
+end
+
+local function catcoon_equip(inst, owner)
+    common_equip(owner, "backpack_catcoon")
+    if inst.task == nil then
+        inst.task = WARGON.per_task(inst, 3, function()
+            local spear = WARGON.find(owner, 10, nil, 
+                {"tp_catcoon_spear"}, {"projectile"})
+            if spear then
+                WARGON.make_fx(spear, "small_puff")
+                WARGON.make_fx(spear, "tp_fx_catcoon_pick")
+                if owner.components.inventory:IsFull() == false then
+                    owner.components.inventory:GiveItem(spear)
+                end
+            end
+        end)
+    end
+end
+
+local function catcoon_unequip(inst, owner)
+    if inst.task then
+        inst.task:Cancel()
+        inst.task = nil
+    end
+end
+
+local function catcoon_fn(inst)
+end
+
 return 
     MakePack("tp_pack_crab", pack_crabs, crab_equip, nil, crab_fn, "backpack_crab"),
     MakePack("tp_pack_dragonfly", pack_dragonflys, dragonfly_equip, nil, dragonfly_fn, "backpack_dragonfly"),
-    MakePack("tp_pack_rabbit", pack_rabbits, rabbit_equip, nil, rabbit_fn, "backpack_rabbit")
+    MakePack("tp_pack_rabbit", pack_rabbits, rabbit_equip, nil, rabbit_fn, "backpack_rabbit"),
+    MakePack("tp_pack_beefalo", pack_beefalos, beefalo_equip, beefalo_unequip, beefalo_fn, "backpack_beefalo"),
+    MakePack("tp_pack_catcoon", pack_catcoons, catcoon_equip, catcoon_unequip, catcoon_fn, "backpack_catcoon")

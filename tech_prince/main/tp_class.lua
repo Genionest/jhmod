@@ -5,26 +5,28 @@ local MadBadge = Class(Badge, function(self, owner)
 end)
 
 AddClassPostConstruct("widgets/statusdisplays", function(self)
-	self.madvalue = self:AddChild(MadBadge(self.owner))
-    self.madvalue:SetPosition(-80, -115, 0)
-    self.madvalue:SetPercent(self.owner.components.tpmadvalue:GetPercent(), 
-    	self.owner.components.tpmadvalue.max)
-    self.inst:ListenForEvent("tp_madvalue_delta", function(inst, data)
-    	self:MadValueDelta(data)
-    end, self.owner)
+	if self.owner.prefab == "wilson" then
+		self.madvalue = self:AddChild(MadBadge(self.owner))
+	    self.madvalue:SetPosition(-80, -115, 0)
+	    self.madvalue:SetPercent(self.owner.components.tpmadvalue:GetPercent(), 
+	    	self.owner.components.tpmadvalue.max)
+	    self.inst:ListenForEvent("tp_madvalue_delta", function(inst, data)
+	    	self:MadValueDelta(data)
+	    end, self.owner)
 
-    function self:MadValueDelta(data)
-    	self.madvalue:SetPercent(data.new_per, self.owner.components.tpmadvalue.max) 
-		if not data.no_flash then
-			if data.new_per > data.old_per then
-				self.madvalue:PulseGreen()
-				TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/sanity_up")
-			elseif data.new_per < data.old_per then
-				TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/sanity_down")
-				self.madvalue:PulseRed()
+	    function self:MadValueDelta(data)
+	    	self.madvalue:SetPercent(data.new_per, self.owner.components.tpmadvalue.max) 
+			if not data.no_flash then
+				if data.new_per > data.old_per then
+					self.madvalue:PulseGreen()
+					TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/sanity_up")
+				elseif data.new_per < data.old_per then
+					TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/sanity_down")
+					self.madvalue:PulseRed()
+				end
 			end
-		end
-    end
+	    end
+	end
 end)
 
 AddClassPostConstruct("widgets/itemtile", function(self)
@@ -129,5 +131,58 @@ AddClassPostConstruct("brains/leifbrain", function(self)
 	        },1)
 	    
 	    self.bt = BT(self.inst, root)
+	end
+end)
+
+AddClassPostConstruct("screens/playerhud", function(self)
+	local old_update_leaves = self.UpdateLeaves
+	function self:UpdateLeaves(dt)
+		if WARGON.is_dlc(3) then
+			old_update_leaves(self, dt)
+		else
+			if self.leavesTop then
+			    if not self.leavestop_intensity then
+			    	self.leavestop_intensity = 0
+			    end	 
+				local player = GetPlayer()
+				if player:HasTag("tp_spear_wind") then
+					self.leavestop_intensity = math.min(1,self.leavestop_intensity+(1/30) )
+				else			
+				 	self.leavestop_intensity = math.max(0,self.leavestop_intensity-(1/30) )
+				end	
+
+				if self.leavestop_intensity == 0 then
+			    	self.leavesTop:Hide()
+			    else
+			    	self.leavesTop:Show()
+					if self.leavestop_intensity == 1 then
+				    	if not self.leavesfullyin then
+				    		self.leavesTop:GetAnimState():PlayAnimation("idle", true)	
+				    		self.leavesfullyin = true
+				    		-- GetPlayer():PushEvent("canopyin")
+				    	else	
+					    	if GetPlayer().sg:HasStateTag("moving") then
+					    		if not self.leavesmoving then
+					    			self.leavesmoving = true
+					    			self.leavesTop:GetAnimState():PlayAnimation("run_pre")	
+					    			self.leavesTop:GetAnimState():PushAnimation("run_loop", true)					    					    	
+					    		end
+					    	else
+					    		if self.leavesmoving then
+					    			self.leavesmoving = nil
+					    			self.leavesTop:GetAnimState():PlayAnimation("run_pst")	
+					    			self.leavesTop:GetAnimState():PushAnimation("idle", true)	
+					    			self.leaves_olddir = nil
+					    		end
+					    	end
+				    	end
+				    else
+				    	self.leavesfullyin = nil
+				    	self.leavesmoving = nil
+				    	self.leavesTop:GetAnimState():SetPercent("zoom_in", self.leavestop_intensity)
+					end	    	
+			    end	    
+			end
+		end
 	end
 end)

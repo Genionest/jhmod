@@ -8,6 +8,7 @@ local spear_poisons = {"tp_spear_poison", "tp_spear_poison", "idle", "idle_water
 local spear_shadows = {"tp_spear_shadow", "tp_spear_shadow", "idle", "idle_water"}
 local spear_bloods = {"tp_spear_blood", "tp_spear_blood", "idle", "idle_water"}
 local spear_roses = {"spear", "spear_rose", "idle", "idle_water"}
+local spear_winds = {'tp_spear_wind', 'tp_spear_wind', 'idle', 'idle_water'}
 
 local function do_area_damage(inst, range, dmg, reason)
 	local owner = inst.components.inventoryitem.owner
@@ -25,6 +26,12 @@ local function do_area(inst, range, fn)
 			end
 		end
 	end
+end
+
+local function mk_lv_dmg(inst, owner, target)
+	local level = owner.components.tplevel.level or 1
+	local dmg = 5*(level-1)
+	target.components.health:DoDelta(-dmg)
 end
 
 local function on_finish(inst)
@@ -111,11 +118,13 @@ local function spear_ice_unequip(inst, owner)
 end
 
 local function spear_ice_weapon_fn(inst, owner, target)
+	mk_lv_dmg(inst, owner, target)
 	WARGON.frozen_prefab(target)
 	WARGON.make_fx(target, "icespike_fx_"..math.random(1, 4))
 end
 
 local function spear_ice_proj_throw(inst)
+	inst:AddTag("projectile")
 	spear_throw(inst)
 	if inst.fx == nil then
 		inst.fx = SpawnPrefab("tp_fx_snow_line")
@@ -124,6 +133,7 @@ local function spear_ice_proj_throw(inst)
 end
 
 local function spear_ice_proj_drop(inst)
+	inst:RemoveTag("projectile")
 	spear_drop(inst)
 	if inst.fx then
 		inst.fx:kill(inst.fx)
@@ -151,6 +161,7 @@ local function spear_ice_fn(inst)
 	inst.components.tpproj:SetOnHitFn(spear_ice_proj_hit)
 	inst.components.tpproj:SetOnMissFn(spear_ice_proj_drop)
 	inst.components.tpproj:SetLaunchOffset(Vector3(0, 0.2, 0))
+	inst:AddTag("tp_catcoon_spear")
 end
 
 local function spear_fire_equip(inst, owner)
@@ -158,6 +169,7 @@ local function spear_fire_equip(inst, owner)
 end
 
 local function spear_fire_weapon_fn(inst, owner, target)
+	mk_lv_dmg(inst, owner, target)
 	WARGON.fire_prefab(target)
 	local fx = WARGON.make_fx(target, "firesplash_fx")
 	local s = .5
@@ -165,6 +177,7 @@ local function spear_fire_weapon_fn(inst, owner, target)
 end
 
 local function spear_fire_throw(inst)
+	inst:AddTag("projectile")
 	spear_throw(inst)
 	if inst.fx == nil then
 		inst.fx = SpawnPrefab("tp_fx_fire_line")
@@ -173,6 +186,7 @@ local function spear_fire_throw(inst)
 end
 
 local function spear_fire_drop(inst)
+	inst:RemoveTag("projectile")
 	spear_drop(inst)
 	if inst.fx then
 		inst.fx:Remove()
@@ -199,6 +213,7 @@ local function spear_fire_fn(inst)
 	inst.components.tpproj:SetOnHitFn(spear_fire_hit)
 	inst.components.tpproj:SetOnMissFn(spear_fire_drop)
 	inst.components.tpproj:SetLaunchOffset(Vector3(0, 0.2, 0))
+	inst:AddTag("tp_catcoon_spear")
 end
 
 local function spear_thunder_equip(inst, owner)
@@ -224,6 +239,7 @@ local function spear_thunder_weapon_fn(inst, owner, target)
 end
 
 local function spear_thunder_throw(inst)
+	inst:AddTag("projectile")
 	spear_throw(inst)
 	inst.fx = SpawnPrefab("shock_fx")
 	inst:AddChild(inst.fx)
@@ -231,6 +247,7 @@ local function spear_thunder_throw(inst)
 end
 
 local function spear_thunder_drop(inst)
+	inst:RemoveTag("projectile")
 	spear_drop(inst)
 	if inst.fx then
 		inst.fx:Remove()
@@ -258,6 +275,7 @@ local function spear_thunder_fn(inst)
 	inst.components.tpproj:SetOnHitFn(spear_thunder_hit)
 	inst.components.tpproj:SetOnMissFn(spear_thunder_drop)
 	inst.components.tpproj:SetLaunchOffset(Vector3(0, 0.2, 0))
+	inst:AddTag("tp_catcoon_spear")
 end
 
 local function spear_gungnir_equip(inst, owner)
@@ -296,6 +314,7 @@ local function spear_poison_equip(inst, owner)
 end
 
 local function spear_poison_weapon_fn(inst, owner, target)
+	mk_lv_dmg(inst, owner, target)
 	WARGON.poison_prefab(target)
 	local pt = target:GetPosition()
 	pt.y = pt.y + 1
@@ -306,7 +325,7 @@ local function spear_poison_fn(inst)
 	WARGON.CMP.add_cmps(inst, {
 		inspect = {},
 		weapon = {dmg=34, fn=spear_poison_weapon_fn},
-		finite = {max=TUNING.SPEAR_USES, use=TUNING.SPEAR_USES, fn=on_finish},
+		finite = {max=300, use=300, fn=on_finish},
 		equip = {equip=spear_poison_equip, unequip=hand_unequip},
 	})
 	inst:AddComponent("tpmove")
@@ -329,6 +348,7 @@ local function spear_poison_fn(inst)
 			end
 		end)
 	end
+	-- inst:AddTag("tp_catcoon_spear")
 end
 
 local function spear_shadow_equip(inst, owner)
@@ -336,6 +356,7 @@ local function spear_shadow_equip(inst, owner)
 end
 
 local function spear_shadow_weapon_fn(inst, owner, target)
+	-- mk_lv_dmg(inst, owner, target)
 	if target:HasTag("shadowcreature") then
 		if target.components.health then
 			target.components.health:Kill()
@@ -354,7 +375,7 @@ local function spear_shadow_fn(inst)
 	WARGON.CMP.add_cmps(inst, {
 		inspect = {},
 		weapon = {dmg=1, fn=spear_shadow_weapon_fn},
-		finite = {max=TUNING.SPEAR_USES, use=TUNING.SPEAR_USES, fn=on_finish},
+		finite = {max=300, use=300, fn=on_finish},
 		equip = {equip=spear_shadow_equip, unequip=hand_unequip, effect={san=-TUNING.SANITYAURA_LARGE}},
 	})
 	inst:AddComponent("tpmove")
@@ -376,6 +397,7 @@ local function spear_shadow_fn(inst)
 			end
 		end)
 	end
+	-- inst:AddTag("tp_catcoon_spear")
 end
 
 local function spear_blood_equip(inst, owner)
@@ -383,7 +405,8 @@ local function spear_blood_equip(inst, owner)
 end
 
 local function spear_blood_weapon_fn(inst, owner, target)
-	local owner = inst.components.inventoryitem.owner
+	-- local owner = inst.components.inventoryitem.owner
+	mk_lv_dmg(inst, owner, target)
 	if target:HasTag('epic') then
 		owner.components.health:DoDelta(15)
 	elseif target:HasTag("largecreature") then
@@ -399,7 +422,7 @@ local function spear_blood_fn(inst)
 	WARGON.CMP.add_cmps(inst, {
 		inspect = {},
 		weapon = {dmg=34, fn=spear_blood_weapon_fn},
-		finite = {max=TUNING.SPEAR_USES, use=TUNING.SPEAR_USES, fn=on_finish},
+		finite = {max=300, use=300, fn=on_finish},
 		equip = {equip=spear_blood_equip, unequip=hand_unequip},
 	})
 	inst:AddComponent("tpmove")
@@ -422,6 +445,7 @@ local function spear_blood_fn(inst)
 			end
 		end)
 	end
+	-- inst:AddTag("tp_catcoon_spear")
 end
 
 local function spear_wind_throw(inst, owner, target)
@@ -450,7 +474,7 @@ local function spear_wind_hit(inst, owner, target)
 end
 
 local function spear_wind_equip(inst, owner)
-	WARGON_EQUIP_EX.object_on(owner, "swap_spear_rose", "swap_spear")
+	WARGON_EQUIP_EX.object_on(owner, "swap_spear_wind", "swap_object")
 	if inst.fx == nil then
 		local pt = owner:GetPosition()
 		pt.x = pt.x + 5
@@ -458,6 +482,7 @@ local function spear_wind_equip(inst, owner)
 		inst.fx.master = owner
 		inst.fx:start_task(inst.fx)
 	end
+	owner:AddTag("tp_spear_wind")
 end
 
 local function spear_wind_unequip(inst, owner)
@@ -466,6 +491,7 @@ local function spear_wind_unequip(inst, owner)
 		inst.fx:Remove()
 		inst.fx = nil
 	end
+	owner:RemoveTag("tp_spear_wind")
 end
 
 local function spear_wind_weapon_fn(inst, owner, target)
@@ -482,6 +508,7 @@ local function spear_wind_fn(inst)
 		weapon = {dmg=34, fn=spear_wind_weapon_fn, },
 		finite = {max=TUNING.SPEAR_USES, use=TUNING.SPEAR_USES, fn=on_finish},
 		equip = {equip=spear_wind_equip, unequip=spear_wind_unequip},
+		water = {value=TUNING.WATERPROOFNESS_SMALL},
 	})
 	inst:AddComponent("tpproj")
 	inst.components.tpproj:SetSpeed(25)
@@ -515,4 +542,4 @@ return
 	MakeItem("tp_spear_poison", spear_poisons, spear_poison_fn, "tp_spear_poison"),
 	MakeItem("tp_spear_shadow", spear_shadows, spear_shadow_fn, "tp_spear_shadow"),
 	MakeItem("tp_spear_blood", spear_bloods, spear_blood_fn, "tp_spear_blood"),
-	MakeItem("tp_spear_wind", spear_roses, spear_wind_fn, "spear_rose")
+	MakeItem("tp_spear_wind", spear_winds, spear_wind_fn, "tp_spear_wind")

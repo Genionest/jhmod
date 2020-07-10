@@ -26,6 +26,14 @@ local spore_blues = {"tp_spore_blue", "tp_spore_blue", 'cough_out'}
 local has_alloys = {"tp_has_alloy", "tp_has_alloy", "idle"}
 local stafflights = {"star", "star", "appear"}
 local snow_balls = {"firefighter_projectile", "firefighter_projectile", "spin_loop", nil}
+local footballs = {"footballhat", "hat_football", "anim"}
+local armorwoods = {"armor_wood", "armor_wood", "anim"}
+local hambats = {"ham_bat", "ham_bat", "idle"}
+local coffeebeanses = {'coffeebeans', 'coffeebeans', 'idle'}
+local bandages = {'bandage', 'bandage', 'idle'}
+local dragonfruits = {'dragonfruit', 'dragonfruit', 'idle'}
+local meats = {'meat', 'meat', 'raw'}
+local catcoons = {'catcoon', 'catcoon_build', 'action'}
 local logs = {"log", "log", "idle"}
 
 local function animover_fn(inst, over_fn)
@@ -125,7 +133,7 @@ local function leaf_circle_fn(inst)
 			inst.task3 = WARGON.per_task(inst, .1, function()
 				WARGON.make_fx(inst, "tp_fx_leaf_"..math.random(4))
 				if inst.master then
-					WARGON.area_dmg(inst, 1.5, inst.master, 20, "tp_fx_leaf")
+					WARGON.area_dmg(inst, 1.5, inst.master, 10, "tp_fx_leaf")
 				end
 			end)
 		end
@@ -461,8 +469,8 @@ local function sign_surround_fn(inst)
 			inst.task:Cancel()
 			inst.task = nil
 		end
+		inst.Physics:SetMotorVel(10, 0, 0)
 		inst.task = WARGON.per_task(inst, 0, function()
-			inst.Physics:SetMotorVel(10, 0, 0)
 			if inst.target then
 				inst:ForceFacePoint(inst.target:GetPosition())
 				if make_dmg(inst, inst.target, inst.master, 50) then
@@ -473,11 +481,17 @@ local function sign_surround_fn(inst)
 				inst:Remove()
 			end
 		end)
+		WARGON.do_task(inst, 1, function()
+			inst.Physics:SetMotorVel(15, 0, 0)
+		end)
+		WARGON.do_task(inst, 2, function()
+			inst.Physics:SetMotorVel(20, 0, 0)
+		end)
 	end)
-	WARGON.per_task(inst, .2, function()
+	WARGON.per_task(inst, .15, function()
 		local fx = WARGON.make_fx(inst, 'tp_fx_sign_2')
 		-- fx.AnimState:PlayAnimation('idle')
-		fx.AnimState:SetMultColour(1, 1, 1, .5)
+		fx.AnimState:SetMultColour(1, 1, 1, .3)
 	end)
 end
 
@@ -525,7 +539,7 @@ local function sign_wan_fn(inst)
 			for i3, v3 in pairs(kill_tags) do
 				if v2:HasTag(v3) then
 					if v2.components.health then
-						if v2:HasTag("epic") and v2.components.health.maxhealth>=2000 then
+						if v2:HasTag("epic") and v2.components.health.maxhealth>=3000 then
 							if v2.components.combat then
 								v2.components.combat:GetAttacked(nil, 500, inst, "tp_fx_sign_wan")
 							end
@@ -1019,6 +1033,40 @@ local function snow_ball_shoot_fn(inst)
 	end)
 end
 
+local function scroll_pig_buff_fn(inst)
+	WARGON.do_task(inst, 0, function()
+		inst.task = WARGON.per_task(inst, 2, function()
+			local master = inst.master or inst.entity:GetParent() or inst
+			if inst.fx_name and master then
+				local pos = master:GetPosition()
+				-- pos.y = pos.y + 2
+				local fx = WARGON.make_fx(pos, inst.fx_name)
+			end
+		end)
+	end)
+end
+
+local function scroll_pig_effect_fn(inst)
+	add_physics(inst)
+	inst.Physics:SetMotorVel(0, 5, 0)
+	WARGON.do_task(inst, 0, function()
+		local pos = inst:GetPosition()
+		pos.y = pos.y + 2
+		inst.Transform:SetPosition(pos:Get())
+	end)
+	WARGON.do_task(inst, .5, function()
+		inst:Remove()
+	end)
+end
+
+local function catcoon_pick_fn(inst)
+	inst.AnimState:SetMultColour(1,1,1,.8)
+	inst:ListenForEvent("animover", function(inst, data)
+		WARGON.make_fx(inst, "collapse_small")
+		inst:Remove()
+	end)
+end
+
 local function MakeFx(name, anims, fx_fn)
 	local function fn()
 		local inst = WARGON.make_prefab(anims)
@@ -1090,4 +1138,13 @@ return
 	MakeFx("tp_fx_boss_spirit", stafflights, boss_spirit_fn),
 	MakeFx("tp_fx_boss_spirit_shadow", stafflights, boss_spirit_shadow_fn),
 	MakeFx("tp_fx_snow_ball", snow_balls, snow_ball_fn),
-	MakeFx("tp_fx_snow_ball_shoot", {}, snow_ball_shoot_fn)
+	MakeFx("tp_fx_snow_ball_shoot", {}, snow_ball_shoot_fn),
+	MakeFx("tp_fx_scroll_pig_damage", hambats, scroll_pig_effect_fn),
+	MakeFx("tp_fx_scroll_pig_armorex", armorwoods, scroll_pig_effect_fn),
+	MakeFx("tp_fx_scroll_pig_speed", coffeebeanses, scroll_pig_effect_fn),
+	MakeFx("tp_fx_scroll_pig_heal", bandages, scroll_pig_effect_fn),
+	MakeFx("tp_fx_scroll_pig_armor", footballs, scroll_pig_effect_fn),
+	MakeFx("tp_fx_scroll_pig_leader", meats, scroll_pig_effect_fn),
+	MakeFx("tp_fx_scroll_pig_health", dragonfruits, scroll_pig_effect_fn),
+	MakeFx("tp_fx_scroll_pig_buff", {}, scroll_pig_buff_fn),
+	MakeFx("tp_fx_catcoon_pick", catcoons, catcoon_pick_fn)

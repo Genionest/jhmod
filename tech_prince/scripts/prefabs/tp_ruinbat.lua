@@ -10,6 +10,12 @@ local function do_area_damage(inst, range, dmg, reason)
 	WARGON.area_dmg(inst, range, owner, dmg, reason)
 end
 
+local function mk_lv_dmg(inst, owner, target)
+	local level = owner.components.tplevel.level or 1
+	local dmg = 5*(level-1)
+	target.components.health:DoDelta(-dmg)
+end
+
 local function on_finish(inst)
 	inst:Remove()
 end
@@ -26,6 +32,7 @@ local function hand_unequip(inst, owner)
 end
 
 local  function ruinbat_weapon_fn(inst, owner, target)
+	mk_lv_dmg(inst, owner, target)
 	WARGON.make_fx(target, "sanity_lower")
 	local summonchance = .2
 	if math.random() < summonchance then

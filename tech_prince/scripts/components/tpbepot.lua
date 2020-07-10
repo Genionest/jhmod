@@ -20,15 +20,19 @@ end
 
 function TpBePot:BePot()
 	local inst = self.inst
-	inst.sg:GoToState('sleep')
-	WARGON.do_task(inst, .75, function()
-		-- WARGON.make_fx(inst, "collapse_small")
-		local pos = inst:GetPosition()
-		self:Hide()
-		local pot = WARGON.make_spawn(pos, self.pot)
-		pot.components.tpbebird.bird = inst
-		pot:AddChild(self.inst)
-	end)
+	if inst.components.sleeper and inst.components.sleeper:IsAsleep() then
+        inst.components.sleeper:WakeUp()
+	else
+		inst.sg:GoToState('sleep')
+		WARGON.do_task(inst, .75, function()
+			-- WARGON.make_fx(inst, "collapse_small")
+			local pos = inst:GetPosition()
+			self:Hide()
+			local pot = WARGON.make_spawn(pos, self.pot)
+			pot.components.tpbebird.bird = inst
+			pot:AddChild(self.inst)
+		end)
+    end
 end
 
 function TpBePot:OnSave()

@@ -8,7 +8,7 @@ end
 
 local reng = Action({},0, false, true, 20, true)
 reng.id = "TP_RENG"
-reng.str = "扔"
+reng.str = STRINGS.TP_STR.tp_reng
 reng.fn = function(act)
 	if act.target.components.combat and act.doer.components.inventory then
 		local item = act.doer.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
@@ -27,7 +27,7 @@ end
 
 local tou = Action({},0, false, true, 20, true)
 tou.id = "TP_TOU"
-tou.str = "投"
+tou.str = STRINGS.TP_STR.tp_tou
 tou.fn = function(act)
 	local thrown = act.invobject or act.doer.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
 	if act.target and not act.pos then
@@ -53,7 +53,7 @@ end
 
 local hua = Action({}, 0, false, true, 20, true)
 hua.id = "TP_HUA"
-hua.str = "滑"
+hua.str = STRINGS.TP_STR.tp_slide
 hua.fn = function(act) 
 	move_act_fn(act)
 	return true
@@ -61,7 +61,7 @@ end
 
 local za = Action({}, 0, nil, true, 10, true)
 za.id = "TP_ZA"
-za.str = "跳砸"
+za.str = STRINGS.TP_STR.tp_za
 za.fn = function(act)
 	move_act_fn(act)
 	return true
@@ -69,7 +69,7 @@ end
 
 local ci = Action({}, 0, nil, true, 20, true)
 ci.id = "TP_CI"
-ci.str = "突刺"
+ci.str = STRINGS.TP_STR.tp_ci
 ci.fn = function(act)
 	move_act_fn(act)
 	return true
@@ -86,12 +86,34 @@ deng.fn = function(act)
 	end
 end
 
+local load_ammo = Action({}, 10)
+load_ammo.id = "TP_LOAD_AMMO"
+load_ammo.str = STRINGS.TP_STR.tp_load_ammo
+load_ammo.fn = function(act)
+	if act.invobject and act.target then
+		local inv = act.invobject
+		local target = act.target
+		if inv.components.stackable and target.components.tpbullets then
+			for i = 1, inv.components.stackable:StackSize() do
+				if target.components.tpbullets:IsFull() then
+					break
+				end
+				local item = inv.components.stackable:Get()
+				item:Remove()
+				target.components.tpbullets:DoDelta(1)
+			end
+			return true
+		end
+	end
+end
+
 add_player_action_sg(reng, "tp_reng")
 add_player_action_sg(tou, "tp_tou")
 add_player_action_sg(hua, "tp_hua_start")
 add_player_action_sg(za, "tp_za")
 add_player_action_sg(ci, "tp_ci_start")
 add_player_action_sg(deng, "give")
+add_player_action_sg(load_ammo, "give")
 
 local tp_perd_store = Action({})
 tp_perd_store.id = "TP_PERD_STORE"
@@ -106,10 +128,13 @@ tp_perd_store.fn = function(act)
 	return true
 end
 AddAction(tp_perd_store)
+AddStategraphActionHandler("perd", 
+    ActionHandler(tp_perd_store, "pick")
+)
 
 local tp_change = Action({}, 2.5)
 tp_change.id = "TP_CHANGE"
-tp_change.str = "改变"
+tp_change.str = STRINGS.TP_STR.tp_change
 tp_change.fn = function(act)
 	if act.target then
 		if act.target.components.tpbepot then

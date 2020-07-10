@@ -12,7 +12,7 @@ local ScienceMorph = Class(function(self, inst)
 	end)
 end)
 
-function ScienceMorph:WithChange(tags, no_tags, sci, hunger)
+function ScienceMorph:WithChange(tags, no_tags, sci, hunger, mag)
 	if type(tags) == "table" then
 		for i, v in pairs(tags) do
 			self.inst:AddTag(v)
@@ -28,6 +28,7 @@ function ScienceMorph:WithChange(tags, no_tags, sci, hunger)
 		self.inst:RemoveTag(no_tags)
 	end
 	self.inst.components.builder.science_bonus = sci
+	self.inst.components.builder.magic_bonus = mag
 	self.inst.components.hunger:SetRate(TUNING.WILSON_HUNGER_RATE*hunger)
 end
 
@@ -113,20 +114,20 @@ end
 function ScienceMorph:SetBuild()
 	self.inst.AnimState:SetBuild(self.builds[self.cur])
 	if self.cur == "v" then
-		self:WithChange('tech_prince', 'mad_prince', 1, 2)
+		self:WithChange('tech_prince', 'mad_prince', 1, 2, 0)
 		self:SetFx()
 		self.inst.components.sanity.dapperness = TUNING.DAPPERNESS_MED_LARGE
 		self.inst.components.tpmadvalue:Stop()
 		self.inst.components.locomotor:AddSpeedModifier_Additive("mad_prince", 0)
 	elseif self.cur == "m" then
-		self:WithChange('mad_prince', 'tech_prince', 0, 1)
+		self:WithChange('mad_prince', 'tech_prince', 0, 1, 2)
 		self:SetFx()
 		self.inst.components.sanity.dapperness = -TUNING.DAPPERNESS_MED_LARGE
 		self.inst.components.tpmadvalue:Start()
 		self.inst.components.locomotor:AddSpeedModifier_Additive("mad_prince", .25)
 	elseif self.cur == "w" then
 		self:SetFx()
-		self:WithChange(nil, {'tech_prince', 'mad_prince'}, 0, 1)
+		self:WithChange(nil, {'tech_prince', 'mad_prince'}, 0, 1, 0)
 		self.inst.components.sanity.dapperness = 0
 		self.inst.components.tpmadvalue:Stop()
 		self.inst.components.locomotor:AddSpeedModifier_Additive("mad_prince", 0)

@@ -5,6 +5,8 @@ AddPrefabPostInit("wilson", function(inst)
 	inst:AddComponent("tpbuff")
 	inst:AddComponent("tplevel")
 	inst.components.tplevel:ApplyUpGrade()
+	inst:AddComponent("tptech")
+	inst:AddComponent("tpriderspawner")
 	-- inst:AddComponent("tpnutspawner")
 	local old_save = inst.OnSave
 	inst.OnSave = function(inst, data)
@@ -52,6 +54,10 @@ end)
 -- 	end)
 -- end)
 
+AddPrefabPostInit("acorn", function(inst)
+	inst:AddComponent('tpammo')
+end)
+
 AddPrefabPostInit("birchnutdrake", function(inst)
 	local old_target_fn = inst.components.combat.targetfn
 	inst.components.combat.targetfn = function(inst)
@@ -61,6 +67,10 @@ AddPrefabPostInit("birchnutdrake", function(inst)
 			return guy
 		end
 	end
+end)
+
+AddPrefabPostInit("pigman", function(inst)
+	inst:AddComponent("tpbuff")
 end)
 
 local function add_prefab_tag(name, tag)
@@ -85,6 +95,9 @@ add_prefab_tag("cutgrass", "tp_hack_pig_item")
 AddPrefabPostInitAny(function(inst)
 	if string.find(inst.prefab, 'seeds') then
 		inst:AddTag("tp_farm_pig_item")
+	end
+	if inst:HasTag("smallcreature") and inst:HasTag("canbetrapped") then
+		inst:AddTag("tp_strawhat_target")
 	end
 end)
 
@@ -113,12 +126,13 @@ for k, v in pairs(farms) do
 end
 
 local strawhat_targets = {
-	"pigman", "bunnyman", "perd",
+	"pigman", "bunnyman", "perd", "beefalo", "primeape",
 }
 for k, v in pairs(strawhat_targets) do
 	add_prefab_tag(v, 'tp_strawhat_target')
 end
-add_prefab_tag('perd', 'tp_strawhat_pet')
+add_prefab_tag('perd', 'tp_strawhat_perd')
+add_prefab_tag('beefalo', 'tp_strawhat_beefalo')
 
 AddPrefabPostInit('rowboat', function(inst)
 	inst:ListenForEvent('onbuilt', function()
@@ -131,42 +145,8 @@ AddPrefabPostInit('rowboat', function(inst)
 	end)
 end)
 
-local function pigking_near(inst)
-	if inst.pig_builder then
-		GetPlayer():AddTag("pig_builder")
-	end
-end
-
-local function pigking_far(inst)
-	if inst.pig_builder then
-		GetPlayer():RemoveTag("pig_builder")
-	end
-end
-
 AddPrefabPostInit('pigking', function(inst)
-	WARGON.CMP.add_cmps(inst, {
-		near = {near=pigking_near, far=pigking_far, dist={5,6}},
-		})
-	-- local old_accept = inst.components.trader.onaccept
-	-- inst.components.trader.onaccept = function(inst, giver, item)
-	-- 	if item.prefab == 'tp_gift_pigking' then
-	-- 		inst.pig_builder = true
-	-- 	end
-	-- end
-	local old_save = inst.OnSave
-	local old_load = inst.OnLoad
-	inst.OnSave = function(inst, data)
-		if old_save then old_save(inst, data) end
-		if data then
-			data.pig_builder = inst.pig_builder
-		end
-	end
-	inst.OnLoad = function(inst, data)
-		if old_load then old_load(inst, data) end
-		if data then
-			inst.pig_builder = data.pig_builder
-		end
-	end
+	inst:AddTag("tp_pigking_tech")
 end)
 
 local boss_meat = {
@@ -181,9 +161,11 @@ end
 
 add_prefab_tag('snakebonesoup', 'tplevel_food_small')
 
+add_prefab_tag('pinecone', 'tp_war_tree_gift')
+
 AddPrefabPostInit('leif', function(inst)
 	local function leif_test(inst, item)
-		return item:HasTag("tp_gingko") and inst:HasTag("tp_war_tree")
+		return item:HasTag("tp_war_tree_gift") and inst:HasTag("tp_war_tree")
 	end
 	local function leif_accept(inst, giver, item)
 		if giver == inst.components.combat.target then
@@ -201,20 +183,49 @@ AddPrefabPostInit('leif', function(inst)
     local old_save = inst.OnSave
     local old_load = inst.OnLoad
     inst.OnSave = function(inst, data)
-    	old_save(inst, data)
+    	if old_save then old_save(inst, data) end
     	if data and inst:HasTag("tp_war_tree") then
     		data.war_tree = true
     	end
 	end
 	inst.OnLoad = function(inst, data)
-		old_load(inst, data)
+		if old_load then old_load(inst, data) end
 		if data and data.war_tree then
 			inst:AddTag("tp_war_tree")
 		end
 	end
 end)
 
+AddPrefabPostInit("perd", function(inst)
+	local old_save = inst.OnSave
+    local old_load = inst.OnLoad
+    inst.OnSave = function(inst, data)
+    	if old_save then old_save(inst, data) end
+    	if data and inst.tp_perd then
+    		data.tp_perd = inst.tp_perd
+    	end
+	end
+	inst.OnLoad = function(inst, data)
+		if old_load then old_load(inst, data) end
+		if data and data.tp_perd then
+			inst.tp_perd = data.tp_perd
+			inst:SetBrain(require "brains/tp_perd_brain")
+			inst.AnimState:Show("HAT")
+			inst.AnimState:OverrideSymbol("swap_hat", "strawhat_cowboy", "swap_hat")
+		end
+	end
+end)
+
+AddPrefabPostInit("beefalo", function(inst)
+	inst:ListenForEvent("death", function(inst)
+
+	end)
+end)
+
 AddPrefabPostInit("deerclops", function(inst)
+	if inst.components.freezable then
+		inst:RemoveComponent("freezable")
+	end	
 	inst:ListenForEvent("attacked", function(inst)
 		if inst.tp_task == nil then
 			inst.tp_task = WARGON.per_task(inst, .2, function()
@@ -234,11 +245,24 @@ AddPrefabPostInit("dragonfly", function(inst)
 	inst.components.groundpounder.destroyer = true
 	inst.components.groundpounder.destructionRings = 1
 	inst:AddTag("groundpoundimmune")
-	-- inst.components.groundpounder.damageRings = 2
 end)
 
 AddPrefabPostInit("bearger", function(inst)
+	if inst.components.freezable then
+		inst:RemoveComponent("freezable")
+	end	
+end)
 
+AddPrefabPostInit("moose", function(inst)
+	if inst.components.freezable then
+		inst:RemoveComponent("freezable")
+	end	
+end)
+
+AddPrefabPostInit("minotaur", function(inst)
+	if inst.components.freezable then
+		inst:RemoveComponent("freezable")
+	end	
 end)
 
 AddPrefabPostInit("kraken", function(inst)
@@ -290,13 +314,23 @@ AddPrefabPostInit("pillar_ruins", function(inst)
 		SpawnPrefab("collapse_small").Transform:SetPosition(inst.Transform:GetWorldPosition())
 		inst:Remove()
 	end
-	local function on_hit(inst, worker)
+	inst:AddComponent("workable")
+    inst.components.workable:SetWorkAction(ACTIONS.HAMMER)
+    inst.components.workable:SetWorkLeft(4)
+	inst.components.workable:SetOnFinishCallback(on_hammered)
+end)
+
+AddPrefabPostInit("campfire", function(inst)
+	local function onhammered(inst, worker)
+		local ash = SpawnPrefab("ash")
+		ash.Transform:SetPosition(inst.Transform:GetWorldPosition())
+		SpawnPrefab("collapse_small").Transform:SetPosition(inst.Transform:GetWorldPosition())
+		inst:Remove()
 	end
 	inst:AddComponent("workable")
     inst.components.workable:SetWorkAction(ACTIONS.HAMMER)
-    inst.components.workable:SetWorkLeft(1)
-	inst.components.workable:SetOnFinishCallback(on_hammered)
-	inst.components.workable:SetOnWorkCallback(on_hit) 
+    inst.components.workable:SetWorkLeft(4)
+	inst.components.workable:SetOnFinishCallback(onhammered)
 end)
 
 AddPrefabPostInit("fissure_lower", function(inst)
@@ -344,35 +378,19 @@ AddPrefabPostInit("fissure_lower", function(inst)
 end)
 
 AddPrefabPostInit("tigershark", function(inst)
-	-- local HOME_PROTECTION_DISTANCE = 60
-	-- local function FindSharkHome(inst)
-	--     if not inst.sharkHome then
-	--         if GetWorld().components.tigersharker and GetWorld().components.tigersharker.shark_home then
-	--             inst.sharkHome = GetWorld().components.tigersharker.shark_home
-	--         else
-	--             inst.sharkHome = GetClosestInstWithTag("sharkhome", inst, 10000)
-	--         end
-	--     end
- --    	local home = inst.sharkhome
- --    	if home and home:GetPosition():Dist(GetPlayer():GetPosition()) < HOME_PROTECTION_DISTANCE then
- --    		if home:HasTag("sharkhome") then
- --    			inst.sharkhome = GetClosestInstWithTag("teleportato", inst, 10000)
- --    		else
- --    			inst.sharkhome = GetClosestInstWithTag("sharkhome", inst, 10000)
- --    		end
- --    	end
-	--     return inst.sharkHome
-	-- end
-	-- inst.FindSharkHome = FindSharkHome
-	-- WARGON.per_task(inst, 1, function(inst)
-	-- 	if inst.home then
-	-- 		if inst.home:GetPosition():Dist(inst:GetPosition()) < 60 then
-	-- 			if inst.home:HasTag("teleportato") then
-	-- 				inst.home = GetClosestInstWithTag("sharkhome", inst, 1000)
-	-- 			elseif inst.home:HasTag("sharkhome") then
-	-- 				inst.home = GetClosestInstWithTag("teleportato", inst, 10000)
-	-- 			end
-	-- 		end
-	-- 	end
-	-- end)
+	if inst.components.freezable then
+		inst:RemoveComponent("freezable")
+	end	
+end)
+
+AddPrefabPostInit("beefalohat", function(inst)
+	local old_equip = inst.components.equippable.onequipfn
+	local old_unequip = inst.components.equippable.onunequipfn
+	inst.components.equippable:SetOnUnequip(function(inst, owner)
+		old_unequip(inst, owner)
+		local pack = owner.components.inventory:GetEquippedItem(EQUIPSLOTS.BODY)
+		if pack and pack.prefab == "tp_pack_beefalo" then
+			owner:AddTag("beefalo")
+		end
+	end)
 end)

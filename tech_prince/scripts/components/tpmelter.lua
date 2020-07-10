@@ -280,6 +280,7 @@ function TpMelter:Harvest( harvester )
 			if harvester and harvester.components.inventory then
 				local loot = nil
 				loot = SpawnPrefab("tp_alloy")
+				loot.components.stackable:SetStackSize(4)
 				--[[
 				if self.product ~= "spoiledfood" then
 					loot = SpawnPrefab(self.product)

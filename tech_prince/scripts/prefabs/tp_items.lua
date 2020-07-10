@@ -2,6 +2,7 @@ local GiftDialog = require("screens/gift_select")
 
 local ashs = {"ash", "ash", "idle", nil}
 local strawhats = {"strawhat", "strawhat_cowboy", "anim", "idle_water"}
+local strawhat_traps = {"tp_strawhat_trap", "tp_strawhat_trap", "idle", "idle_water"}
 local ballhats = {"footballhat", "footballhat_combathelm", "anim", "idle_water"}
 local woods = {"armor_wood_fangedcollar", "armor_wood_fangedcollar", "anim", "idle_water"}
 local hams = {"ham_bat", "ham_bat_spiralcut", "idle", "idle_water"}
@@ -9,7 +10,7 @@ local rockets = {"trinkets", "trinkets", "5", "5_water"}
 local canes = {"cane", "cane_ancient", "idle", "idle_water"}
 local cutlasses = {"tp_cutlass", "tp_cutlass", "idle", "idle_water"}
 local signs = {"tp_sign_staff", "tp_sign_staff", "idle", "idle_water"}
-local guns = {"blunderbuss", "blunderbuss", "idle", nil}
+local guns = {"tp_forest_gun", "tp_forest_gun", "idle", "idle_water"}
 local acorns = {"acorn", "acorn", "idle", nil}
 local swords = {"nightmaresword", "nightsword_sharp", "idle", "idle_water"}
 local spears = {"spear", "spear_bee", "idle", "idle_water"}
@@ -25,6 +26,7 @@ local pigking_hats = {'beefalohat', 'beefalohat_pigking', 'anim', 'idle_water'}
 local alloys = {'tp_alloy', 'tp_alloy', 'idle', 'idle_water'}
 local gifts = {'tp_gift', 'tp_gift', 'idle', nil}
 local flares = {'tp_flare', 'tp_flare', 'idle', nil}
+local gingko_leafs = {'tp_gingko_leaf', 'tp_gingko_leaf', 'idle', nil}
 
 local function do_area_damage(inst, range, dmg, reason)
 	local owner = inst.components.inventoryitem.owner
@@ -61,34 +63,7 @@ end
 local function strawhat_score(inst, giver)
 	local pos = inst:GetPosition()
 	if pos.y <= 0.1 then
-		local guy = WARGON.find(inst, 1, nil, {"tp_strawhat_target"}, {"player", "werepig", "merm"})
-		if guy and guy:HasTag("tp_strawhat_pet") then
-			local perd = WARGON.make_spawn(guy, 'tp_perd')
-			guy:Remove()
-			inst:Remove()
-		elseif guy then
-			local item = SpawnPrefab("tp_strawhat2")
-			local percent = inst.components.finiteuses:GetPercent()
-			item.components.fueled:SetPercent(percent)
-			local current = guy.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
-			if current then
-				guy.components.inventory:DropItem(current)
-			end
-			guy.components.inventory:Equip(item)
-			guy.AnimState:Show('hat')
-			if giver.components.leader then
-				guy.SoundEmitter:PlaySound("dontstarve/common/makeFriend")
-				giver.components.leader:AddFollower(guy)
-				guy.components.follower:AddLoyaltyTime(30 * 16)
-			end
-			inst:Remove()
-		else
-			WARGON.do_task(inst, .1, function()
-				if inst.per_task then
-					inst.per_task:Cancel()
-				end
-			end)
-		end
+		inst.components.tphatball:Trigger()
 	end
 end
 
@@ -104,6 +79,7 @@ local function strawhat_fn(inst)
 		finite = {max=TUNING.SPEAR_USES, use=TUNING.SPEAR_USES, fn=on_finish},
 		equip = {equip=strawhat_equip, unequip=hand_unequip},
 		throw = {throw=strawhat_throw},
+		tphatball = {},
 	})
 end
 
@@ -120,6 +96,48 @@ local function strawhat2_fn(inst)
 		insu = {value=TUNING.INSULATION_SMALL, typ="summer"},
 		fueled = {time=TUNING.STRAWHAT_PERISHTIME, typ="usage", fn={finish=on_finish}},
 	})
+end
+
+local function strawhat_saddle_finish(inst)
+	on_finish(inst)
+end
+
+local function strawhat_saddle_fn(inst)
+	inst.mounted_foleysound = "dontstarve/beefalo/saddle/regular_foley"
+	WARGON.CMP.add_cmps(inst, {
+		inspect = {},
+		finite = {max=10, use=10, fn=strawhat_saddle_finish},
+		saddler = {},
+		})
+	inst.components.saddler:SetBonusDamage(1)
+    inst.components.saddler:SetBonusSpeedMult(1)
+    inst.components.saddler:SetSwaps("strawhat_cowboy", "swap_hat")
+    inst.components.saddler:SetDiscardedCallback(function() end)
+end
+
+local function strawhat_trap_harvest(inst)
+	inst.components.finiteuses:Use()
+end
+
+local function strawhat_trap_fn(inst)
+	WARGON.CMP.add_cmps(inst, {
+		inspect = {},
+		trap = {},
+		finite = {use=10, max=10, fn=on_finish},
+		})
+	WARGON.add_tags(inst, {
+		"trap",
+		})
+	inst.components.trap.targettag = "canbetrapped"
+	inst.components.trap:SetOnHarvestFn(strawhat_trap_harvest)
+	inst.components.trap.baitsortorder = 1
+	inst:SetStateGraph("SGtrap")
+	inst.sounds = {
+		close = "dontstarve/common/trap_close",
+		rustle = "dontstarve/common/trap_rustle",
+	}
+	inst.entity:AddMiniMapEntity()
+	inst.MiniMapEntity:SetIcon("strawhat_cowboy.tex")
 end
 
 local function ballhat_attacked(owner, data)
@@ -408,10 +426,17 @@ local function cane_fn(inst)
 	end
 end
 
+local function mk_lv_dmg(inst, owner, target)
+	local level = owner.components.tplevel.level or 1
+	local dmg = 5*(level-1)
+	target.components.health:DoDelta(-dmg)
+end
+
 local function cutlass_weapon_fn(inst, attacker, target)
     if target:HasTag("epic") then
         target.components.health:DoDelta(-TUNING.CUTLASS_BONUS_DAMAGE)
     end
+    mk_lv_dmg(inst, atttacker, target)
     local pt = target:GetPosition()
     pt.y = pt.y + 2
     WARGON.make_fx(pt, "splash_water_drop")
@@ -510,7 +535,21 @@ local function sign_staff_fn(inst)
 end
 
 local function forest_gun_equip(inst, owner)
-	WARGON.EQUIP.object_on(owner, "swap_blunderbuss", "swap_blunderbuss")
+	WARGON.EQUIP.object_on(owner, "swap_forest_gun", "swap_object")
+	if inst.fx == nil then
+		inst.fx = SpawnPrefab("tp_spirit_fx")
+		inst.fx:AddTag("INTERIOR_LIMBO_IMMUNE")
+        local follower = inst.fx.entity:AddFollower()
+        follower:FollowSymbol( owner.GUID, "swap_object", 0, -110, 0 )
+	end
+end
+
+local function forest_gun_unequip(inst, owner)
+	hand_unequip(inst, owner)
+	if inst.fx then
+		inst.fx:Remove()
+		inst.fx = nil
+	end
 end
 
 local function forest_gun_weapon_fn(inst, owner, target)
@@ -536,10 +575,10 @@ end
 local function forest_gun_trader_test(inst, item)
 	local tree_seeds = {
 		-- ["pinecone"] = 1,
-		-- ["acorn"] = 1,
+		["acorn"] = 1,
 		-- ["jungletreeseed"] = 1,
 		-- ["teatree_nut"] = 1,
-		["tp_gingko"] = 1,
+		-- ["tp_gingko"] = 1,
 	}
 	if tree_seeds[item.prefab] and not inst.components.tpbullets:IsFull() then
 		return true
@@ -556,8 +595,8 @@ local function forest_gun_fn(inst)
 	WARGON.CMP.add_cmps(inst, {
 		inspect = {},
 		weapon = {dmg=10, fn=forest_gun_weapon_fn, },
-		equip = {equip=forest_gun_equip, unequip=hand_unequip},
-		trader = {test=forest_gun_trader_test, accept=forest_gun_trader_accept},
+		equip = {equip=forest_gun_equip, unequip=forest_gun_unequip},
+		-- trader = {test=forest_gun_trader_test, accept=forest_gun_trader_accept},
 	})
 	-- inst.components.trader.enabled = true
 	inst:AddComponent("tpbullets")
@@ -715,7 +754,7 @@ local function pig_book_read_fn(inst, reader)
 		inv:ConsumeByName("pigskin", 1)
 	end
 	reader.components.sanity:DoDelta(-20)
-	reader.components.health:DoDelta(-10)
+	-- reader.components.health:DoDelta(-10)
 	local pos = WARGON.around_land(reader, math.random(3, 6))
 	if pos then
 		local pig = WARGON.make_spawn(pos, "pigman")
@@ -800,7 +839,7 @@ local function pig_lamp_fn(inst)
 	WARGON.CMP.add_cmps(inst, {
 		inspect = {},
 		invitem = {put=pig_lamp_put, drop=pig_lamp_drop},
-		use = {str="擦拭", test=pig_lamp_test, use=pig_lamp_use},
+		use = {str="wipe", test=pig_lamp_test, use=pig_lamp_use},
 		cd = {time=1},
 	})
 	-- falloff, intensity, radius, colour, enable
@@ -916,8 +955,8 @@ local function bird_egg_fn(inst)
 		inspect = {},
 		hatch = {state=bird_egg_hatch_state, 
 			crake=TUNING.SMALLBIRD_HATCH_CRACK_TIME,
-			-- hatch=TUNING.SMALLBIRD_HATCH_TIME,
-			hatch=30*16*1,
+			-- hatch=30*16*1,
+			hatch = 10,
 			fail=TUNING.SMALLBIRD_HATCH_FAIL_TIME},
 		invitem = {drop=bird_egg_drop, put=bird_egg_put},
 		})
@@ -954,14 +993,18 @@ end
 
 local function pigking_hat_equip(inst, owner)
 	WARGON.EQUIP.hat_on(owner, "beefalohat_pigking")
-	owner:ListenForEvent('attacked', pigking_hat_on_attacked)
-	owner:AddTag("pigroyalty")
+	if owner:HasTag('player') then
+		owner:ListenForEvent('attacked', pigking_hat_on_attacked)
+		owner:AddTag("pigroyalty")
+	end
 end
 
 local function pigking_hat_unequip(inst, owner)
 	WARGON.EQUIP.hat_off(owner)
-	owner:RemoveEventCallback('attacked', pigking_hat_on_attacked)
-	owner:RemoveTag("pigroyalty")
+	if owner:HasTag("player") then
+		owner:RemoveEventCallback('attacked', pigking_hat_on_attacked)
+		owner:RemoveTag("pigroyalty")
+	end
 end
 
 local function pigking_hat_fn(inst)
@@ -1008,43 +1051,25 @@ local function alloy_fn(inst)
 	alloy_shine(inst)
 end
 
-local function remove_gifts()
-	local g1 = c_find('tp_gift_pigking')
-	g1:Remove()
-	local g2 = c_find('tp_gift_gingko')
-	g2:Remove()
-	local g3 = c_find('tp_gift_alloy')
-	g3:Remove()
-end
-
 local function gift_use(inst)
-	-- if inst.prefab == "tp_gift_pigking" then
-	-- 	local pigking = c_find('pigking')
-	-- 	if pigking then
-	-- 		pigking.pig_builder = true
-	-- 	end
-	-- elseif inst.prefab == "tp_gift_gingko" then
-	-- 	WARGON.make_spawn(inst, 'tp_gingko')
-	-- elseif inst.prefab == "tp_gift_alloy" then
-	-- 	WARGON.make_spawn(inst, 'tp_alloy')
-	-- end
 	TheFrontEnd:PushScreen(GiftDialog( {
-		{text="猪王的礼物", cb = function()
+		{text=STRINGS.TP_STR.tp_gift_pigking, cb = function()
 			if WARGON.is_dlc(1) then
 				local pigking = c_find('pigking')
 				if pigking then
-					pigking.pig_builder = true
+					-- pigking.pig_builder = true
+					GetPlayer().components.tptech.unlock = true
 				end
 			else
 				local item = SpawnPrefab("tp_gingko")
 				GetPlayer().components.inventory:GiveItem(item)
 			end
 		end},
-		{text="银杏的礼物", cb = function()
-			local item = SpawnPrefab("tp_gingko")
+		{text=STRINGS.TP_STR.tp_gift_gingko, cb = function()
+			local item = SpawnPrefab("tp_gingko_leaf")
 			GetPlayer().components.inventory:GiveItem(item)
 		end},
-		{text="工坊的礼物", cb = function()
+		{text=STRINGS.TP_STR.tp_gift_alloy, cb = function()
 			local item = SpawnPrefab("tp_alloy")
 			GetPlayer().components.inventory:GiveItem(item)
 		end},
@@ -1060,18 +1085,33 @@ end
 local function gift_fn(inst)
 	WARGON.CMP.add_cmps(inst, {
 		inspect = {},
-		use = {str="打开", use=gift_use, test=gift_use_test},
+		use = {str="open", use=gift_use, test=gift_use_test},
 	})
+end
+
+local function gingko_leaf_fn(inst)
+	WARGON.set_scale(inst, .33)
+	WARGON.CMP.add_cmps(inst, {
+		inspect = {},
+		stack = {max=40},
+		})
+	WARGON.make_burn(inst, "small", TUNING.SMALL_BURNTIME)
+	WARGON.make_prop(inst, "small")
+	WARGON.burn_bait(inst, 3)
+	WARGON.make_blow(inst, TUNING.WINDBLOWN_SCALE_MIN.MEDIUM, TUNING.WINDBLOWN_SCALE_MAX.MEDIUM)
 end
 
 local function MakeItem(name, anims, item_fn, atlas, img)
 	local function fn()
 		local the_atlas = atlas and "images/inventoryimages/"..atlas..".xml" 
 		local the_img = img or atlas
-	 	local inst = WARGON.make_prefab(anims, anims[4], "inv", nil, nil, item_fn)
+	 	local inst = WARGON.make_prefab(anims, anims[4], "inv", nil, nil)
 	 	WARGON_CMP_EX.add_cmps(inst, {
 	 		invitem = {atlas=the_atlas, img=the_img},
 	 	})
+	 	if item_fn then
+	 		item_fn(inst)
+	 	end
 
 	    return inst
 	end
@@ -1082,6 +1122,8 @@ return
 	-- MakeItem("tp_ash", ashs, ash_fn, nil, "ash"),
 	MakeItem("tp_strawhat", strawhats, strawhat_fn, "strawhat_cowboy"),
 	MakeItem("tp_strawhat2", strawhats, strawhat2_fn, "strawhat_cowboy"),
+	MakeItem("tp_strawhat_saddle", strawhats, strawhat_saddle_fn, "strawhat_cowboy"),
+	MakeItem("tp_strawhat_trap", strawhat_traps, strawhat_trap_fn, "strawhat_cowboy"),
 	MakeItem("tp_ballhat", ballhats, ballhat_fn, "footballhat_combathelm"),
 	MakeItem("tp_woodarmor", woods, wood_fn, "armor_wood_fangedcollar"),
 	MakeItem("tp_hambat", hams, ham_fn, "ham_bat_spiralcut"),
@@ -1090,7 +1132,7 @@ return
 	MakeItem("tp_cane", canes, cane_fn, "cane_ancient"),
 	MakeItem("tp_cutlass", cutlasses, cutlass_fn, "tp_cutlass"),
 	MakeItem("tp_sign_staff", signs, sign_staff_fn, "tp_sign_staff"),
-	MakeItem("tp_forest_gun", guns, forest_gun_fn, nil, "blunderbuss"),
+	MakeItem("tp_forest_gun", guns, forest_gun_fn, "tp_forest_gun"),
 	MakeItem("tp_tree_seed_bullet", acorns, tree_seed_bullet_fn, nil, "acorn"),
 	MakeItem("tp_unreal_sword", swords, unreal_sword_fn, "nightsword_sharp"),
 	MakeItem("tp_oak_armor", soft_woods, oak_armor_fn, "armor_wood_haramaki"),
@@ -1101,7 +1143,5 @@ return
 	MakeItem('tp_bird_egg_cracked', tall_bird_eggs, bird_egg_cracked_fn, nil, 'tallbirdegg_cracked'),
 	MakeItem('tp_pigking_hat', pigking_hats, pigking_hat_fn, 'beefalohat_pigking'),
 	MakeItem('tp_alloy', alloys, alloy_fn, 'tp_alloy'),
-	-- MakeItem('tp_gift_pigking', gifts, gift_fn, 'tp_gift'),
-	-- MakeItem('tp_gift_alloy', gifts, gift_fn, 'tp_gift'),
-	-- MakeItem('tp_gift_gingko', gifts, gift_fn, 'tp_gift')
-	MakeItem('tp_gift', gifts, gift_fn, 'tp_gift')
+	MakeItem('tp_gift', gifts, gift_fn, 'tp_gift'),
+	MakeItem('tp_gingko_leaf', gingko_leafs, gingko_leaf_fn, 'tp_gingko_leaf')

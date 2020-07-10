@@ -54,9 +54,9 @@ local gingko_builds =
 	normal = {
 		file="tp_gingko_tree",
 		prefab_name="tp_gingko_tree",
-		normal_loot = {"log", "log", "tp_gingko"}, -- "jungletreeseed"
+		normal_loot = {"log", "log", "tp_gingko_leaf"}, -- "jungletreeseed"
 		short_loot = {"log"},
-		tall_loot = {"log", "log", "log", "tp_gingko", "tp_gingko"}, -- "jungletreeseed", "jungletreeseed"
+		tall_loot = {"log", "log", "log", "tp_gingko_leaf", "tp_gingko_leaf"}, -- "jungletreeseed", "jungletreeseed"
 	},
 }
 local function gingko_fn(inst)

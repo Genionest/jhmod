@@ -16,8 +16,8 @@ AddRoomPreInit("PigVillage", function(room)
 	room.contents.countprefabs.tp_werepig_king = 1
 end)
 
-AddRoomPreInit("BeefalowPlain", function(room)
-	room.contents.countprefabs = {
-		tp_sign_rider = 1,
-	}
-end)
+-- AddRoomPreInit("BeefalowPlain", function(room)
+-- 	room.contents.countprefabs = {
+-- 		tp_sign_rider = 1,
+-- 	}
+-- end)

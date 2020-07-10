@@ -401,11 +401,11 @@ local function member_sg(sg_name)
 					inst.sg:RemoveStateTag('attack')
 					inst.sg:RemoveStateTag('busy')
 					if inst:HasTag("tp_pig_fire") then
-						inst.components.talker:Say("炎拳")
+						inst.components.talker:Say(STRINGS.TP_STR.tp_pig_fire)
 					elseif inst:HasTag("tp_pig_ice") then
-						inst.components.talker:Say("为了巫妖王")
+						inst.components.talker:Say(STRINGS.TP_STR.tp_pig_ice)
 					elseif inst:HasTag("tp_pig_poison") then
-						inst.components.talker:Say("主宰")
+						inst.components.talker:Say(STRINGS.TP_STR.tp_pig_poison)
 					end
 				end},
 			},
