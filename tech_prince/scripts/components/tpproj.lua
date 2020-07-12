@@ -38,13 +38,23 @@ function TpProjectile:Hit(target)
     if weapon.components.weapon then
         damage = weapon.components.weapon.damage
     end
-    if attacker and attacker.components.combat then
+    if attacker and attacker.components.combat 
+    and attacker ~= target then
         -- attacker.components.combat:DoAttackattacker.components.combat:Get(target, weapon, self.inst)
         target.components.combat:GetAttacked(attacker, damage, weapon, 'tp_projectile')
     end
     
-    if self.onhit then
-        self.onhit(self.inst, attacker, target, weapon)
+    if target == attacker then
+        if self.oncatch then
+            self.oncatch(self.inst, attacker)
+        end
+        if self.inst.components.finiteuses then
+            self.inst.components.finiteuses:Use()
+        end
+    else
+        if self.onhit then
+            self.onhit(self.inst, attacker, target, weapon)
+        end
     end
 end
 

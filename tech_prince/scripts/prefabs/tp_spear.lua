@@ -84,6 +84,16 @@ local function spear_lance_fn(inst)
 	inst.components.tpproj:SetLaunchOffset(Vector3(0, 0.2, 0))
 end
 
+local function spear_catch(inst, owner)
+	inst:RemoveTag("projectile")
+	if owner.components.inventory then
+		owner.components.inventory:GiveItem(inst)
+	end
+	if owner.components.tpbuff then
+		owner.components.tpbuff:AddBuff("tp_pack_catcoon")
+	end
+end
+
 local function spear_ice_fx_add(inst)
 	-- if inst.fx == nil then
 	-- 	inst.fx = SpawnPrefab("tp_snow_fx")
@@ -124,7 +134,7 @@ local function spear_ice_weapon_fn(inst, owner, target)
 end
 
 local function spear_ice_proj_throw(inst)
-	inst:AddTag("projectile")
+	-- inst:AddTag("projectile")
 	spear_throw(inst)
 	if inst.fx == nil then
 		inst.fx = SpawnPrefab("tp_fx_snow_line")
@@ -133,7 +143,7 @@ local function spear_ice_proj_throw(inst)
 end
 
 local function spear_ice_proj_drop(inst)
-	inst:RemoveTag("projectile")
+	-- inst:RemoveTag("projectile")
 	spear_drop(inst)
 	if inst.fx then
 		inst.fx:kill(inst.fx)
@@ -145,6 +155,19 @@ local function spear_ice_proj_hit(inst, owner, target)
 	WARGON.FX.impact_fx(inst, target)
 	spear_ice_proj_drop(inst)
 	spear_ice_weapon_fn(inst, owner, target)
+end
+
+local function spear_ice_proj_catch(inst, owner)
+	if owner.components.inventory
+	and owner.components.inventory:IsFull() == false then
+		spear_catch(inst, owner)
+		if inst.fx then
+			inst.fx:kill(inst.fx)
+			inst.fx = nil
+		end
+	else
+		spear_ice_proj_drop(inst)
+	end
 end
 
 local function spear_ice_fn(inst)
@@ -161,6 +184,7 @@ local function spear_ice_fn(inst)
 	inst.components.tpproj:SetOnHitFn(spear_ice_proj_hit)
 	inst.components.tpproj:SetOnMissFn(spear_ice_proj_drop)
 	inst.components.tpproj:SetLaunchOffset(Vector3(0, 0.2, 0))
+	inst.components.tpproj.oncatch = spear_ice_proj_catch
 	inst:AddTag("tp_catcoon_spear")
 end
 
@@ -177,7 +201,7 @@ local function spear_fire_weapon_fn(inst, owner, target)
 end
 
 local function spear_fire_throw(inst)
-	inst:AddTag("projectile")
+	-- inst:AddTag("projectile")
 	spear_throw(inst)
 	if inst.fx == nil then
 		inst.fx = SpawnPrefab("tp_fx_fire_line")
@@ -186,7 +210,7 @@ local function spear_fire_throw(inst)
 end
 
 local function spear_fire_drop(inst)
-	inst:RemoveTag("projectile")
+	-- inst:RemoveTag("projectile")
 	spear_drop(inst)
 	if inst.fx then
 		inst.fx:Remove()
@@ -198,6 +222,19 @@ local function spear_fire_hit(inst, owner, target)
 	WARGON.FX.impact_fx(inst, target)
 	spear_fire_drop(inst)
 	spear_fire_weapon_fn(inst, owner, target)
+end
+
+local function spear_fire_catch(inst, owner)
+	if owner.components.inventory
+	and owner.components.inventory:IsFull() == false then
+		spear_catch(inst, owner)
+		if inst.fx then
+			inst.fx:Remove()
+			inst.fx = nil
+		end
+	else
+		spear_fire_drop(inst)
+	end
 end
 
 local function spear_fire_fn(inst)
@@ -213,6 +250,7 @@ local function spear_fire_fn(inst)
 	inst.components.tpproj:SetOnHitFn(spear_fire_hit)
 	inst.components.tpproj:SetOnMissFn(spear_fire_drop)
 	inst.components.tpproj:SetLaunchOffset(Vector3(0, 0.2, 0))
+	inst.components.tpproj.oncatch = spear_fire_catch
 	inst:AddTag("tp_catcoon_spear")
 end
 
@@ -239,7 +277,7 @@ local function spear_thunder_weapon_fn(inst, owner, target)
 end
 
 local function spear_thunder_throw(inst)
-	inst:AddTag("projectile")
+	-- inst:AddTag("projectile")
 	spear_throw(inst)
 	inst.fx = SpawnPrefab("shock_fx")
 	inst:AddChild(inst.fx)
@@ -247,7 +285,7 @@ local function spear_thunder_throw(inst)
 end
 
 local function spear_thunder_drop(inst)
-	inst:RemoveTag("projectile")
+	-- inst:RemoveTag("projectile")
 	spear_drop(inst)
 	if inst.fx then
 		inst.fx:Remove()
@@ -259,6 +297,19 @@ local function spear_thunder_hit(inst, owner, target)
 	WARGON.FX.impact_fx(inst, target)
 	spear_thunder_weapon_fn(inst, owner, target)
 	spear_thunder_drop(inst)
+end
+
+local function spear_thunder_catch(inst, owner)
+	if owner.components.inventory
+	and owner.components.inventory:IsFull() == false then
+		spear_catch(inst, owner)
+		if inst.fx then
+			inst.fx:Remove()
+			inst.fx = nil
+		end
+	else
+		spear_thunder_drop(inst)
+	end
 end
 
 local function spear_thunder_fn(inst)
@@ -275,6 +326,7 @@ local function spear_thunder_fn(inst)
 	inst.components.tpproj:SetOnHitFn(spear_thunder_hit)
 	inst.components.tpproj:SetOnMissFn(spear_thunder_drop)
 	inst.components.tpproj:SetLaunchOffset(Vector3(0, 0.2, 0))
+	inst.components.tpproj.oncatch = spear_thunder_catch
 	inst:AddTag("tp_catcoon_spear")
 end
 

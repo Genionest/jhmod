@@ -3,6 +3,7 @@ local pack_dragonflys = {"backpack1", "backpack_dragonfly", "anim", "idle_water"
 local pack_rabbits = {'backpack1', 'backpack_rabbit', 'anim', 'idle_water'}
 local pack_beefalos = {'backpack1', 'backpack_beefalo', 'anim', 'idle_water'}
 local pack_catcoons = {'backpack1', 'backpack_catcoon', 'anim', 'idle_water'}
+local pack_hounds = {'backpack1', 'backpack_hound', 'anim', 'idle_water'}
 
 local function onopen(inst)
 	inst.SoundEmitter:PlaySound("dontstarve/wilson/backpack_open", "open")
@@ -194,14 +195,14 @@ end
 local function catcoon_equip(inst, owner)
     common_equip(owner, "backpack_catcoon")
     if inst.task == nil then
-        inst.task = WARGON.per_task(inst, 3, function()
+        inst.task = WARGON.per_task(inst, 1, function()
             local spear = WARGON.find(owner, 10, nil, 
                 {"tp_catcoon_spear"}, {"projectile"})
             if spear then
                 WARGON.make_fx(spear, "small_puff")
                 WARGON.make_fx(spear, "tp_fx_catcoon_pick")
-                if owner.components.inventory:IsFull() == false then
-                    owner.components.inventory:GiveItem(spear)
+                if spear.components.tpproj then
+                    spear.components.tpproj:Throw(owner, owner)
                 end
             end
         end)
@@ -218,9 +219,37 @@ end
 local function catcoon_fn(inst)
 end
 
+local function hound_equip(inst, owner)
+    common_equip(owner, "backpack_hound")
+    if inst.task == nil then
+        inst.task = WARGON.per_task(inst, 1, function()
+            local traps = WARGON.finds(owner, 15, {"tp_trap_teeth"})
+            if traps then
+                for k, v in pairs(traps) do
+                    if v.components.mine
+                    and v.components.mine.issprung then
+                        v.components.mine:Reset()
+                    end
+                end
+            end
+        end)
+    end
+end
+
+local function hound_unequip(inst, owner)
+    if inst.task then
+        inst.task:Cancel()
+        inst.task = nil
+    end
+end
+
+local function hound_fn(inst, owner)
+end
+
 return 
     MakePack("tp_pack_crab", pack_crabs, crab_equip, nil, crab_fn, "backpack_crab"),
     MakePack("tp_pack_dragonfly", pack_dragonflys, dragonfly_equip, nil, dragonfly_fn, "backpack_dragonfly"),
     MakePack("tp_pack_rabbit", pack_rabbits, rabbit_equip, nil, rabbit_fn, "backpack_rabbit"),
     MakePack("tp_pack_beefalo", pack_beefalos, beefalo_equip, beefalo_unequip, beefalo_fn, "backpack_beefalo"),
-    MakePack("tp_pack_catcoon", pack_catcoons, catcoon_equip, catcoon_unequip, catcoon_fn, "backpack_catcoon")
+    MakePack("tp_pack_catcoon", pack_catcoons, catcoon_equip, catcoon_unequip, catcoon_fn, "backpack_catcoon"),
+    MakePack("tp_pack_hound", pack_hounds, hound_equip, hound_unequip, hound_fn, "backpack_hound")

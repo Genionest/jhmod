@@ -59,7 +59,7 @@ hua.fn = function(act)
 	return true
 end
 
-local za = Action({}, 0, nil, true, 10, true)
+local za = Action({}, 0, nil, true, 6, true)
 za.id = "TP_ZA"
 za.str = STRINGS.TP_STR.tp_za
 za.fn = function(act)

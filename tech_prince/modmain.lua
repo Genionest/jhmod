@@ -146,8 +146,10 @@ local a_t = _G.WARGON.CHECK.check_asset()
 if not a_t.wortox then
 	_G.WARGON.add_asset(Assets, "wortox_soul_heal_fx", "anim")
 end
-_G.WARGON.add_asset(Assets, "recharge_meter_wargon", "anim")
--- _G.WARGON.add_asset(Assets, "recharge_meter", "anim")
+-- _G.WARGON.add_asset(Assets, "recharge_meter_wargon", "anim")
+_G.WARGON.add_asset(Assets, "recharge_meter", "anim")
+_G.WARGON.add_asset(Assets, "player_lunge", "anim")
+_G.WARGON.add_asset(Assets, "player_attack_leap", "anim")
 _G.WARGON.add_asset(Assets, "tp_spore", "anim")
 _G.WARGON.add_asset(Assets, "tp_spore_blue", "anim")
 _G.WARGON.add_asset(Assets, "tp_teen_bird", "anim")
@@ -173,6 +175,7 @@ _G.WARGON.add_map('inventoryimages/backpack_dragonfly')
 _G.WARGON.add_map('inventoryimages/backpack_rabbit')
 _G.WARGON.add_map('inventoryimages/backpack_beefalo')
 _G.WARGON.add_map('inventoryimages/backpack_catcoon')
+_G.WARGON.add_map('inventoryimages/backpack_hound')
 _G.WARGON.add_map('inventoryimages/strawhat_cowboy')
 
 local scroll_generic = "失落的上古之章"
@@ -264,13 +267,15 @@ local the_strs = {
 	tp_pig_lamp = {'猪拉丁神灯', '这玩意能许愿不'},
 	tp_pig_spirit = {'神灯之灵', '你管这玩意叫灯神'},
 	tp_chest = {'潘多拉魔盒', '受诅咒的宝箱'},
-	tp_gingko_tree = {'银杏树', '这是银杏的变种'},
 	tp_gingko_leaf = {'银杏树叶', '叶落归根'},
+	tp_gingko_tree = {'银杏树', '灰森林的成员'},
+	tp_war_tree = {'战争古树', '古老的战争精灵'},
+	tp_defense_tree = {'哨兵树', '古老的守卫者'},
+	tp_life_tree = {'生命之树', '上古时期便存在的树'},
 	tp_gingko_spaling = {'银杏树苗', '十年树木，百年树人'},
 	tp_war_tree_spaling = {'战争树苗', '孕育战争的精灵'},
-	tp_war_tree = {'战争古树', '古老的战争精灵'},
+	tp_life_tree_spaling = {'生命树苗', '世界之树的子嗣'},
 	tp_defense_tree_spaling = {'哨兵树苗', '精灵守护着这个种子'},
-	tp_defense_tree = {'哨兵树', '古老的守卫者'},
 	tp_chop_pig = {'伐木猪', '工具猪1号'},
 	tp_hack_pig = {'砍工猪', '工具猪2号'},
 	tp_farm_pig = {'农场猪', '工具猪3号'},
@@ -292,7 +297,8 @@ local the_strs = {
 	tp_pack_dragonfly = {'火蜓背包', '吃的是草，挤得是灰'},
 	tp_pack_rabbit = {'兔兔背包', '动若脱兔'},
 	tp_pack_beefalo = {'牦牛背包', '与牛共舞'},
-	tp_pack_catcoon = {'浣熊背包', '嗷呜~'},
+	tp_pack_catcoon = {'浣熊背包', '喵呜~'},
+	tp_pack_hound = {'贪狼背包', '嗷呜~'},
 }
 local e_the_strs = {
 	bigfoot_sp = {'Big Foot', nil, nil},
@@ -336,13 +342,15 @@ local e_the_strs = {
 	tp_pig_lamp = {"Pigladdin's Magic Lamp", 'Hello, Pigladdin'},
 	tp_pig_spirit = {'Lamp Spirit', 'what?'},
 	tp_chest = {"Pandora's Box", 'Cursed treasure chest'},
-	tp_gingko_tree = {'gingko tree', 'another kind of gingko tree'},
 	tp_gingko_leaf = {'ginkgo biloba', 'Can I do it?'},
-	tp_gingko_spaling = {'gingko spaling', 'Hurry and grow up'},
+	tp_gingko_tree = {'gingko tree', 'Member of Grey Forest'},
+	tp_war_tree = {'war tree', 'the Old Soldier'},
+	tp_defense_tree = {'defense tree', 'the Old Guard'},
+	tp_life_tree = {'life tree', "Children of the World Tree"},
 	tp_war_tree_spaling = {'war tree spaling', 'Hurry and grow up'},
-	tp_war_tree = {'war tree', 'The old soldier'},
-	tp_defense_tree_spaling = {'defense tree', 'Hurry and grow up'},
-	tp_defense_tree = {'defense tree', 'The old guard'},
+	tp_defense_tree_spaling = {'defense tree spaling', 'Hurry and grow up'},
+	tp_life_tree_spaling = {'life tree spaling', 'Hurry and grow up'},
+	tp_gingko_spaling = {'gingko spaling', 'Hurry and grow up'},
 	tp_chop_pig = {'chopper', 'No.001'},
 	tp_hack_pig = {'hacker', 'No.002'},
 	tp_farm_pig = {'farmer', 'No.003'},
@@ -365,6 +373,7 @@ local e_the_strs = {
 	tp_pack_rabbit = {'rabbit pack', 'It is like rabbit'},
 	tp_pack_beefalo = {'beefalo pack', 'It is like beefalo'},
 	tp_pack_catcoon = {'catcoon pack', 'It is like catcoon'},
+	tp_pack_hound = {'hound pack', 'It is like hound'},
 }
 for i, v in pairs(_L and e_the_strs or the_strs) do
 	_G.WARGON.add_str(i, v[1], v[2], v[3])
@@ -480,7 +489,7 @@ set_img(pack_dragonfly, "backpack_dragonfly")
 pack_dragonfly.wargon_test = tech_prince_test
 
 local pack_rabbit = _G.WARGON.add_recipe('tp_pack_rabbit',
-	{cutreeds=12, rope=2, rabbit=4}, rtb, 's_2')
+	{cutreeds=12, rope=2, manrabbit_tail=4}, rtb, 's_2')
 set_img(pack_rabbit, "backpack_rabbit")
 pack_rabbit.wargon_test = tech_prince_test
 
@@ -493,6 +502,11 @@ local pack_catcoon = _G.WARGON.add_recipe('tp_pack_catcoon',
 	{cutreeds=12, rope=2, coontail=4}, rtb, 's_2')
 set_img(pack_catcoon, 'backpack_catcoon')
 pack_catcoon.wargon_test = tech_prince_test
+
+local pack_hound = _G.WARGON.add_recipe('tp_pack_hound',
+	{cutreeds=12, rope=2, houndstooth=10}, rtb, 's_2')
+set_img(pack_hound, 'backpack_hound')
+pack_hound.wargon_test = tech_prince_test
 
 local tent = _G.WARGON.add_recipe('tp_tent', {silk=10, twigs=6, rope=4}, 
 	rtb, 's_2', nil, nil, nil, "tp_tent_placer")
@@ -569,6 +583,11 @@ local defense_spaling = _G.WARGON.add_recipe('tp_defense_tree_spaling',
 	{tp_gingko_leaf={3, get_img('tp_gingko_leaf')}, poop=1}, 
 	'ref', 's_2', nil, nil, nil, 'tp_defense_tree_spaling_placer')
 set_img(defense_spaling, 'tp_defense_tree_spaling')
+
+local life_spaling = _G.WARGON.add_recipe('tp_life_tree_spaling',
+	{tp_gingko_leaf={4, get_img('tp_gingko_leaf')}, poop=1}, 
+	'ref', 's_2', nil, nil, nil, 'tp_life_tree_spaling_placer')
+set_img(life_spaling, 'tp_war_tree_spaling')
 
 local spear_wind = _G.WARGON.add_recipe('tp_spear_wind', 
 	{

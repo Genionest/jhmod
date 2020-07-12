@@ -4,6 +4,7 @@ local gingkos = {"tp_gingko", "tp_gingko", "idle", nil}
 local gingko_spalings ={"tp_gingko_spaling", "tp_gingko_spaling", "idle_planted", nil}
 local war_spalings = {"pinecone", "pinecone", "idle_planted", nil}
 local defense_spalings = {'acorn', 'acorn', 'idle_planted', nil}
+local life_spalings = war_spalings
 
 local function common_treeseed_save(inst, data)
 	WARGON.seed_save(inst, data)
@@ -106,6 +107,11 @@ local function defense_spaling_fn(inst)
 	inst.tree = "tp_defense_tree"
 end
 
+local function life_spaling_fn(inst)
+	common_spaling_fn(inst)
+	inst.tree = "tp_life_tree"
+end
+
 local function MakeItem(name, anims, item_fn, atlas, img)
 	local function fn()
 		local the_atlas = atlas and "images/inventoryimages/"..atlas..".xml" 
@@ -133,12 +139,21 @@ return
 	MakeItem("tp_gingko_spaling", gingko_spalings, gingko_sapling_fn, "tp_gingko"),
 	MakeItem("tp_war_tree_spaling", war_spalings, war_spaling_fn, "tp_gingko"),
 	MakeItem("tp_defense_tree_spaling", defense_spalings, defense_spaling_fn, "tp_gingko"),
+	MakeItem("tp_life_tree_spaling", life_spalings, life_spaling_fn, "tp_gingko"),
+	-- MakePlacer("common/tp_gingko_spaling_placer", gingko_spalings[1], 
+	-- 	gingko_spalings[2], gingko_spalings[3],nil, nil, nil, nil, 
+	-- 	nil, nil, nil, nil, nil, common_deploy_test),
+	-- MakePlacer("common/tp_war_tree_spaling_placer", war_spalings[1], 
+	-- 	war_spalings[2], war_spalings[3],nil, nil, nil, nil, 
+	-- 	nil, nil, nil, nil, nil, common_deploy_test),
+	-- MakePlacer("common/tp_defense_tree_spaling_placer", defense_spalings[1], 
+	-- 	defense_spalings[2], defense_spalings[3],nil, nil, nil, nil, 
+	-- 	nil, nil, nil, nil, nil, common_deploy_test)
 	MakePlacer("common/tp_gingko_spaling_placer", gingko_spalings[1], 
-		gingko_spalings[2], gingko_spalings[3],nil, nil, nil, nil, 
-		nil, nil, nil, nil, nil, common_deploy_test),
+		gingko_spalings[2], gingko_spalings[3]),
 	MakePlacer("common/tp_war_tree_spaling_placer", war_spalings[1], 
-		war_spalings[2], war_spalings[3],nil, nil, nil, nil, 
-		nil, nil, nil, nil, nil, common_deploy_test),
+		war_spalings[2], war_spalings[3]),
 	MakePlacer("common/tp_defense_tree_spaling_placer", defense_spalings[1], 
-		defense_spalings[2], defense_spalings[3],nil, nil, nil, nil, 
-		nil, nil, nil, nil, nil, common_deploy_test)
+		defense_spalings[2], defense_spalings[3]),
+	MakePlacer("common/tp_life_tree_spaling_placer", life_spalings[1],
+		life_spalings[2], life_spalings[3])

@@ -198,14 +198,16 @@ end
 local function make_fx(pos, fx_name, is_follow)
 	local fx = SpawnPrefab(fx_name)
 	local pt = nil
-	if pos.GetPosition then
-		fx.Transform:SetPosition(pos:GetPosition():Get())
-	elseif pos.Get then
-		fx.Transform:SetPosition(pos:Get())
-	end
-	if is_follow and pos.entity then
-		pos:AddChild(fx)
-		fx.Transform:SetPosition(0, 0, 0)
+	if fx then
+		if pos.GetPosition then
+			fx.Transform:SetPosition(pos:GetPosition():Get())
+		elseif pos.Get then
+			fx.Transform:SetPosition(pos:Get())
+		end
+		if is_follow and pos.entity then
+			pos:AddChild(fx)
+			fx.Transform:SetPosition(0, 0, 0)
+		end
 	end
 	return fx
 end
@@ -323,8 +325,10 @@ local function finds(inst, range, tags, no_tags)
 	local x, y, z
 	if inst.Get then
 		x, y, z = inst:Get()
-	else
+	elseif inst.GetPosition then
 		x, y, z = inst:GetPosition():Get()
+	elseif type(inst)=="table" then
+		x, y, z = inst[1], inst[2], inst[3]
 	end
 	if x and y and z then
 		return TheSim:FindEntities(x, y, z, range, tags, no_tags)

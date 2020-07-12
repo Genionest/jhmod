@@ -1,7 +1,7 @@
 name = "Tech Prince"
 description = "Tech Prince"
 author = "wargon"
-version = "1.000"
+version = "1.009"
 forumthread = ""
 priority = -5
 api_version = 6

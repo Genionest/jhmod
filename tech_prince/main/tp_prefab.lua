@@ -74,15 +74,24 @@ AddPrefabPostInit("pigman", function(inst)
 end)
 
 local function add_prefab_tag(name, tag)
-	AddPrefabPostInit(name, function(inst)
-		if type(tag) == "table" then
-			for k, v in pairs(tag) do
-				inst:AddTag(v)
+	local function add_tag(name, tag)
+		AddPrefabPostInit(name, function(inst)
+			if type(tag) == "table" then
+				for k, v in pairs(tag) do
+					inst:AddTag(v)
+				end
+			else
+				inst:AddTag(tag)
 			end
-		else
-			inst:AddTag(tag)
+		end)
+	end
+	if type(name) == "table" then
+		for k, v in pairs(name) do
+			add_tag(v, tag)
 		end
-	end)
+	else
+		add_tag(name, tag)
+	end
 end
 
 add_prefab_tag("log", "tp_chop_pig_item")
@@ -158,6 +167,14 @@ local boss_meat = {
 for k, v in pairs(boss_meat) do
 	add_prefab_tag(v, "tplevel_food")
 end
+
+local life_tree_plants = {
+	"carrot_planted",
+	"lichen",
+	"sweet_potato_planted",
+	"asparagus_planted",
+}
+add_prefab_tag(life_tree_plants, "life_tree_plant")
 
 add_prefab_tag('snakebonesoup', 'tplevel_food_small')
 
@@ -393,4 +410,8 @@ AddPrefabPostInit("beefalohat", function(inst)
 			owner:AddTag("beefalo")
 		end
 	end)
+end)
+
+AddPrefabPostInit("trap_teeth", function(inst)
+	inst:AddTag("tp_trap_teeth")
 end)

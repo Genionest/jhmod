@@ -128,6 +128,27 @@ local buff_tbl = {
 			end
 		end,
 	},
+	tp_pack_catcoon = {
+		time = 1,
+		add = function(inst)
+			inst.components.locomotor:AddSpeedModifier_Mult("tp_pack_catcoon", .3)
+			if inst.tp_pack_catcoon_task == nil then
+				inst.tp_pack_catcoon_task = WARGON.per_task(inst, .1, function()
+					if inst.sg:HasStateTag("moving") then
+						local fx = WARGON.make_fx(inst, "tp_fx_wilson_run")
+						fx.master = inst
+					end
+				end)
+			end
+		end,
+		rm = function(inst)
+			inst.components.locomotor:RemoveSpeedModifier_Mult("tp_pack_catcoon")
+			if inst.tp_pack_catcoon_task then
+				inst.tp_pack_catcoon_task:Cancel()
+				inst.tp_pack_catcoon_task = nil
+			end
+		end,
+	},
 }
 
 function TpBuff:GetInfo()

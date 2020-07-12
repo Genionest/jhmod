@@ -526,3 +526,13 @@ buildrename输入和输出都选同一个build就行了
 combat:DoAttack()必须要在攻击范围内才会造成伤害，设有target参数，
 也是会判断target是否在攻击范围内
 23:56 2020/7/6
+
+屏幕上方的叶子在screens/playerhud 的 UpdateLeaves 函数里，
+screes/playerhud 是 GetPlayer().HUD
+15:14 2020/7/9
+
+建造物没有inventoryitem就会放置在原地，有就会送到物品栏
+15:14 2020/7/9
+
+建造栏的图片图像的位置要偏右一点
+22:14 2020/7/9

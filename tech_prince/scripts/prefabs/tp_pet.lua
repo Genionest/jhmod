@@ -198,7 +198,7 @@ local function small_bird_fn(inst)
 		})
 	local growth_stages = {
         -- {name="small", time = TUNING.SMALLBIRD_GROW_TIME, fn = function() end },
-        {name="small", time = function() return 10 end, fn = function() end },
+        {name="small", time = function() return TUNING.SMALLBIRD_GROW_TIME end, fn = function() end },
         {name="tall", fn = function() inst.sg:GoToState("growup") end}
     }
 

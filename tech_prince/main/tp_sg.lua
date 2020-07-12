@@ -258,10 +258,68 @@ add_sg("wilson", State{
     name = "tp_za",
     tags = {"doing", "busy", "canrotate"},
     onenter = function(inst)
+        inst.AnimState:AddOverrideBuild("player_attack_leap")
         inst.components.locomotor:Stop()
         inst.components.locomotor:EnableGroundSpeedMultiplier(false)
-        inst.AnimState:PlayAnimation("jumpboat")
-        inst.SoundEmitter:PlaySound("dontstarve_DLC002/common/boatjump_whoosh")
+        inst.AnimState:PlayAnimation("atk_leap_pre")
+        -- inst.AnimState:PlayAnimation("jumpboat")
+        -- inst.SoundEmitter:PlaySound("dontstarve_DLC002/common/boatjump_whoosh")
+        -- local ba = inst:GetBufferedAction()
+        -- inst.sg.statemem.startpos = inst:GetPosition()
+        -- inst.sg.statemem.targetpos = inst:GetPosition()
+        -- if ba and ba.pos then
+        --     inst.sg.statemem.targetpos = ba.pos
+        -- elseif ba and ba.target then
+        --     inst.sg.statemem.targetpos = ba.target:GetPosition()
+        -- end
+        -- RemovePhysicsColliders(inst)
+        inst.components.health:SetInvincible(true)
+        inst.components.playercontroller:Enable(false)
+        inst.sg:SetTimeout(8*FRAMES)
+    end,
+
+    onexit = function(inst)
+        -- ChangeToCharacterPhysics(inst)
+        -- inst.components.locomotor:Stop()
+        -- inst.components.locomotor:EnableGroundSpeedMultiplier(true)
+        inst.components.health:SetInvincible(false)
+        -- inst.components.playercontroller:Enable(true)
+    end,
+
+    timeline =
+    {
+        TimeEvent(0*FRAMES, function(inst)
+            -- inst:ForceFacePoint(inst.sg.statemem.targetpos:Get())
+            -- local dist = inst:GetPosition():Dist(inst.sg.statemem.targetpos)
+            -- local speed = dist / (8/30)
+            -- inst.Physics:SetMotorVelOverride(1 * speed, 0, 0)
+        end),
+    },
+
+    events =
+    {
+        EventHandler("animover", function(inst)
+            -- inst.Transform:SetPosition(inst.sg.statemem.targetpos:Get())
+            -- inst.Physics:Stop()
+            -- inst:PerformBufferedAction()
+            inst.components.health:SetInvincible(false)
+            inst.sg:GoToState("tp_za_pst")
+        end),
+    },
+    ontimeout = function(inst)
+        -- inst:PerformBufferedAction()
+        -- inst.Transform:SetPosition(inst.sg.statemem.targetpos:Get())
+        -- inst.Physics:Stop()
+        inst.components.health:SetInvincible(false)
+        inst.sg:GoToState("tp_za_pst")
+    end,
+})
+
+add_sg("wilson", State{
+    name = "tp_za_pst",
+    tags = {"doing", "busy", "canrotate"},
+
+    onenter = function(inst)
         local ba = inst:GetBufferedAction()
         inst.sg.statemem.startpos = inst:GetPosition()
         inst.sg.statemem.targetpos = inst:GetPosition()
@@ -270,61 +328,51 @@ add_sg("wilson", State{
         elseif ba and ba.target then
             inst.sg.statemem.targetpos = ba.target:GetPosition()
         end
-
         RemovePhysicsColliders(inst)
         inst.components.health:SetInvincible(true)
         inst.components.playercontroller:Enable(false)
-    end,
 
-    onexit = function(inst)
-        ChangeToCharacterPhysics(inst)
-        inst.components.locomotor:Stop()
-        inst.components.locomotor:EnableGroundSpeedMultiplier(true)
-        inst.components.health:SetInvincible(false)
-        inst.components.playercontroller:Enable(true)
+        -- inst.AnimState:PushAnimation("land", false)
+        inst.AnimState:PlayAnimation("atk_leap")
+        inst.SoundEmitter:PlaySound("dontstarve_DLC002/common/boatjump_to_land")
+        PlayFootstep(inst)
+        inst.sg:SetTimeout(30*FRAMES)
     end,
 
     timeline =
     {
-        TimeEvent(7*FRAMES, function(inst)
+        TimeEvent(0*FRAMES, function(inst)
             inst:ForceFacePoint(inst.sg.statemem.targetpos:Get())
             local dist = inst:GetPosition():Dist(inst.sg.statemem.targetpos)
-            local speed = dist / (18/30)
+            local speed = dist / (13/30)
             inst.Physics:SetMotorVelOverride(1 * speed, 0, 0)
         end),
+        TimeEvent(13 * FRAMES, function(inst)
+            inst:PerformBufferedAction()
+            ChangeToCharacterPhysics(inst)
+            inst.components.locomotor:Stop()
+            inst.components.locomotor:EnableGroundSpeedMultiplier(true)
+        end),
     },
+
+    ontimeout = function(inst)
+        -- inst.Transform:SetPosition(inst.sg.statemem.targetpos:Get())
+        inst.Physics:Stop()
+        inst.components.health:SetInvincible(false)
+        inst.sg:GoToState("idle")
+    end,
+
+    onexit = function(inst)
+        -- inst.components.health:SetInvincible(true)
+        inst.Physics:Stop()
+        inst.components.health:SetInvincible(false)
+        inst.components.playercontroller:Enable(true)
+        inst.AnimState:ClearOverrideBuild("player_attack_leap")
+    end,
 
     events =
     {
         EventHandler("animover", function(inst)
-            inst.Transform:SetPosition(inst.sg.statemem.targetpos:Get())
-            inst.Physics:Stop()
-            inst:PerformBufferedAction()
-            inst.components.health:SetInvincible(false)
-            inst.sg:GoToState("tp_za_pst")
-        end),
-    },
-})
-
-add_sg("wilson", State{
-    name = "tp_za_pst",
-    tags = {"doing", "busy", "canrotate"},
-
-    onenter = function(inst)
-        inst.components.health:SetInvincible(true)
-        inst.Physics:Stop()
-        inst.AnimState:PushAnimation("land", false)
-        inst.SoundEmitter:PlaySound("dontstarve_DLC002/common/boatjump_to_land")
-        PlayFootstep(inst)
-    end,
-
-    onexit = function(inst)
-        inst.components.health:SetInvincible(false)
-    end,
-
-    events =
-    {
-        EventHandler("animqueueover", function(inst)
             inst.sg:GoToState("idle")
         end),
     },
@@ -334,16 +382,34 @@ add_sg("wilson", State{
     name = "tp_ci_start",
     tags = {"busy"},
     onenter = function(inst)
-        inst.sg:SetTimeout(.2)
-        inst.AnimState:PlayAnimation("atk")
+        -- inst.sg:SetTimeout(.2)
+        -- inst.AnimState:PlayAnimation("atk")
         local ba = inst:GetBufferedAction()
         if ba and ba.pos then
             inst:ForceFacePoint(ba.pos:Get())
         end
+        inst.AnimState:AddOverrideBuild("player_lunge")
+        inst.AnimState:PlayAnimation("lunge_pre")
+        -- if inst.tp_lunge_fx == nil then
+        --     inst.tp_lunge_fx = WARGON.make_fx(inst, "")
+        -- end
     end,
-    ontimeout = function(inst)
-        inst.sg:GoToState("tp_ci")
-    end,
+    -- ontimeout = function(inst)
+    --     inst.sg:GoToState("tp_ci")
+    -- end,
+    timeline =
+    {
+        TimeEvent(12 * FRAMES, function(inst)
+            inst.sg:GoToState('tp_ci')
+        end),
+    },
+
+    events =
+    {
+        EventHandler("unequip", function(inst)
+            inst.sg:GoToState("idle")
+        end),
+    },
 })
 
 add_sg("wilson", State{
@@ -354,14 +420,37 @@ add_sg("wilson", State{
         inst.SoundEmitter:PlaySound("dontstarve_DLC003/characters/wheeler/slide")
         inst.components.locomotor:EnableGroundSpeedMultiplier(false)
         inst.Physics:SetMotorVelOverride(20, 0, 0)
-        inst.AnimState:PlayAnimation("sail_loop")
+        -- inst.AnimState:PlayAnimation("sail_loop")
+        inst.AnimState:PlayAnimation("lunge_pst")
         inst:PerformBufferedAction()
-        inst.sg:SetTimeout(.3)
+        -- inst.sg:SetTimeout(.3)
     end,
-    ontimeout = function(inst)
-        inst.components.locomotor:EnableGroundSpeedMultiplier(true)
+    -- ontimeout = function(inst)
+    --     inst.components.locomotor:EnableGroundSpeedMultiplier(true)
+    --     inst.Physics:ClearMotorVelOverride()
+    --     inst.sg:GoToState("idle")
+    -- end,
+    timeline =
+    {
+        TimeEvent(7* FRAMES, function(inst)
+            inst.Physics:ClearMotorVelOverride()
+            inst.components.locomotor:EnableGroundSpeedMultiplier(true)
+        end),
+    },
+
+    events =
+    {
+        EventHandler("animover", function(inst)
+            inst.AnimState:ClearOverrideBuild("player_lunge")
+            if inst.AnimState:AnimDone() then
+                inst.sg:GoToState("idle")
+            end
+        end),
+    },
+
+    onexit = function(inst)
         inst.Physics:ClearMotorVelOverride()
-        inst.sg:GoToState("idle")
+        inst.components.locomotor:EnableGroundSpeedMultiplier(true)
     end,
 })
 

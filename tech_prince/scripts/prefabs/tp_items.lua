@@ -955,8 +955,8 @@ local function bird_egg_fn(inst)
 		inspect = {},
 		hatch = {state=bird_egg_hatch_state, 
 			crake=TUNING.SMALLBIRD_HATCH_CRACK_TIME,
-			-- hatch=30*16*1,
-			hatch = 10,
+			hatch=30*16*1,
+			-- hatch = 10,
 			fail=TUNING.SMALLBIRD_HATCH_FAIL_TIME},
 		invitem = {drop=bird_egg_drop, put=bird_egg_put},
 		})

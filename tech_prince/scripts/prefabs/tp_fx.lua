@@ -13,7 +13,7 @@ local beargers = {"bearger", "bearger_build", "ground_pound"}
 local dragonflys = {"dragonfly", "dragonfly_fire_build", "taunt_pre"}
 local deerclopses = {"deerclops", "deerclops_build", "atk"}
 local mooses = {"goosemoose", "goosemoose_build", "honk"}
-local wilson_lunges = {"wilson", "wilson", "sail_loop"}
+local wilson_lunges = {"wilson", "wilson", "lunge_pst"}
 local bloods = {"wortox_soul_heal_fx", "wortox_soul_heal_fx", "heal"}
 local signs = {"sign_home", "sign_home", "place"}
 local acorns = {"acorn", "acorn", "idle"}
@@ -33,7 +33,7 @@ local coffeebeanses = {'coffeebeans', 'coffeebeans', 'idle'}
 local bandages = {'bandage', 'bandage', 'idle'}
 local dragonfruits = {'dragonfruit', 'dragonfruit', 'idle'}
 local meats = {'meat', 'meat', 'raw'}
-local catcoons = {'catcoon', 'catcoon_build', 'action'}
+local catcoons = {'catcoon', 'catcoon_build', 'taunt_pst'}
 local logs = {"log", "log", "idle"}
 
 local function animover_fn(inst, over_fn)
@@ -879,7 +879,8 @@ local function spore_three_fn(inst)
 	WARGON.do_task(inst, 0, function()
 		local pos = inst:GetPosition()
 		local pts = WARGON.get_divide_point(inst, inst.num)
-		for i = 1, inst.num do
+		-- for i = 1, inst.num do
+			local i = inst.num
 			local fx = nil
 			if inst:HasTag('spore_blue') then
 				fx = SpawnPrefab("tp_fx_spore_blue")
@@ -895,7 +896,7 @@ local function spore_three_fn(inst)
 				inst.height = 1.5
 			end
 			table.insert(inst.fxs, fx)
-		end
+		-- end
 	end)
 	inst.kill = function(inst)
 		for k, v in pairs(inst.fxs) do
@@ -1048,6 +1049,7 @@ end
 
 local function scroll_pig_effect_fn(inst)
 	add_physics(inst)
+	inst.AnimState:SetMultColour(1,1,1,.8)
 	inst.Physics:SetMotorVel(0, 5, 0)
 	WARGON.do_task(inst, 0, function()
 		local pos = inst:GetPosition()
@@ -1060,9 +1062,32 @@ local function scroll_pig_effect_fn(inst)
 end
 
 local function catcoon_pick_fn(inst)
-	inst.AnimState:SetMultColour(1,1,1,.8)
+	inst.AnimState:SetMultColour(1,1,1,.5)
+	inst.Transform:SetFourFaced()
+	WARGON.do_task(inst, 0, function()
+		local player = GetPlayer() or inst
+		inst:ForceFacePoint(player:GetPosition())
+	end)
 	inst:ListenForEvent("animover", function(inst, data)
 		WARGON.make_fx(inst, "collapse_small")
+		inst:Remove()
+	end)
+end
+
+local function wilson_run_fn(inst)
+	inst.AnimState:PlayAnimation("run_loop")
+	inst.AnimState:SetMultColour(1,.1,1,.5)
+	inst.Transform:SetFourFaced()
+	WARGON.do_task(inst, 0, function()
+		if inst.master then
+			if inst.master.components.sciencemorph then
+				local build = inst.master.components.sciencemorph:GetBuild()
+				inst.AnimState:SetBuild(build)
+				inst.Transform:SetRotation(inst.master.Transform:GetRotation())
+			end
+		end
+	end)
+	WARGON.do_task(inst, .3, function()
 		inst:Remove()
 	end)
 end
@@ -1147,4 +1172,5 @@ return
 	MakeFx("tp_fx_scroll_pig_leader", meats, scroll_pig_effect_fn),
 	MakeFx("tp_fx_scroll_pig_health", dragonfruits, scroll_pig_effect_fn),
 	MakeFx("tp_fx_scroll_pig_buff", {}, scroll_pig_buff_fn),
-	MakeFx("tp_fx_catcoon_pick", catcoons, catcoon_pick_fn)
+	MakeFx("tp_fx_catcoon_pick", catcoons, catcoon_pick_fn),
+	MakeFx("tp_fx_wilson_run", wilson_lunges, wilson_run_fn)

@@ -86,9 +86,9 @@ local war_tree_builds = {
 	normal = {
 		file="evergreen_new",
 		prefab_name="tp_war_tree",
-		normal_loot = {"log", "log", "tp_war_tree_seed"},
+		normal_loot = {"log", "log"},
 		short_loot = {"log"},
-		tall_loot = {"log", "log", "log", "tp_war_tree_seed", "tp_war_tree_seed"},
+		tall_loot = {"log", "log", "log"},
     },
 }
 
@@ -141,6 +141,7 @@ end
 
 local function war_tree_on_chop_down(inst)
 	kill_fx(inst)
+	WARGON.make_fx(inst, "pine_needles")
 end
 
 local war_trees = 
@@ -150,9 +151,9 @@ local defense_tree_builds = {
 	normal = { --Green
 		file="tree_leaf_trunk_build",
 		prefab_name="tp_defense_tree",
-		normal_loot = {"log", "log", "tp_defense_tree_seed"},
+		normal_loot = {"log", "log"},
 		short_loot = {"log"},
-		tall_loot = {"log", "log", "log", "tp_defense_tree_seed", "tp_defense_tree_seed"},
+		tall_loot = {"log", "log", "log"},
     },
 }
 
@@ -242,13 +243,52 @@ local function defense_tree_on_chop_down(inst)
 		inst.task = nil
 	end
 	kill_fx(inst)
+	WARGON.make_fx(inst, "green_leaves")
 end
 
 local defense_trees = 
 WARGON.TREE.create_trees("tp_defense_tree", defense_tree_builds, "tree_leaf", defense_tree_fn, defense_tree_on_chop, defense_tree_on_chop_down, "green_leaves_chop", "tree_leaf.png", "nil")
 
+local life_tree_builds = 
+{
+	normal = {
+		file="evergreen_new_2",
+		prefab_name="tp_life_tree",
+		normal_loot = {"log","log"},
+		short_loot = {"log"},
+		tall_loot = {"log", "log","log"},
+    },
+}
+
+local function life_tree_fn(inst)
+	inst.components.growable.loopstages = false
+	inst:AddComponent("tpplantspawner")
+	inst.components.tpplantspawner:Start()
+	WARGON.do_task(inst, 0, function()
+		spawn_fx(inst)
+	end)
+	WARGON.add_listen(inst, {
+		onignite = on_ignite_tree,
+		onextinguish = on_extinguish_tree,
+		})
+	inst.components.growable:SetOnGrowthFn(growth_tree)
+end
+
+local function life_tree_on_chop(inst)
+end
+
+local function life_tree_on_chop_down(inst)
+	kill_fx(inst)
+	WARGON.make_fx(inst, "pine_needles")
+	inst.components.tpplantspawner:Stop()
+end
+
+local life_trees = 
+WARGON.TREE.create_trees("tp_life_tree", life_tree_builds, "evergreen_short", life_tree_fn, life_tree_on_chop, life_tree_on_chop_down, "pine_needles_chop", "evergreen_lumpy.png", "nil")
+
 add_trees(gingko_trees)
 add_trees(war_trees)
 add_trees(defense_trees)
+add_trees(life_trees)
 
 return unpack(trees)

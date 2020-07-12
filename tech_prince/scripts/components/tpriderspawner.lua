@@ -16,6 +16,7 @@ function TpRiderSpawner:Trigger()
 		local rider = c_find('tp_sign_rider')
 		if rider == nil then
 			local inst = self.inst
+			inst.SoundEmitter:PlaySound("dontstarve/creatures/krampus/beenbad_lvl3")
 			local radius = 25 + math.random(5)
 			local pos = WARGON.around_land(inst, radius)
 			if pos and WARGON.on_land(inst, pos) then
