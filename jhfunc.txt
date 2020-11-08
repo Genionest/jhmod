@@ -478,6 +478,35 @@ local function GlobalUsingMetatable()
 end
 GlobalUsingMetatable()
 
+获取函数体内的临时函数，强
+local function flc_Get(fn,name,maxlevel,max,level,file)
+	if type(fn) ~= "function" then
+		return
+	end
+	local maxlevel = maxlevel or 5
+	local level = level or 0
+	local max = max or 20
+	for i=1,max,1 do
+		local upname,upvalue = debug.getupvalue(fn,i)
+		if upname and upname == name then
+			if file and type(file) == "string" then
+				local fninfo = debug.getinfo(fn)
+				if fninfo.source and fninfo.source:match(file) then
+					return upvalue
+				end
+			else
+				return upvalue
+			end
+		end
+		if level < maxlevel and upvalue and type(upvalue) == "function" then
+			local upupvalue = flc_Get(upvalue,name,maxlevel,max,level+1,file)
+			if upupvalue then
+				return upupvalue
+			end
+		end
+	end
+end
+
 获取其他mod是否加载
 GLOBAL.KnownModIndex:IsModEnabled("workshop-xxx")
 
@@ -658,6 +687,33 @@ AddLevel里overrides = {  -- 三箱开局的设置
   {"carrot", "rare"},
   {"rabbits", "rare"},
 }
+
+深度遍历
+local function pre_print(n, ...)
+	if n <= 0 then
+		print(...)
+	else
+		local pre = ""
+		for i = 1, n-1 do
+			pre = pre.."\t"
+		end
+		print(pre, ...)
+	end
+end
+
+local loaded = {}
+local function traverse(tbl, n)
+	loaded[tbl] = true
+	n = n or 0
+	for k, v in pairs(tbl) do
+		if type(v) == "table" and not loaded[v] then
+			pre_print(n, k)
+			traverse(v, n+1)
+		else
+			pre_print(n, k, v)
+		end
+	end
+end
 
 waterproofer 防水材料
 inherent 固有的
@@ -840,3 +896,9 @@ particle 粒子
 emitter 发射器
 quantity 数量
 hostile 敌对的
+definition 清晰度，解说
+interior 内部的
+perspective 视图
+reverb 混响
+destnation 目的地
+cc ColourCube

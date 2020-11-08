@@ -1,0 +1,12 @@
+SetScale
+SetVAnchor
+GetRotation
+GetLocalPosition
+SetPosition
+SetMaxPropUpscale
+SetScaleMode
+UpdateTransform
+SetHAnchor
+SetRotation
+GetScale
+GetWorldPosition
