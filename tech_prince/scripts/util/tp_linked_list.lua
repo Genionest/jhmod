@@ -1,0 +1,116 @@
+-- local Node = Class(function(self, value)
+--     self.value = value
+--     self.next = nil
+-- end)
+
+-- local TpLinkedList = Class(function(self, value)
+--     self.head = nil
+--     if value then
+--         self.head = Node(value)
+--     end
+-- end)
+
+-- function TpLinkedList:IsEmpty()
+--     return self.head == nil
+-- end
+
+-- function TpLinkedList:Add(value)
+--     local node = Node(value)
+--     local cur = nil
+--     if self.head == nil then
+--         self.head = node
+--     else
+--         cur = self.head
+--         while cur.next do
+--             cur = cur.next
+--         end
+--         cur.next = node
+--     end
+-- end
+
+-- -- return delete item, if no find return nil
+-- function TpLinkedList:Delete(value)
+--     local cur = self.head
+--     local pre = self.head
+--     while cur do
+--         if (type(value) == "function" and value(cur)) or cur.value == value then
+--             if cur == self.head then
+--                 self.head = nil
+--             else
+--                 pre.next = cur.next
+--             end
+--             cur = nil
+--             return cur
+--         end
+--         pre = cur
+--         cur = cur.next
+--     end
+--     return
+-- end
+
+-- -- if find return index, no find return nil
+-- function TpLinkedList:Search(value)
+--     local count = 0
+--     local cur = self.head
+--     while cur do
+--         count = count + 1
+--         if (type(value) == "function" and value(cur)) or cur.value == value then
+--             return count
+--         end
+--         cur = cur.next
+--     end
+--     return
+-- end
+
+-- -- return index node
+-- function TpLinkedList:Index(idx)
+--     if idx <= self:Lenght() then
+--         local cur = self.head
+--         local count = 0
+--         while cur do
+--             count = count + 1
+--             if count == idx then
+--                 return cur
+--             end
+--             cur = cur.next
+--         end
+--     end
+-- end
+
+-- -- if idx not in {1-length}, pop last node
+-- function TpLinkedList:Pop(idx)
+--     local cur = self.head
+--     local pre = self.head
+--     local count = 0
+--     while cur do
+--         pre = cur
+--         cur = cur.next
+--         count = count + 1
+--         if count == idx then
+--             if cur == self.head then
+--                 self.head = nil
+--             else
+--                 pre.next = cur.next
+--             end
+--             return pre
+--         end
+--     end
+--     -- if cur == self.head then
+--     --     self.head = nil
+--     -- else 
+--     --     pre.next = nil
+--     -- end
+--     return cur
+-- end
+
+-- function TpLinkedList:Lenght()
+--     local count = 0
+--     local cur = self.head
+--     while cur do
+--         count = count + 1
+--         cur = cur.next
+--     end
+--     return count
+-- end
+
+-- return TpLinkedList

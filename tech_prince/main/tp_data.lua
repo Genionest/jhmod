@@ -1,0 +1,1 @@
+GLOBAL.WARGON.DATA = {}
