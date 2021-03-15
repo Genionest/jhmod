@@ -22,6 +22,9 @@ exported/item/item.scml到exported/item.scml
 return Prefab("common/iventory/xxx", fn, assets, prefabs)
 17:53 2019/11/6
 
+sanityrock在prefabs/nightmarerock里
+13:54 2020/8/1
+
 scripts/prefabs/里的物体代码，一定要有MakeInventoryPhysics(inst)
 setBank()，setBuild()，playAnimation()
 17:55 2019/11/6
@@ -223,7 +226,7 @@ steam社区不能进，因为用steamcommunity工具修改了host，
 源码里有inventoryitem组件和atlasname，imagesname的可以照搬它的贴图
 19:29 2020/3/14
 
-AddLevelPerInit(id, function(level) end)
+AddLevelPreInit(id, function(level) end)
 id是定义的level的id属性，如“SURVIVAL_DEFAULT”
 20:36 2020/4/2
 
@@ -527,12 +530,75 @@ combat:DoAttack()必须要在攻击范围内才会造成伤害，设有target参数，
 也是会判断target是否在攻击范围内
 23:56 2020/7/6
 
-屏幕上方的叶子在screens/playerhud 的 UpdateLeaves 函数里，
-screes/playerhud 是 GetPlayer().HUD
-15:14 2020/7/9
+Get Clock()是world的component clock
+14:40 2020/7/14
 
-建造物没有inventoryitem就会放置在原地，有就会送到物品栏
-15:14 2020/7/9
+ice prefab在inv_rocks_ice文件里
+18:32 2020/7/15
 
-建造栏的图片图像的位置要偏右一点
-22:14 2020/7/9
+local a = {1, 2, 3}
+unpack(a), 4 的结果是 1, 4
+4, unpack(a) 的结果是 4, 1, 2, 3
+12:02 2020/7/28
+
+定义widget时，self.text这种变量最好不要定义，很可能是已经定义过了的
+12:32 2020/7/31
+
+weapon组件的range是额外再加多少长度
+18:09 2020/8/4
+
+地图生成时，不再陆地上的单位都会被删除掉
+13:52 2020/8/8
+
+蔬菜和水果在prefabs/veggie.lua里
+16:46 2020/8/22
+
+SetPrefabName()会导致加载时会变成修改后的生物
+17:07 2020/8/23
+
+有companion tag的生物不能直接左键攻击
+2:01 2020/9/28
+
+lua支持"1"+1，结果为2
+16:14 2020/10/10
+
+对一个门使用扩建许可证后，对应房间的物品并没有生成，而是生成了对应的数据，进入
+之后才会生成，门也是有predoor tag，但移动的时候又没有
+2:59 2020/10/29
+
+trans_door 门在移动过程中才能收集到reset_door动作，因为reset_door动作的优先级低了
+20:31 2020/10/29
+
+a[1]:fn()和a:[1].fn()这两种格式都是不对的
+1:16 2020/11/5
+
+WgImg只能在modmain的环境下运营，估计要像WARGON一样传入GLOBAL才能在prefab
+或screen里面写
+17:08 2020/11/10
+
+商品的替换在shopinterior里
+14:26 2020/11/18
+
+tpenchantment.attribute = 上面定义好的attributes，这样就导致的tpenchantment的attribute
+都指向那个table，所以定义组件时不要让属性去等于一个之前定义好的表，因为那会指向同一个指针，
+或者深复制过去也行(lua没有定义，但饥荒定义了deepcopy)。
+23:39 2020/11/24
+
+用AddPrefabPostInit获取inst.brain回报错，因为brain还未生成
+0:59 2020/11/29
+
+添加建造栏时sort别写一样，否则会加到一起去
+1:03 2020/11/29
+
+父a和被b盖住，那么父a的子aa也会被b盖住
+1:27 2020/12/13
+
+子ui旋转，设置位置是x，y不变，父ui旋转，子ui设置位置x，y会改变
+15:36 2021/1/16
+
+PlaySound(event, name)要设置一个name，才能用KillSound(name)停住
+2:35 2021/1/23
+
+生物攻击之前战吼在combat的BattleCry函数里，
+chaseandattack 和 standandattack 里有进行调用
+21:05 2021/1/31
