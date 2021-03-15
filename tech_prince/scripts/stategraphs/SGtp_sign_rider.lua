@@ -65,7 +65,9 @@ local states=
 			if not target then
 				target = inst
 			end
-			WARGON.make_fx(target, "tp_fx_sign_killer")
+            if c_find("tp_fx_sign_killer") == nil then
+                WARGON.make_fx(target, "tp_fx_sign_killer")
+            end
 			inst.atk_num = 0
 		end,
 		
@@ -190,5 +192,5 @@ local states=
     },    
 }
     
-return StateGraph("tp_werepig_king", states, events, "idle", actionhandlers)
+return StateGraph("tp_sign_rider", states, events, "idle", actionhandlers)
 

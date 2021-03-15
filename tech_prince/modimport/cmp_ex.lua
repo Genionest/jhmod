@@ -17,11 +17,12 @@ local function add_inspectable(inst, getstatus)
 	if getstatus then inst.components.inspectable.getstatus = getstatus end
 end
 
-local function add_trader(inst, test, accept, refuse)
+local function add_trader(inst, test, accept, refuse, stack)
 	check_cmp(inst, "trader")
 	if test then inst.components.trader:SetAcceptTest(test) end
 	if accept then inst.components.trader.onaccept = accept end
 	if refuse then inst.components.trader.onrefuse = refuse end
+	if stack then inst.components.trader.always_accept_stack = stack end
 end
 
 local function add_tradable(inst, value)
@@ -50,7 +51,7 @@ local function add_equippable(inst, slot, equip, unequip, pocket, effect)
 			head = EQUIPSLOTS.HEAD,
 			body = EQUIPSLOTS.BODY,
 		}
-		inst.components.equippable.equipslot = slots[slot]
+		inst.components.equippable.equipslot = slots[slot] or slot
 	end
 	if equip then inst.components.equippable:SetOnEquip(equip) end
 	if unequip then inst.components.equippable:SetOnUnequip(unequip) end
@@ -77,8 +78,8 @@ end
 
 local function add_finiteuses(inst, use, max, fn, act, num)
 	check_cmp(inst, "finiteuses")
-	if use then inst.components.finiteuses:SetUses(use) end
 	if max then inst.components.finiteuses:SetMaxUses(max) end
+	if use then inst.components.finiteuses:SetUses(use) end
 	if fn then inst.components.finiteuses:SetOnFinished(fn) end
 	if act and num then inst.components.finiteuses:SetConsumption(act, num) end
 end
@@ -155,7 +156,7 @@ local function add_combat(inst, dmg, per, re, keep, hit, atk, symbol, player, ra
 	end
 end
 
-local function add_health(inst, max, regen, absorb)
+local function add_health(inst, max, regen, absorb, fire)
 	check_cmp(inst, "health")
 	if max then inst.components.health:SetMaxHealth(max) end
 	if regen then
@@ -164,6 +165,7 @@ local function add_health(inst, max, regen, absorb)
 		inst.components.health:StartRegen(regen_num, regen_per) 
 	end
 	if absorb then inst.components.health:SetAbsorptionAmount(absorb) end
+	if fire then inst.components.health.fire_damage_scale = fire end
 end
 
 local function add_locomotor(inst, walk, run)
@@ -270,9 +272,10 @@ local function add_follower(inst, max)
 	if max then inst.components.follower.maxfollowtime = max end
 end
 
-local function add_sanityaura(inst, fn)
+local function add_sanityaura(inst, fn, value)
 	check_cmp(inst, "sanityaura")
 	if fn then inst.components.sanityaura.aurafn = fn end
+	if value then inst.components.sanityaura.aura = value end
 end
 
 local function add_projectile(inst, speed, throw, hit, can, catch, miss, offset)
@@ -360,13 +363,37 @@ local function set_widgets(inst, slotpos, bank, build, pos, align)
 	inst.components.container.side_align_tip = align or 160
 end
 
-local function add_container(inst, num, open, close, widgets, test)
+local function add_container(inst, num, open, close, widgets, test, typ)
 	check_cmp(inst, "container")
 	if num then inst.components.container:SetNumSlots(num) end
 	if open then inst.components.container.onopenfn = open end
 	if close then inst.components.container.onclosefn = close end
 	if widgets then set_widgets(inst, unpack(widgets)) end
 	if test then inst.components.container.itemtestfn = test end
+	if typ == "2x4" then
+		local slotpos = {}
+		for y = 0, 3 do
+			table.insert(slotpos, Vector3(-162, -y*75 + 114 ,0))
+			table.insert(slotpos, Vector3(-162 +75, -y*75 + 114 ,0))
+		end
+		inst.components.container:SetNumSlots(#slotpos)
+	    inst.components.container.widgetslotpos = slotpos
+	    inst.components.container.widgetanimbank = "ui_backpack_2x4"
+	    inst.components.container.widgetanimbuild = "ui_backpack_2x4"
+	    inst.components.container.widgetpos = Vector3(-5,-70,0)
+	    inst.components.container.side_widget = true
+	elseif typ == "1x4" then
+		local slotpos = {}
+		for y = 0, 3 do
+			table.insert(slotpos, Vector3(-162 +(75/2), -y*75 + 114 ,0))
+		end
+		inst.components.container:SetNumSlots(#slotpos)
+	    inst.components.container.widgetslotpos = slotpos
+	    inst.components.container.widgetanimbank = "ui_thatchpack_1x4"
+	    inst.components.container.widgetanimbuild = "ui_thatchpack_1x4"
+	    inst.components.container.widgetpos = Vector3(-5,-70,0)
+	    inst.components.container.side_widget = true
+	end
 end
 
 local function add_deployable(inst, test, deploy)
@@ -424,13 +451,30 @@ local function add_tiletracker(inst, water)
 	if water then inst.components.tiletracker:SetOnWaterChangeFn(water) end
 end
 
+local function add_edible(inst, typ, health, hunger, san, fn)
+	check_cmp(inst, "edible")
+	if typ then inst.components.edible.foodtype = typ end
+	if health then inst.components.edible.healthvalue = health end
+	if hunger then inst.components.edible.hungervalue = hunger end
+	if san then inst.components.edible.sanityvalue = san end
+	if fn then inst.components.edible:SetOnEatenFn(fn) end
+end
+
+local function add_heater(inst, fn, equip, cool, heat)
+	check_cmp(inst, "heater")
+	if fn then inst.components.heater.heatfn = fn end
+	if equip then inst.components.heater.equippedheatfn = equip end
+	if cool then inst.components.heater.iscooler = cool end
+	if heat then inst.components.heater.heat = heat end
+end
+
 local function add_component(inst, cmp, data)
 	if cmp == "invitem" then
 		add_inventoryitem(inst, data.atlas, data.img, data.put, data.drop)
 	elseif cmp == "inspect" then
 		add_inspectable(inst, data.fn)
 	elseif cmp == "trader" then
-		add_trader(inst, data.test, data.accept, data.refuse)
+		add_trader(inst, data.test, data.accept, data.refuse, data.stack)
 	elseif cmp == "trade" then
 		add_tradable(inst, data.value)
 	elseif cmp == "stack" then
@@ -456,7 +500,7 @@ local function add_component(inst, cmp, data)
 		-- dmg, per, re, keep, hit, atk, symbol, player, range
 		add_combat(inst, data.dmg, data.per, data.re, data.keep, data.hit, data.atk, data.symbol, data.player, data.range)  --re={time,fn}
 	elseif cmp == "health" then
-		add_health(inst, data.max, data.regen, data.absorb)  --regen={num,per}
+		add_health(inst, data.max, data.regen, data.absorb, data.fire)  --regen={num,per}
 	elseif cmp == "loco" then
 		add_locomotor(inst, data.walk, data.run)
 	elseif cmp == "insu" then  -- 防暑/防寒
@@ -479,7 +523,7 @@ local function add_component(inst, cmp, data)
 	elseif cmp == "follow" then
 		add_follower(inst, data.max)
 	elseif cmp == "san_aoe" then
-		add_sanityaura(inst, data.fn)
+		add_sanityaura(inst, data.fn, data.value)
 	elseif cmp == "proj" then
 		add_projectile(inst, data.speed, data.throw, data.hit, data.can, data.catch, data.miss, data.offset)
 	elseif cmp == "throw" then
@@ -499,7 +543,7 @@ local function add_component(inst, cmp, data)
 	elseif cmp == "cd" then
 		add_cooldown(inst, data.time, data.fn)
 	elseif cmp == "cont" then
-		add_container(inst, data.num, data.open, data.close, data.widgets, data.test)
+		add_container(inst, data.num, data.open, data.close, data.widgets, data.test, data.typ)
 	elseif cmp == "dep" then
 		add_deployable(inst, data.test, data.deploy)
 	elseif cmp == "near" then
@@ -516,6 +560,10 @@ local function add_component(inst, cmp, data)
 		add_floodable(inst, data.start, data.stop, data.effect, data.sound)
 	elseif cmp == "tile" then
 		add_tiletracker(inst, data.water)
+	elseif cmp == "food" then
+		add_edible(inst, data.typ, data.health, data.hunger, data.san, data.fn)
+	elseif cmp == "heat" then
+		add_heater(inst, data.fn, data.equip, data.cool, data.heat)
 	else
 		check_cmp(inst, cmp)
 	end

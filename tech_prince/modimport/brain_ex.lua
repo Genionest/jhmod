@@ -238,7 +238,20 @@ local function character_brain(day_active, scary_test)
 			WhileNode(function()
 				return self.inst.components.health and self.inst.components.health.takingfiredamage
 			end, 'OnFire', Panic(self.inst)),
-			ChaseAndAttack(self.inst, max_chase_time, max_chase_dist),
+			WhileNode( function() 
+			 	return self.inst.components.combat.target == nil 
+			 		or not self.inst.components.combat:InCooldown() 
+			 	end, "Attack",
+		        ChaseAndAttack(self.inst, max_chase_time, max_chase_dist )
+		    ),
+		    WhileNode( function() 
+		    	return self.inst.components.combat.target 
+		    		and self.inst.components.combat:InCooldown() 
+		    	end, "RunAway",
+		        RunAway(self.inst, function() 
+		        	return self.inst.components.combat.target 
+		        end, run_away_dist, stop_run_away_dist) 
+		    ),
 			FaceEntity(self.inst, get_trader, keep_trader),
 			active,
 			passive,

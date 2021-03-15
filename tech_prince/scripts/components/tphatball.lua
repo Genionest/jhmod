@@ -2,11 +2,14 @@ local TpHatBall = Class(function(self, inst)
 	self.inst = inst
 end)
 
-function TpHatBall:Trigger()
+function TpHatBall:Trigger(giver)
 	local inst = self.inst
-	local guy = WARGON.find(inst, 1, nil, {"tp_strawhat_target"})
+	local guy = WARGON.find(inst, 2, nil, {"tp_strawhat_target"})
+	print("TpHatBall", 1)
 	if guy then
+		print("TpHatBall", 2)
 		if guy:HasTag("tp_strawhat_perd") then
+			print("TpHatBall", 3)
 			-- local perd = WARGON.make_spawn(guy, 'tp_perd')
 			-- guy:Remove()
 			guy.tp_perd = true

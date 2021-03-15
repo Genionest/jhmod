@@ -278,13 +278,15 @@ local function sp_player_build_sg_fn(sg)
 		morph_sp 	= "science_morph",
 		callbeast_sp = "tp_call_beasts",
 		beefalo_sp = "tp_spawn_beefalo",
+		rider_sp = "tp_spawn_beefalo",
+		shadow_sp = "tp_spawn",
 	}
 	local old_handler = sg.actionhandlers[ACTIONS.BUILD].deststate
     sg.actionhandlers[ACTIONS.BUILD].deststate = function(inst, action)
         if not inst.sg:HasStateTag('busy') then
             if action.doer and action.doer.prefab == "wilson" then
 	            if action.recipe and tbl[action.recipe] then
-	            	print(tbl[action.recipe])
+	            	-- print(tbl[action.recipe])
 	            	return tbl[action.recipe]
 	            end
 	        end
@@ -400,12 +402,8 @@ local function member_sg(sg_name)
 					inst.components.combat:DoAttack()
 					inst.sg:RemoveStateTag('attack')
 					inst.sg:RemoveStateTag('busy')
-					if inst:HasTag("tp_pig_fire") then
-						inst.components.talker:Say(STRINGS.TP_STR.tp_pig_fire)
-					elseif inst:HasTag("tp_pig_ice") then
-						inst.components.talker:Say(STRINGS.TP_STR.tp_pig_ice)
-					elseif inst:HasTag("tp_pig_poison") then
-						inst.components.talker:Say(STRINGS.TP_STR.tp_pig_poison)
+					if inst.components.talker then
+						inst.components.talker:Say(STRINGS.TP_STR[inst.prefab])
 					end
 				end},
 			},

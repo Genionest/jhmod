@@ -41,7 +41,7 @@ function TpRecharge:DoDelta(dt)
 end
 
 function TpRecharge:SetRechargeTime(max)
-	self.max = max
+	self.max = max or self.max
 	self.current = 0
 	self:Start()
 end

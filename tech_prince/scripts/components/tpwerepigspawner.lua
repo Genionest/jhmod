@@ -2,6 +2,7 @@ local TpWerePigSpawner = Class(function(self, inst)
 	self.inst = inst
 	self.followers = {}
 	self.num_followers = 0
+	self.pigs = {}
 end)
 
 function TpWerePigSpawner:RemoveFollower(follower)
@@ -26,19 +27,21 @@ end
 
 function TpWerePigSpawner:SpawnJack()
 	local inst = self.inst
-	local pigs = {
-		"tp_pig_fire", "tp_pig_ice", "tp_pig_poison",
-	}
-	for i, v in pairs(pigs) do
-		if self.inst.components.leader:CountFollowers(v) == 0 then
-			local pos = WARGON.around_land(self.inst, 15)
-			if pos and WARGON.on_land(inst, pos) then
-				local pigman = WARGON.make_spawn(pos, v)
-				self.inst.components.leader:AddFollower(pigman)
-				WARGON.make_fx(pos, 'statue_transition')
-				WARGON.make_fx(pos, 'statue_transition_2')
+	for k, v in pairs(self.pigs) do
+		-- if self.inst.components.leader:CountFollowers(k) < v then
+			for i = 1, v do
+				if self.inst.components.leader:CountFollowers(k) >= v then
+					break
+				end
+				local pos = WARGON.around_land(self.inst, 15)
+				if pos and WARGON.on_land(inst, pos) then
+					local pigman = WARGON.make_spawn(pos, k)
+					self.inst.components.leader:AddFollower(pigman)
+					WARGON.make_fx(pos, 'statue_transition')
+					WARGON.make_fx(pos, 'statue_transition_2')
+				end
 			end
-		end
+		-- end
 	end
 end
 
@@ -63,7 +66,7 @@ function TpWerePigSpawner:CallNear(pigs)
 	local inst = self.inst
 	for k, v in pairs(pigs) do
 		if k and not k:IsNear(inst, 30) then
-			print("TpWerePigSpawner", k.prefab)
+			-- print("TpWerePigSpawner", k.prefab)
 			local pos = WARGON.around_land(inst, 10)
 			if pos and WARGON.on_land(inst, pos) then
 				k.Transform:SetPosition(pos:Get())
@@ -87,7 +90,7 @@ end
 
 function TpWerePigSpawner:BeastPig()
 	local inst = self.inst
-	local ents = WARGON.finds(inst, 15, {'pig'}, {'werepig'})
+	local ents = WARGON.finds(inst, 15, {'pig'}, {'werepig', "tp_call_beast"})
 	for i, v in pairs(ents) do
 		if v.components.werebeast
 		and not v.components.werebeast:IsInWereState() then

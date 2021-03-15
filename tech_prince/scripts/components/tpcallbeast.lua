@@ -12,6 +12,7 @@ function CallBeast:MagicBeast(target)
 	target:RemoveComponent("poisonable")
 	target:RemoveComponent("freezable")
 	target:AddTag("tp_call_beast")
+	target:AddTag("tp_call_beast")
 	local monster = WARGON.find(target, 20, nil, {"monster"})
 	if monster then
 		target.components.combat:SetTarget(monster)

@@ -1,18 +1,26 @@
 local ScienceMorph = Class(function(self, inst)
 	self.inst = inst
 	self.builds = {
-		v = "wilson_victorian",
-		m = "wilson_madscience",
+		-- v = TP_SKIN_HAD and "wilson_victorian" or "wilson",
+		-- m = TP_SKIN_HAD and "wilson_madscience" or "wilson",
+		v = "wilson",
+		m = "wilson",
 		w = "wilson",
+		p = "werepig_build",
 	}
 	self.cur = 'w'
 	self.fx = nil
-	inst:ListenForEvent("tp_madvalue_empty", function()
-		self:UnMad()
-	end)
+	-- inst:ListenForEvent("tp_madvalue_empty", function()
+	-- 	self:UnMad()
+	-- end)
 end)
 
-function ScienceMorph:WithChange(tags, no_tags, sci, hunger, mag)
+function ScienceMorph:WithChange(data)
+	local tags = data.tags
+	local no_tags = data.no_tags
+	local sci = data.sci
+	local hunger = data.hunger
+	local mag = data.mag
 	if type(tags) == "table" then
 		for i, v in pairs(tags) do
 			self.inst:AddTag(v)
@@ -29,10 +37,16 @@ function ScienceMorph:WithChange(tags, no_tags, sci, hunger, mag)
 	end
 	self.inst.components.builder.science_bonus = sci
 	self.inst.components.builder.magic_bonus = mag
-	self.inst.components.hunger:SetRate(TUNING.WILSON_HUNGER_RATE*hunger)
+	-- self.inst.components.hunger:SetRate(TUNING.WILSON_HUNGER_RATE*hunger)
+	self.inst.components.hunger:AddBurnRateModifier("tech_prince", hunger)
+	self.inst.components.sanity.dapperness = data.san
+	self.inst.components.locomotor:AddSpeedModifier_Mult("tech_prince", data.speed)
 end
 
 function ScienceMorph:Morph(sym)
+	if self.inst:HasTag("tp_no_morph") then
+		return
+	end
 	local old = self.cur
     if not sym then
 		if self.cur ~= "w" then
@@ -43,7 +57,7 @@ function ScienceMorph:Morph(sym)
 		local clock = GetWorld().components.clock
 	    if (clock:IsNight() and clock:GetMoonPhase() == "full") then
 	    	self.cur = "m"
-	    	self.inst.components.tpmadvalue:SetPercent(1)
+	    	-- self.inst.components.tpmadvalue:SetPercent(1)
 	    end
 	else
     	self.cur = sym
@@ -58,6 +72,14 @@ function ScienceMorph:UnMad()
 		self.inst.sg:GoToState("science_morph2")
 		self:Morph("w")
 	end
+	-- if self.cur == "p" then
+	-- 	self.inst:RemoveTag("tp_no_morph")
+	-- 	self.inst.AnimState:SetBank("wilson")
+	-- 	self.inst.AnimState:SetBuild("wilson")
+	-- 	self.inst:SetStateGraph("SGwilson")
+	-- 	self.inst.sg:GoToState("science_morph2")
+	-- 	self:Morph("w")
+	-- end
 end
 
 local function fly_do_trail(inst)
@@ -114,23 +136,67 @@ end
 function ScienceMorph:SetBuild()
 	self.inst.AnimState:SetBuild(self.builds[self.cur])
 	if self.cur == "v" then
-		self:WithChange('tech_prince', 'mad_prince', 1, 2, 0)
+		-- self:WithChange('tech_prince', 'mad_prince', 1, 25, 0)
+		self:WithChange({
+			tags = 'tech_prince', 
+			no_tags = 'mad_prince', 
+			sci = 1, 
+			hunger = .25, 
+			mag = 0,
+			san = TUNING.DAPPERNESS_MED_LARGE,
+			speed = .1,
+		})
 		self:SetFx()
-		self.inst.components.sanity.dapperness = TUNING.DAPPERNESS_MED_LARGE
-		self.inst.components.tpmadvalue:Stop()
-		self.inst.components.locomotor:AddSpeedModifier_Additive("mad_prince", 0)
+		-- self.inst.components.sanity.dapperness = TUNING.DAPPERNESS_MED_LARGE
+		-- self.inst.components.tpmadvalue:Stop()
+		-- self.inst.components.locomotor:AddSpeedModifier_Mult("tech_prince", .1)
 	elseif self.cur == "m" then
-		self:WithChange('mad_prince', 'tech_prince', 0, 1, 2)
+		-- self:WithChange('mad_prince', 'tech_prince', 0, 0, 2)
+		self:WithChange({
+			tags = 'mad_prince',
+			no_tags = 'tech_prince', 
+			sci = 0, 
+			hunger = 0, 
+			mag = 2,
+			san = -TUNING.DAPPERNESS_MED_LARGE,
+			speed = .25,
+		})
 		self:SetFx()
-		self.inst.components.sanity.dapperness = -TUNING.DAPPERNESS_MED_LARGE
-		self.inst.components.tpmadvalue:Start()
-		self.inst.components.locomotor:AddSpeedModifier_Additive("mad_prince", .25)
+		-- self.inst.components.sanity.dapperness = -TUNING.DAPPERNESS_MED_LARGE
+		-- self.inst.components.tpmadvalue:Start()
+		-- self.inst.components.locomotor:AddSpeedModifier_Mult("tech_prince", .25)
 	elseif self.cur == "w" then
 		self:SetFx()
-		self:WithChange(nil, {'tech_prince', 'mad_prince'}, 0, 1, 0)
-		self.inst.components.sanity.dapperness = 0
-		self.inst.components.tpmadvalue:Stop()
-		self.inst.components.locomotor:AddSpeedModifier_Additive("mad_prince", 0)
+		self:WithChange({
+			tags = nil, 
+			no_tags = {'tech_prince', 'mad_prince'}, 
+			sci = 0, 
+			hunger = 0, 
+			mag = 0,
+			san = 0,
+			speed = 0,
+		})
+		-- self.inst.components.sanity.dapperness = 0
+		-- self.inst.components.tpmadvalue:Stop()
+		-- self.inst.components.locomotor:AddSpeedModifier_Mult("tech_prince", 0)
+	elseif self.cur == "p" then
+		self:SetFx()
+		self:WithChange({
+			tags = nil, 
+			no_tags = {'tech_prince', 'mad_prince'}, 
+			sci = 0, 
+			hunger = 0, 
+			mag = 0,
+			san = 0,
+			speed = 0,
+		})
+		-- self.inst.components.sanity.dapperness = 0
+		-- self.inst.components.tpmadvalue:Start()
+		self.inst.AnimState:SetBank("pigman")
+		self.inst:SetStateGraph("SGwerepig")
+		self.inst.sg:GoToState("idle")
+		self.inst:AddTag("tp_no_morph")
+		self.inst.components.inventory:DropEverything()
 	end
 	self.inst:PushEvent("tp_morph", {cur=self.cur})
 end

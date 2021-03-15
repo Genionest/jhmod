@@ -4,6 +4,9 @@ local small_bird_shadow = {1.25, .75}
 local teen_birds = {'tallbird', 'tp_teen_bird', 'idle'}
 local teen_bird_phy = {'char', 10, .25}
 local teen_bird_shadow = {2.75, 1}
+local krampuses = {'krampus', "krampus_hawaiian_build", "run_loop"}
+local krampus_phy = {'char', 10, .5}
+local krampus_shadow = {3, 1}
 
 local function bird_on_save(inst, data)
 	local ents
@@ -136,7 +139,7 @@ local function bird_fn(inst, fn)
     	loco = {walk=6},
     	follow = {},
     	eat = {typ='all', eat=bird_eat},
-    	sleep = {resist=3, sleep=bird_sleep_test, wake=bird_wake_test},
+    	-- sleep = {resist=3, sleep=bird_sleep_test, wake=bird_wake_test},
     	trader = {test=bird_trader_test, accept=bird_trader_accept},
     	combat = {symbol='head', range=TUNING.SMALLBIRD_ATTACK_RANGE,
 			dmg=TUNING.SMALLBIRD_DAMAGE, per=TUNING.SMALLBIRD_ATTACK_PERIOD,
@@ -151,6 +154,12 @@ local function bird_fn(inst, fn)
 		follow_leader = bird_follow_leader,
 		get_peep_chance = bird_get_peep_chance,
 		spawn_teen = bird_spawn_teen,
+	}
+	inst.userfunctions = {
+		FollowLeader = bird_follow_leader,
+		GetPeepChance = bird_get_peep_chance,
+		SpawnTeen = bird_spawn_teen,
+		SpawnAdult = function() end,
 	}
 	WARGON.add_listen(inst, {
 		attacked = bird_on_attacked,
@@ -198,7 +207,7 @@ local function small_bird_fn(inst)
 		})
 	local growth_stages = {
         -- {name="small", time = TUNING.SMALLBIRD_GROW_TIME, fn = function() end },
-        {name="small", time = function() return TUNING.SMALLBIRD_GROW_TIME end, fn = function() end },
+        {name="small", time = function() return 30*16*5 end, fn = function() end },
         {name="tall", fn = function() inst.sg:GoToState("growup") end}
     }
 
@@ -231,6 +240,64 @@ local function teen_bird_fn(inst)
 	inst:SetStateGraph('SGtallbird')
 end
 
+local function pot_bird_fn(inst)
+	teen_bird_fn(inst)
+	inst:add_cmps({
+		loot = {},
+	})
+	inst:AddTag("tp_pot_bird")
+	inst:DoTaskInTime(1.5, function(inst)
+        if not TheSim:FindFirstEntityWithTag("tp_pot_bird_egg") then
+            inst:Remove()
+        end
+	end)
+	inst.OnSave = nil
+	inst.OnLoad = nil
+end
+
+local function on_red_dragon_death(inst, data)
+	if inst.components.container then
+		inst.components.container:Close()
+		inst.components.container:DropEverything()
+	end
+end
+
+local function red_dragon_fn(inst)
+	inst.AnimState:Hide("ARM")
+	local slotpos = {}
+	for y = 0, 6 do
+		table.insert(slotpos, Vector3(-162, -y*75 + 240 ,0))
+		table.insert(slotpos, Vector3(-162 +75, -y*75 + 240 ,0))
+	end
+	inst:add_tags({
+		"scarytoprey", "monster", "scary_to_pig_guards", "krampus",
+		"INTERIOR_LIMBO_IMMUNE", "tp_red_dragon", "companion",
+	})
+	inst:add_cmps({
+		inspect = {},
+		follow = {},
+		cont = {},
+		loco = {run=TUNING.KRAMPUS_SPEED},
+		sleep = {},
+		health = {max=400,
+			regen={TUNING.CHESTER_HEALTH_REGEN_AMOUNT, 
+				TUNING.CHESTER_HEALTH_REGEN_PERIOD}, },
+		combat = {symbol="krampus_torso", dmg=TUNING.KRAMPUS_DAMAGE,
+			per=TUNING.KRAMPUS_ATTACK_PERIOD},
+		loot = {},
+		knownlocations = {},
+	})
+    inst.components.container:SetNumSlots(#slotpos)
+    inst.components.container.widgetslotpos = slotpos
+    inst.components.container.widgetanimbank = "ui_krampusbag_2x8"
+    inst.components.container.widgetanimbuild = "ui_krampusbag_2x8"
+    inst.components.container.widgetpos = Vector3(0,200,0)
+	inst.components.container.side_align_tip = 160 
+	inst:add_listener("death", on_red_dragon_death)
+	inst:SetStateGraph("SGkrampus")
+	inst:SetBrain(require "brains/chesterbrain")
+end
+
 local function MakePet(name, anims, phys, shadows, faced, pet_fn)
 	local function fn()
 		local inst = WARGON.make_prefab(anims, nil, phys, shadows, faced)
@@ -246,5 +313,10 @@ local function MakePet(name, anims, phys, shadows, faced, pet_fn)
 end
 
 return 
-	MakePet('tp_small_bird', small_birds, small_bird_phy, small_bird_shadow, 4, small_bird_fn),
+	MakePet('tp_small_bird', small_birds, small_bird_phy, small_bird_shadow, 
+		4, small_bird_fn),
+	MakePet('tp_pot_bird', teen_birds, teen_bird_phy, teen_bird_shadow, 
+		4, pot_bird_fn),
+	MakePet('tp_red_dragon', krampuses, krampus_phy, krampus_shadow, 
+		4, red_dragon_fn),
 	MakePet('tp_teen_bird', teen_birds, teen_bird_phy, teen_bird_shadow, 4, teen_bird_fn)

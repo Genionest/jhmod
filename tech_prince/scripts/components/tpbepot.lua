@@ -1,6 +1,7 @@
 local TpBePot = Class(function(self, inst)
 	self.inst = inst
 	self.pot = "tp_cook_pot"
+	self.cookpot = nil
 end)
 
 function TpBePot:CanChange()
@@ -19,6 +20,9 @@ function TpBePot:Hide()
 end
 
 function TpBePot:BePot()
+	if not self:CanChange() then
+		return 
+	end
 	local inst = self.inst
 	if inst.components.sleeper and inst.components.sleeper:IsAsleep() then
         inst.components.sleeper:WakeUp()
@@ -31,6 +35,7 @@ function TpBePot:BePot()
 			local pot = WARGON.make_spawn(pos, self.pot)
 			pot.components.tpbebird.bird = inst
 			pot:AddChild(self.inst)
+			self.cookpot = pot
 		end)
     end
 end

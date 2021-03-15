@@ -6,7 +6,7 @@ local function add_asset(assets, asset, asset_type)
 	table.insert(assets, a)
 end
 
-local function add_recipe(name, ingd, tab, tech, game, atlas, img, placer)
+local function add_recipe(name, ingd, tab, tech, game, placer, aquatic)
 	local rec_tab = GLOBAL.RECIPETABS or RECIPETABS
 	local tab_tbl = {
 		lig = rec_tab.LIGHT,
@@ -75,14 +75,17 @@ local function add_recipe(name, ingd, tab, tech, game, atlas, img, placer)
 		end
 	end
 	local rcp = GLOBAL.Recipe(name, ingredients, tab_tbl[tab] or tab, tech_tbl[tech], game_type, placer)
-	if atlas then rcp.atlas = "images/"..atlas..".xml" end
-	if img then rcp.image = img..'.tex' end
+	if aquatic then
+		rcp = GLOBAL.Recipe(name, ingredients, tab_tbl[tab] or tab, tech_tbl[tech], game_type, placer, nil, nil, nil, true, 4)
+	end
+	-- if atlas then rcp.atlas = "images/"..atlas..".xml" end
+	-- if img then rcp.image = img..'.tex' end
 
 	return rcp
 end
 
 local function add_map(atlas)
-	AddMinimapAtlas("images/"..atlas..".xml")  
+	AddMinimapAtlas("images/"..atlas..".xml")
 end
 
 local function add_print(str, x)
@@ -167,33 +170,35 @@ local function make_prefab(anims, float_anim, phy, shadows, faced, fn)
 	return inst
 end
 
--- local function make_fx(pos, anims, loop, fn)
--- 	local inst = CreateEntity()
--- 	local trans = inst.entity:AddTransform()
--- 	local anim = inst.entity:AddAnimState()
--- 	local snd = inst.entity:AddSoundEmitter()
+local function create_fx(pos, anims, loop, fn)
+	local inst = CreateEntity()
+	local trans = inst.entity:AddTransform()
+	local anim = inst.entity:AddAnimState()
+	local snd = inst.entity:AddSoundEmitter()
 
--- 	local bank = anims and anims[1] or ''
--- 	local build = anims and anims[2] or ''
--- 	local anim_name = anims and anims[3] or ''
--- 	anim:SetBank(bank)
--- 	anim:SetBuild(build)
--- 	anim:PlayAnimation(anim_name, loop)
+	local bank = anims and anims[1] or ''
+	local build = anims and anims[2] or ''
+	local anim_name = anims and anims[3] or ''
+	anim:SetBank(bank)
+	anim:SetBuild(build)
+	anim:PlayAnimation(anim_name, loop)
 
--- 	if pos then
--- 		trans:SetPosition(pos:Get())
--- 	end
+	if pos.GetPosition then
+		trans:SetPosition(pos:GetPosition():Get())
+	elseif pos.Get then
+		trans:SetPosition(pos:Get())
+	end
 
--- 	inst:AddTag('FX')
--- 	inst:AddTag('NOCLICK')
--- 	inst.persists = false
+	inst:AddTag('FX')
+	inst:AddTag('NOCLICK')
+	inst.persists = false
 
--- 	if fn then
--- 		fn(inst)
--- 	end
+	if fn then
+		fn(inst)
+	end
 
--- 	return inst
--- end
+	return inst
+end
 
 local function make_fx(pos, fx_name, is_follow)
 	local fx = SpawnPrefab(fx_name)
@@ -222,7 +227,12 @@ local function make_light(inst, falloff, intensity, radius, colour, enable)
 end
 
 local function make_map(inst, img, typ)
-	local minimap = inst.entity:AddMiniMapEntity()
+	local minimap = nil
+	if inst.MiniMapEntity then
+		minimap = inst.MiniMapEntity
+	else
+		minimap = inst.entity:AddMiniMapEntity()
+	end
 	if typ then
 		minimap:SetIcon( img.."."..typ )
 	else
@@ -347,12 +357,12 @@ local function per_task(inst, ...)
 	return inst:DoPeriodicTask(...)
 end
 
-local function around_land(inst, dist)
+local function around_land(inst, dist, attemp)
 	local theta = math.random() * 2 * PI
     local pt = inst:GetPosition()
     -- local radius = math.random(3, 6)
     local radius = dist
-    local offset = FindWalkableOffset(pt, theta, radius, 12, true)
+    local offset = FindWalkableOffset(pt, theta, radius, attemp or 12, true)
     if offset then
         local pos = pt + offset
         return pos
@@ -371,8 +381,8 @@ local function key_up(key, fn)
 	TheInput:AddKeyUpHandler(key, fn)
 end
 
-local function area_dmg(inst, range, attacker, dmg, reason)
-	local ents = WARGON.finds(inst, range, nil, {"player", "wall", "FX", "NOCLICK", "INLIMBO"})
+local function area_dmg(inst, range, attacker, dmg, reason, fn)
+	local ents = WARGON.finds(inst, range, nil, {"player", "wall", "companion", "FX", "NOCLICK", "INLIMBO"})
 	local attacker = attacker or inst
 	for i, v in pairs(ents) do
 		if attacker then
@@ -380,13 +390,14 @@ local function area_dmg(inst, range, attacker, dmg, reason)
 				if v.components.combat and v.components.health
 				and attacker.components.combat:CanTarget(v) then
 					v.components.combat:GetAttacked(attacker, dmg, inst, reason)
+					if fn then fn(inst, attacker, v) end
 				end
 			end
 		end
 	end
 end
 
-local function fire_prefab(target)
+local function fire_prefab(target, attacker)
 	if target.components.burnable and not target.components.burnable:IsBurning() then
         if target.components.freezable and target.components.freezable:IsFrozen() then           
             target.components.freezable:Unfreeze()            
@@ -425,7 +436,7 @@ local function fire_prefab(target)
     target:PushEvent("attacked", { attacker = attacker, damage = 0 })
 end
 
-local function frozen_prefab(target)
+local function frozen_prefab(target, attacker, num)
 	if not target:IsValid() then
         return
     end
@@ -446,7 +457,7 @@ local function frozen_prefab(target)
     end
 
     if target.components.freezable then
-        target.components.freezable:AddColdness(1)
+        target.components.freezable:AddColdness(num or 1)
         target.components.freezable:SpawnShatterFX()
     end
 end
@@ -457,12 +468,18 @@ local function poison_prefab(target)
     end 
 end
 
+local function sleep_prefab(target)
+	if target.components.sleeper then
+	    target.components.sleeper:AddSleepiness(10, TUNING.PANFLUTE_SLEEPTIME, target)
+	end
+end
+
 local function shake_camera(inst)
 	GetPlayer().components.playercontroller:ShakeCamera(inst, "FULL", 0.7, 0.02, 2, 40)
 end
 
-local function pigking_throw(inst, item)
-	local nut = item
+local function pigking_throw(inst, nug)
+	-- local nug = item
     local pt = Vector3(inst.Transform:GetWorldPosition()) + Vector3(0,4.5,0)
     
     nug.Transform:SetPosition(pt:Get())
@@ -478,21 +495,25 @@ end
 
 local function set_scale(inst, ...)
 	local args = {...}
-	if #args == 1 then
-		local s = args[1]
-		inst.Transform:SetScale(s,s,s)
-	else
-		inst.Transform:SetScale(...)
+	if inst.Transform then
+		if #args == 1 then
+			local s = args[1]
+			inst.Transform:SetScale(s,s,s)
+		else
+			inst.Transform:SetScale(...)
+		end
 	end
 end
 
 local function set_pos(inst, ...)
 	local args = {...}
-	if #args == 1 then
-		local x = args[1]
-		inst.Transform:SetPosition(x,x,x)
-	else
-		inst.Transform:SetPosition(...)
+	if inst.Transform then
+		if #args == 1 then
+			local x = args[1]
+			inst.Transform:SetPosition(x,x,x)
+		else
+			inst.Transform:SetPosition(...)
+		end
 	end
 end
 
@@ -529,6 +550,18 @@ end
 local function remove_hunger_rate(inst, ...)
 	if inst.components.hunger then
 		inst.components.hunger:RemoveBurnRateModifier(...)
+	end
+end
+
+local function add_san_rate(inst, ...)
+	if inst.components.sanity then
+		inst.components.sanity:AddRateModifier(...)
+	end
+end
+
+local function remove_san_rate(inst, ...)
+	if inst.components.sanity then
+		inst.components.sanity:RemoveRateModifier(...)
 	end
 end
 
@@ -579,9 +612,9 @@ local function is_monster(inst)
 		or inst:HasTag("spider_monkey")
 end
 
-local function play_snd(inst, snd)
+local function play_snd(inst, ...)
 	if inst.SoundEmitter then
-		inst.SoundEmitter:PlaySound(snd)
+		inst.SoundEmitter:PlaySound(...)
 	end
 end
 
@@ -610,6 +643,132 @@ local function get_config(key)
 	return GetModConfigData(key)
 end
 
+local function has_tag(inst, tags)
+	for k, v in pairs(tags) do
+		if inst:HasTag(v) then
+			return true
+		end
+	end
+	return false
+end
+
+local function has_tags(inst, tags)
+	for k, v in pairs(tags) do
+		if not inst:HasTag(v) then
+			return false
+		end
+ 	end
+ 	return true
+end
+
+local function get_years()
+	local days = GetClock():GetNumCycles()
+	local years = math.floor(days/70) + 1
+	return years
+end
+
+local function get_days()
+	local days = GetClock():GetNumCycles()
+	return days
+end
+
+local function get_dist(inst, target)
+	return inst:GetDistanceSqToInst(target)
+end
+
+local function is_full_moon()
+	local clock = GetClock()
+	if clock:IsNight() and clock:GetMoonPhase() == "full" then
+		return true
+	end
+end
+
+local function face_target(inst, target)
+	if target.GetPosition then
+		inst:ForceFacePoint(target:GetPosition())
+	elseif target.Get then
+		inst:ForceFacePoint(target)
+	end
+end
+
+local function can_throns(inst, data)
+	if (data.weapon == nil or (not data.weapon:HasTag("projectile") 
+	and data.weapon.projectile == nil)) and data.attacker 
+	and data.attacker.components.combat and data.stimuli ~= "thorns" 
+	and not data.attacker:HasTag("thorny") 
+	and (data.attacker.components.combat == nil 
+	or (data.attacker.components.combat.defaultdamage > 0))
+	and data.damage and data.damage > 0 then
+		return true
+	end
+end
+
+local function resolve_img_path(img)
+	if img then
+		local atlas = "images/inventoryimages"
+		if string.find(img, "#") then
+			img = string.sub(img, 1, -2)
+			atlas = atlas.."/"..img
+		elseif img > "torch" then
+			atlas = atlas.."_2"
+		end
+		return atlas..".xml", img..".tex"
+	end
+end
+
+local function get_screen_size()
+	local scr_w, scr_h = TheSim:GetScreenSize()
+	return scr_w/1920
+end
+
+local function spawn_tornado(inst, target)
+	local function getspawnlocation(inst, target)
+	    local tarPos = target:GetPosition()
+	    local pos = inst:GetPosition()
+	    local vec = tarPos - pos
+	    vec = vec:Normalize()
+	    local dist = pos:Dist(tarPos)
+	    return pos + (vec * (dist * .15))
+	end
+	target = target or inst
+	local tornado = SpawnPrefab("tornado")
+	tornado:AddTag("tp_wind_attack_target")
+	tornado.WINDSTAFF_CASTER = inst
+	local spawnPos = inst:GetPosition() + TheCamera:GetDownVec()
+	local totalRadius = target.Physics and target.Physics:GetRadius() or 0.5 + tornado.Physics:GetRadius() + 0.5
+	local targetPos = target:GetPosition() + (TheCamera:GetDownVec() * totalRadius)
+	tornado.Transform:SetPosition(getspawnlocation(inst, target):Get())
+	tornado.components.knownlocations:RememberLocation("target", targetPos)
+end
+
+local function flc_get(fn,name,maxlevel,max,level,file)
+	if type(fn) ~= "function" then
+		return
+	end
+	local maxlevel = maxlevel or 5
+	local level = level or 0
+	local max = max or 20
+	for i=1,max,1 do
+		local upname,upvalue = debug.getupvalue(fn,i)
+		if upname and upname == name then
+			if file and type(file) == "string" then
+				local fninfo = debug.getinfo(fn)
+				if fninfo.source and fninfo.source:match(file) then
+					return upvalue
+				end
+			else
+				return upvalue
+			end
+		end
+		if level < maxlevel and upvalue and type(upvalue) == "function" then
+			local upupvalue = flc_get(upvalue,name,maxlevel,max,level+1,file)
+			if upupvalue then
+				return upupvalue
+			end
+		end
+	end
+end
+
 GLOBAL.WARGON = {
 	add_asset 			= add_asset,
 	add_recipe 			= add_recipe,
@@ -621,19 +780,21 @@ GLOBAL.WARGON = {
 	add_speed_rate		= add_speed_rate,
 	add_dmg_rate		= add_dmg_rate,
 	add_hunger_rate		= add_hunger_rate,
+	add_san_rate 		= add_san_rate,
 	remove_tags 		= remove_tags,
 	remove_speed_rate 	= remove_speed_rate,
-	remove_dmg_rate 	= remove_speed_rate,
+	remove_dmg_rate 	= remove_dmg_rate,
 	remove_hunger_rate 	= remove_hunger_rate,
+	remove_san_rate 	= remove_san_rate,
 	make_prefab 		= make_prefab,
 	make_fx 			= make_fx,
 	make_spawn 			= make_fx,
 	make_light			= make_light,
 	make_map 			= make_map,
-	make_burn 			= make_burn,
-	make_prop 			= make_prop,
-	make_free 			= make_free,
-	make_blow 			= make_blow,
+	make_burn 			= make_burn,  
+	make_prop 			= make_prop,  -- 可传播燃烧
+	make_free 			= make_free,  -- 可冻
+	make_blow 			= make_blow,  -- 可吹
 	make_poi 			= make_poi,
 	set_scale 			= set_scale,
 	set_pos 			= set_pos,
@@ -646,7 +807,7 @@ GLOBAL.WARGON = {
 	find_close 			= find_close,
 	do_task 			= do_task,
 	per_task 			= per_task,
-	around_land 		= around_land,
+	around_land 		= around_land,  
 	no_save 			= no_save,
 	key_up 				= key_up,
 	key_down 			= key_down,
@@ -655,16 +816,29 @@ GLOBAL.WARGON = {
 	fire_prefab 		= fire_prefab,
 	frozen_prefab 		= frozen_prefab,
 	poison_prefab 		= poison_prefab,
-	pigking_throw		= pigking_throw,
-	burn_save 			= burn_save,
-	burn_load 			= burn_load,
-	seed_save 			= seed_save,
+	sleep_prefab		= sleep_prefab,
+	pigking_throw		= pigking_throw,  -- 猪王仍东西
+	burn_save 			= burn_save,  -- 可燃物保存
+	burn_load 			= burn_load,  -- 可燃物加载
+	seed_save 			= seed_save, 
 	seed_load 			= seed_load,
-	burn_bait 			= burn_bait,
+	burn_bait 			= burn_bait,  -- 龙蝇引燃
 	get_tile 			= get_tile,
 	can_deploy 			= can_deploy,
 	is_monster 			= is_monster,
 	play_snd 			= play_snd,
-	get_divide_point 	= get_divide_point,
+	get_divide_point 	= get_divide_point,  -- 获取周围若干的等分的几个点位
 	get_config 			= get_config,
+	has_tag 			= has_tag,  -- 至少拥有tag表里的一个tag
+	has_tags 			= has_tags,  -- 拥有tag表里的所有tag
+	get_years			= get_years,
+	get_days 			= get_days,
+	get_dist 			= get_dist,
+	is_full_moon 		= is_full_moon,
+	face_target 		= face_target,
+	can_throns 			= can_throns,  -- 是否可以反伤
+	resolve_img_path	= resolve_img_path,
+	get_screen_size		= get_screen_size,
+	spawn_tornado 		= spawn_tornado,
+	flc_get 			= flc_get,
 }

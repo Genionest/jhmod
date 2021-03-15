@@ -4,6 +4,9 @@ local pack_rabbits = {'backpack1', 'backpack_rabbit', 'anim', 'idle_water'}
 local pack_beefalos = {'backpack1', 'backpack_beefalo', 'anim', 'idle_water'}
 local pack_catcoons = {'backpack1', 'backpack_catcoon', 'anim', 'idle_water'}
 local pack_hounds = {'backpack1', 'backpack_hound', 'anim', 'idle_water'}
+local pack_deerclopses = {'backpack1', 'backpack_deerclops', 'anim', 'idle_water'}
+local pack_beargers = {'backcub', 'backcub', 'anim', 'idle_water'}
+local pack_giants = {'backpack1', 'giantsfoot', 'anim', 'idle_water'}
 
 local function onopen(inst)
 	inst.SoundEmitter:PlaySound("dontstarve/wilson/backpack_open", "open")
@@ -77,7 +80,7 @@ local function MakePack(name, anims, pack_equip_fn, pack_unequip_fn, pack_fn, pa
         inst.components.inventoryitem.foleysound = "dontstarve/movement/foley/backpack"
 
         inst:AddComponent("equippable")
-        inst.components.equippable.equipslot = EQUIPSLOTS.BODY
+        inst.components.equippable.equipslot = EQUIPSLOTS.BACK or EQUIPSLOTS.BODY
         
         inst.components.equippable:SetOnEquip( onequip )
         inst.components.equippable:SetOnUnequip( onunequip )
@@ -179,14 +182,22 @@ end
 
 local function beefalo_equip(inst, owner)
     common_equip(owner, "backpack_beefalo")
-    owner:AddTag('beefalo')
+    owner:AddTagNum("beefalo", 1)
+    -- owner:AddTag('beefalo')
+    -- if owner.components.tptagnum then
+    --     owner.components.tptagnum:DeltaTag("beefalo", 1)
+    -- end
 end
 
 local function beefalo_unequip(inst, owner)
-    local hat =  owner.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
-    if not (hat and hat.prefab == "beefalohat") then
-        owner:RemoveTag('beefalo')
-    end
+    -- local hat =  owner.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
+    -- if not (hat and hat.prefab == "beefalohat") then
+    --     owner:RemoveTag('beefalo')
+    -- end
+    -- if owner.components.tptagnum then
+    --     owner.components.tptagnum:DeltaTag("beefalo", -1)
+    -- end
+    owner:AddTagNum("beefalo", -1)
 end
 
 local function beefalo_fn(inst)
@@ -198,7 +209,7 @@ local function catcoon_equip(inst, owner)
         inst.task = WARGON.per_task(inst, 1, function()
             local spear = WARGON.find(owner, 10, nil, 
                 {"tp_catcoon_spear"}, {"projectile"})
-            if spear then
+            if spear and WARGON.on_land(spear) then
                 WARGON.make_fx(spear, "small_puff")
                 WARGON.make_fx(spear, "tp_fx_catcoon_pick")
                 if spear.components.tpproj then
@@ -234,6 +245,16 @@ local function hound_equip(inst, owner)
             end
         end)
     end
+    -- if inst.task2 == nil then
+    --     inst.task2 = inst:per_task(inst, 1, function()
+    --         local trap = inst.components.container:FindItem(function(item)
+    --             return item.prefab == "trap_teeth"
+    --         end)
+    --         if trap then
+    --             local ents = inst:wg_finds()
+    --         end
+    --     end)
+    -- end
 end
 
 local function hound_unequip(inst, owner)
@@ -243,7 +264,102 @@ local function hound_unequip(inst, owner)
     end
 end
 
-local function hound_fn(inst, owner)
+local function hound_fn(inst)
+end
+
+local function deerclops_equip(inst, owner)
+    common_equip(owner, "backpack_deerclops")
+    if inst.task == nil then
+        inst.task = WARGON.per_task(inst, 1, function()
+            for i, v in pairs(inst.components.container.slots) do
+                if v and v.components.perishable 
+                and not v:HasTag("tp_must_spoilsh") then
+                    local perishable = v.components.perishable
+                    local old_val = perishable.perishremainingtime
+                    perishable.perishremainingtime = perishable.perishremainingtime + 2
+                end
+            end
+        end)
+    end
+end
+
+local function deerclops_unequip(inst, owner)
+    if inst.task then
+        inst.task:Cancel()
+        inst.task = nil
+    end
+end
+
+local function deerclops_fn(inst)
+end
+
+local function giant_equip(inst, owner)
+    common_equip(owner, "giantsfoot")
+    owner:AddTag("groundpoundimmune")
+end
+
+local function giant_unequip(inst, owner)
+    owner:RemoveTag("groundpoundimmune")
+end
+
+local function giant_fn(inst)
+end
+
+local function bearger_eat(inst)
+    if inst.components.container then
+        local food = inst.components.container:FindItem(function(item)
+            return item.components.edible 
+                and item.components.edible.hungervalue > 0
+                and (item.components.edible.foodtype == "MEAT"
+                or item.components.edible.foodtype == "VEGGIE"
+                or item.components.edible.foodtype == "INSECT"
+                or item.components.edible.foodtype == "SEEDS"
+                or item.components.edible.foodtype == "GENERIC")
+        end)
+        if food then
+            if inst.components.tpvalue then
+                local dt = food.components.edible.hungervalue
+                inst.components.tpvalue:DoDelta(dt)
+                if food.components.stackable then
+                    food = food.components.stackable:Get()
+                end
+                food:Remove()
+            end
+        else
+            local my_owner = inst.components.equippable.owner
+            if my_owner then
+                my_owner.components.inventory:DropItem(inst)
+            end
+        end 
+    end
+end
+
+local function bearger_equip(inst, owner)
+    common_equip(owner, "backcub")
+end
+
+local function bearger_unequip(inst, owner)
+end
+
+local function bearger_fn(inst)
+    local slotpos = {}
+
+    for y = 0, 6 do
+        table.insert(slotpos, Vector3(-162, -y*75 + 240 ,0))
+        table.insert(slotpos, Vector3(-162 +75, -y*75 + 240 ,0))
+    end
+    inst.components.container:SetNumSlots(#slotpos)
+    inst.components.container.widgetslotpos = slotpos
+    inst.components.container.widgetanimbank = "ui_krampusbag_2x8"
+    inst.components.container.widgetanimbuild = "ui_krampusbag_2x8"
+    inst.components.container.widgetpos = Vector3(-5,-120,0)
+    inst.components.container.side_widget = true    
+    inst.components.container.type = "pack"
+
+    inst:AddComponent("tpvalue")
+    inst.components.tpvalue:SetMax(150)
+    inst.components.tpvalue:SetRate(TUNING.WILSON_HUNGER_RATE)
+    inst.components.tpvalue.empty = bearger_eat
 end
 
 return 
@@ -252,4 +368,7 @@ return
     MakePack("tp_pack_rabbit", pack_rabbits, rabbit_equip, nil, rabbit_fn, "backpack_rabbit"),
     MakePack("tp_pack_beefalo", pack_beefalos, beefalo_equip, beefalo_unequip, beefalo_fn, "backpack_beefalo"),
     MakePack("tp_pack_catcoon", pack_catcoons, catcoon_equip, catcoon_unequip, catcoon_fn, "backpack_catcoon"),
-    MakePack("tp_pack_hound", pack_hounds, hound_equip, hound_unequip, hound_fn, "backpack_hound")
+    MakePack("tp_pack_hound", pack_hounds, hound_equip, hound_unequip, hound_fn, "backpack_hound"),
+    MakePack("tp_pack_deerclops", pack_deerclopses, deerclops_equip, deerclops_unequip, deerclops_fn, "backpack_deerclops"),
+    MakePack("tp_pack_giant", pack_giants, giant_equip, giant_unequip, giant_fn, "giantsfoot"),
+    MakePack("tp_pack_bearger", pack_beargers, bearger_equip, bearger_unequip, bearger_fn, "backcub")

@@ -13,7 +13,7 @@ local assets =
 
 local prefabs = 
 {
-    -- "shadowwaxwell_boat",
+    "shadowwaxwell_boat",
 }
 
 local items =
@@ -145,6 +145,7 @@ local function onstartfollow(inst, data)
     inst:ListenForEvent("dismountboat", inst.dismountfn, leader)
 end
 
+local function create_fn(short)
 local function fn()
     local inst = CreateEntity()
     local trans = inst.entity:AddTransform()
@@ -175,6 +176,7 @@ local function fn()
     inst:AddTag("amphibious")
     inst:AddTag("scarytoprey")
     --inst:AddTag("NOCLICK")
+    inst:AddTag("tp_unreal_wilson")
 
     inst:AddComponent("colourtweener")
     inst.components.colourtweener:StartTween({0,0,0,.5}, 0)
@@ -210,7 +212,7 @@ local function fn()
     inst.items = items
     inst.equipfn = EquipItem
 
-    inst.lifetime = TUNING.SHADOWWAXWELL_LIFETIME
+    inst.lifetime = short and 30 or TUNING.SHADOWWAXWELL_LIFETIME
     inst.death = inst:DoTaskInTime(inst.lifetime, die)
 
     inst.OnSave = onsave
@@ -232,8 +234,13 @@ local function fn()
     inst:ListenForEvent("stopfollowing", onstopfollow)
     inst:ListenForEvent("onremove", onremove)
 
-
     return inst
 end
-
+if short then
+    return Prefab("common/tp_unreal_short_wilson", fn, {})
+else
 return Prefab("common/tp_unreal_wilson", fn, assets, prefabs)
+end
+end
+
+return create_fn(),create_fn(true)

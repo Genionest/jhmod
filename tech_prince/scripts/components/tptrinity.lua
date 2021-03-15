@@ -29,7 +29,7 @@ function TpTrinity:ChangeCur()
 	end
 end
 
-function TpTrinity:Change(cur)
+function TpTrinity:Change(cur, original)
 	if cur == nil then
 		self:ChangeCur()
 	else
@@ -38,6 +38,11 @@ function TpTrinity:Change(cur)
 	if self.inst.components.inventoryitem then
 		local atlas, img = self:GetImage()
 		local the_atlas = "images/inventoryimages/"..atlas..".xml"
+		if original == 1 then
+			the_atlas = "images/inventoryimages.xml"
+		elseif original == 2 then
+			the_atlas = "images/inventoryimages_2.xml"
+		end
 		self.inst.components.inventoryitem.atlasname = the_atlas
 		self.inst.components.inventoryitem:ChangeImageName(img)
 		if self.inst.components.equippable then

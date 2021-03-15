@@ -1,4 +1,7 @@
 local pigs = {"pigman", "pig_build", "idle_loop"}
+local Anims = {
+	pig = {"pigman", "pig_build", "idle_loop", },
+}
 local pig_phy = {'char', 50, .5}
 local pig_shadow = {1.5, 7.5}
 
@@ -13,6 +16,21 @@ local ice_randloot = {
 local poison_randloot = {
 	meat = 3,
 	venomgland = 1,
+}
+
+local thunder_randloot = {
+	meat = 3,
+	goldnugget = 1,
+}
+
+local blood_randloot = {
+	meat = 3,
+	mosquitosack = 1,
+}
+
+local shadow_randloot = {
+	meat = 3,
+	nightmarefuel = 1,
 }
 
 local share_target_dist = 30
@@ -96,12 +114,14 @@ end
 
 local function pig_keep(inst, target)
 	return inst.components.combat:CanTarget(target)
+		and not target:HasTag("tp_pig")
 end
 
 local function pig_retarget(inst, target)
 	return WARGON.find(inst, TUNING.PIG_TARGET_DIST, function(guy)
 		return guy:HasTag("monster") and guy.components.health 
 		and not guy.components.health:IsDead() and inst.components.combat:CanTarget(guy)
+		and not guy:HasTag("tp_pig")
 	end)
 end
 
@@ -126,25 +146,6 @@ local function fire_atk(inst, target, damage)
     end
 end
 
-local function ice_atk(inst, target, damage)
-    if target.components.freezable then
-        target.components.freezable:AddColdness(1)
-        target.components.freezable:SpawnShatterFX()
-    end
-    if target.components.sleeper and target.components.sleeper:IsAsleep() then
-        target.components.sleeper:WakeUp()
-    end
-    if target.components.burnable and target.components.burnable:IsBurning() then
-        target.components.burnable:Extinguish()
-    end
-end
-
-local function poison_atk(inst, target, damage)
-	if target.components.poisonable and target:HasTag("poisonable") then
-        target.components.poisonable:Poison()
-    end 
-end
-
 local function pig_fire_fn(inst)
 	WARGON.do_task(inst, 0, function()
 		inst.task = WARGON.per_task(inst, .2, function()
@@ -159,6 +160,19 @@ local function pig_fire_fn(inst)
 	 --    local follower = inst.fx.entity:AddFollower()
 		-- follower:FollowSymbol( inst.GUID, "arm", 0, 2, 0 )
 	end)
+end
+
+local function ice_atk(inst, target, damage)
+    if target.components.freezable then
+        target.components.freezable:AddColdness(1)
+        target.components.freezable:SpawnShatterFX()
+    end
+    if target.components.sleeper and target.components.sleeper:IsAsleep() then
+        target.components.sleeper:WakeUp()
+    end
+    if target.components.burnable and target.components.burnable:IsBurning() then
+        target.components.burnable:Extinguish()
+    end
 end
 
 local function pig_ice_fn(inst)
@@ -178,6 +192,12 @@ local function pig_ice_fn(inst)
 	end)
 end
 
+local function poison_atk(inst, target, damage)
+	if target.components.poisonable and target:HasTag("poisonable") then
+        target.components.poisonable:Poison()
+    end 
+end
+
 local function pig_poison_fn(inst)
 	WARGON.do_task(inst, 0, function()
 		inst.task = WARGON.per_task(inst, .2, function()
@@ -191,14 +211,62 @@ local function pig_poison_fn(inst)
 		inst.fx = SpawnPrefab("poisonbubble")
 		inst:AddChild(inst.fx)
 		inst.fx.Transform:SetPosition(0, 0, 0)
-		-- inst.task = WARGON.do_task(inst, .1, function()
-		-- 	local fx = WARGON.make_fx(inst, "poisonbubble")
-		-- 	WARGON.do_task(fx, 1, function()
-		-- 		fx:Remove()
-		-- 	end)
-		-- end)
 	end)
 end	
+
+local function thunder_atk(inst, target, damage)
+end
+
+local function pig_thunder_fn(inst)
+	WARGON.do_task(inst, 0, function()
+		inst.fx = SpawnPrefab("tp_thunder_fx_ground")
+		-- WARGON.set_scale(inst.fx, 2)
+		inst:AddChild(inst.fx)
+		inst.fx.Transform:SetPosition(0, 1, 0)
+		inst.fx2 = SpawnPrefab("tp_thunder_fx_held")
+		-- WARGON.set_scale(inst.fx2, 2)
+		inst:AddChild(inst.fx)
+		inst.fx2.Transform:SetPosition(0, 2, 0)
+		WARGON.EQUIP.equip_temp_weapon(inst, TUNING.PIG_DAMAGE, {6, 10}, "tp_bishop_charge")
+	end)
+end
+
+local function blood_atk(inst, target, damage)
+	if target.components.health then
+		target.components.health:DoDelta(-TUNING.PIG_DAMAGE)
+	end
+	if inst.components.health then
+		inst.components.health:DoDelta(TUNING.PIG_DAMAGE)
+	end
+end
+
+local function pig_blood_fn(inst)
+	WARGON.do_task(inst, 0, function()
+		inst.task = WARGON.per_task(inst, .2, function()
+			if inst.sg:HasStateTag("moving") then
+				local fx = WARGON.make_fx(inst, "poisonbubble_short")
+				fx.AnimState:SetMultColour(1, .1, .1, 1)
+				WARGON.do_task(fx, 1, function()
+					fx:Remove()
+				end)
+			end
+		end)
+		inst.fx = SpawnPrefab("poisonbubble")
+		inst:AddChild(inst.fx)
+		inst.fx.Transform:SetPosition(0, 0, 0)
+		inst.fx.AnimState:SetMultColour(1, .1, .1, 1)
+	end)
+end
+
+local function shadow_atk(inst, target, damage)
+	WARGON.sleep_prefab(target)
+end
+
+local function pig_shadow_fn(inst)
+	WARGON.do_task(inst, 0, function()
+		WARGON.FX.shadow_foot_fx(inst)
+	end)
+end
 
 local function MakeChar(name, anims, randloot, nature, atk_fn, colour, pig_fn)
 	local function fn()
@@ -212,7 +280,7 @@ local function MakeChar(name, anims, randloot, nature, atk_fn, colour, pig_fn)
 				keep=pig_keep, re={time=3, fn=pig_retarget}, atk=atk_fn},
 			-- follow = {max = TUNING.PIG_LOYALTY_MAXTIME},
 			follow = {},
-			health = {max=TUNING.PIG_HEALTH},
+			health = {max=600},
 			inv = {},
 			loot = {rand=randloot, ranum=1},
 			trader = {test=pig_trader_test, accept=pig_accept, refuse=pig_refuse},
@@ -249,7 +317,17 @@ local function MakeChar(name, anims, randloot, nature, atk_fn, colour, pig_fn)
 	return Prefab("common/character/"..name, fn, {})
 end
 
-return 
-	MakeChar("tp_pig_fire", pigs, fire_randloot, "fire", fire_atk, {1, .1, .1, 1}, pig_fire_fn),
-	MakeChar("tp_pig_ice", pigs, ice_randloot, "ice", ice_atk, {.1, .1, 1, 1}, pig_ice_fn),
-	MakeChar("tp_pig_poison", pigs, poison_randloot, "poison", poison_atk, {.1, 1, .1, 1}, pig_poison_fn)
+return
+MakeChar("tp_pig_fire", Anims.pig, fire_randloot, "fire", fire_atk, {1, 1, .1, 1}, pig_fire_fn),
+MakeChar("tp_pig_ice", Anims.pig, ice_randloot, "ice", ice_atk, {.1, 1, 1, 1}, pig_ice_fn),
+MakeChar("tp_pig_poison", Anims.pig, poison_randloot, "poison", poison_atk, {.1, 1, .1, 1}, pig_poison_fn),
+MakeChar("tp_pig_thunder", Anims.pig, thunder_randloot, "thunder", thunder_atk, {.1, .1, 1, 1}, pig_thunder_fn),
+MakeChar("tp_pig_blood", Anims.pig, blood_randloot, "blood", blood_atk, {1, .1, .1, 1}, pig_blood_fn),
+MakeChar("tp_pig_shadow", Anims.pig, shadow_randloot, "shadow", shadow_atk, {1, .1, 1, 1}, pig_shadow_fn)
+-- return 
+	-- MakeChar("tp_pig_fire", pigs, fire_randloot, "fire", fire_atk, {1, 1, .1, 1}, pig_fire_fn),
+	-- MakeChar("tp_pig_ice", pigs, ice_randloot, "ice", ice_atk, {.1, 1, 1, 1}, pig_ice_fn),
+	-- MakeChar("tp_pig_poison", pigs, poison_randloot, "poison", poison_atk, {.1, 1, .1, 1}, pig_poison_fn),
+	-- MakeChar("tp_pig_thunder", pigs, thunder_randloot, "thunder", thunder_atk, {.1, .1, 1, 1}, pig_thunder_fn),
+	-- MakeChar("tp_pig_blood", pigs, blood_randloot, "blood", blood_atk, {1, .1, .1, 1}, pig_blood_fn),
+	-- MakeChar("tp_pig_shadow", pigs, shadow_randloot, "shadow", shadow_atk, {1, .1, 1, 1}, pig_shadow_fn)

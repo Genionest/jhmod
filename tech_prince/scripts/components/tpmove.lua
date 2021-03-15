@@ -11,7 +11,7 @@ function TpMove:CanAction()
 end
 
 local function get_action(actions, act)
-	return table.insert(actions, ACTIONS[act])
+	table.insert(actions, ACTIONS[act])
 end
 
 function TpMove:CollectPointActions(doer, pos, actions, right)
@@ -22,7 +22,17 @@ end
 
 function TpMove:CollectEquippedActions(doer, target, actions, right)
 	if right and self:CanAction() then
-		return get_action(actions, self.action)
+		if self.inst:HasTag("tp_move_no_target") then
+			return
+		end
+		if not (self.inst:HasTag("tp_move_combat")
+		and target.components.combat
+		and target.components.health 
+		and doer.components.combat
+		and doer.components.combat:CanTarget(target)) then
+			return
+		end
+		get_action(actions, self.action)
 	end
 end
 

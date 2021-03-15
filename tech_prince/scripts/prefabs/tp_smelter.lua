@@ -20,8 +20,8 @@ local function onhammered(inst, worker)
 	if inst:HasTag("fire") and inst.components.burnable then
 		inst.components.burnable:Extinguish()
 	end
-	if not inst:HasTag("burnt") and inst.components.tpmelter and inst.components.tpmelter.product and inst.components.tpmelter.done then
-		inst.components.lootdropper:AddChanceLoot(inst.components.tpmelter.product, 1)
+	if not inst:HasTag("burnt") and inst.components.tpstewer and inst.components.tpstewer.product and inst.components.tpstewer.done then
+		inst.components.lootdropper:AddChanceLoot(inst.components.tpstewer.product, 1)
 	end
 	inst.components.lootdropper:DropLoot()
 	SpawnPrefab("collapse_small").Transform:SetPosition(inst.Transform:GetWorldPosition())
@@ -31,14 +31,17 @@ end
 
 local function onhit(inst, worker)
 	if not inst:HasTag("burnt") then
-		inst.AnimState:PlayAnimation("hit_empty")
+		inst.AnimState:PlayAnimation("hi_hit")
 		
-		if inst.components.tpmelter.cooking then
-			inst.AnimState:PushAnimation("smelting_loop")
-		elseif inst.components.tpmelter.done then
-			inst.AnimState:PushAnimation("idle_full")
+		if inst.components.tpstewer.cooking then
+			-- inst.AnimState:PushAnimation("smelting_loop")
+			inst.AnimState:PushAnimation("hi")
+		elseif inst.components.tpstewer.done then
+			-- inst.AnimState:PushAnimation("idle_full")
+			inst.AnimState:PushAnimation("idle")
 		else
-			inst.AnimState:PushAnimation("idle_empty")
+			-- inst.AnimState:PushAnimation("idle_empty")
+			inst.AnimState:PushAnimation("idle")
 		end
 	end
 end
@@ -52,32 +55,38 @@ local widgetbuttoninfo = {
 	text = STRINGS.ACTIONS.COOK.SMELT,
 	position = Vector3(0, -165, 0),
 	fn = function(inst)
-		inst.components.tpmelter:StartCooking()	
+		inst.components.tpstewer:StartCooking()	
 	end,
 	
 	validfn = function(inst)
-		return inst.components.tpmelter:CanCook()
+		return inst.components.tpstewer:CanCook()
 	end,
 }
 
 local function itemtest(inst, item, slot)
 	if not inst:HasTag("burnt") then
-		if item.prefab == "bluegem" then
+		-- if item.prefab == "bluegem" then
 			return true
-		end
+		-- end
 	end
 end
 
 --anim and sound callbacks
-
 local function ShowProduct(inst)
 	if not inst:HasTag("burnt") then
-		-- local product = inst.components.tpmelter.product
-		-- inst.AnimState:OverrideSymbol("swap_item", "tp_alloy", "alloy01")
+		local product = inst.components.tpstewer.product
 		if inst.fx == nil then
-			inst.fx = SpawnPrefab("tp_fx_has_alloy")
-			inst.fx.Transform:SetPosition(0, 2, 0)
+			inst.fx = SpawnPrefab("tp_fx_has_item")
 			inst:AddChild(inst.fx)
+			if product then
+				-- local img = get_image(product)
+				-- local atlas, image = inst.components.tpstewer:ResolvePath(img)
+				local product_img_manager = WARGON.DATA.tp_data_composed.product_img_manager
+				local atlas, image = product_img_manager:get_img(product)
+				inst.fx.components.tpfollowimage:SetImage(atlas, image)
+				-- local atlas = product == "ash" and "images/inventoryimages.xml" or "images/inventoryimages/"..img..".xml"
+				-- inst.fx.components.tpfollowimage:SetImage(atlas, img..".tex")
+			end
 		end
 	end
 end
@@ -100,11 +109,14 @@ local function onopen(inst)
 	if not inst:HasTag("burnt") then
 		inst.SoundEmitter:PlaySound("dontstarve_DLC003/common/crafted/smelter/move_3", "open")
 	end
+	if inst.components.tpwidget then
+
+	end
 end
 
 local function onclose(inst)
 	if not inst:HasTag("burnt") then
-		if not inst.components.tpmelter.cooking then
+		if not inst.components.tpstewer.cooking then
 			-- inst.AnimState:PlayAnimation("idle_empty")
 			inst.AnimState:PlayAnimation("idle")
 			inst.SoundEmitter:KillSound("snd")
@@ -115,7 +127,7 @@ end
 
 local function spoilfn(inst)
 	if not inst:HasTag("burnt") then
-		inst.components.tpmelter.product = inst.components.tpmelter.spoiledproduct
+		inst.components.tpstewer.product = inst.components.tpstewer.spoiledproduct
 		ShowProduct(inst)
 	end
 end
@@ -200,11 +212,11 @@ end
 local function getstatus(inst)
 	if inst:HasTag("burnt") then
 		return "BURNT"
-	elseif inst.components.tpmelter.cooking and inst.components.tpmelter:GetTimeToCook() > 15 then
+	elseif inst.components.tpstewer.cooking and inst.components.tpstewer:GetTimeToCook() > 15 then
 		return "COOKING_LONG"
-	elseif inst.components.tpmelter.cooking then
+	elseif inst.components.tpstewer.cooking then
 		return "COOKING_SHORT"
-	elseif inst.components.tpmelter.done then
+	elseif inst.components.tpstewer.done then
 		return "DONE"
 	else
 		return "EMPTY"
@@ -272,9 +284,9 @@ local function onFloodedStart(inst)
 	if inst.components.container then 
 		inst.components.container.canbeopened = false 
 	end 
-	if inst.components.tpmelter then 
-		if inst.components.tpmelter.cooking then 
-			inst.components.tpmelter.product = "wetgoop"
+	if inst.components.tpstewer then 
+		if inst.components.tpstewer.cooking then 
+			inst.components.tpstewer.product = "wetgoop"
 		end 
 	end 
 end 
@@ -302,6 +314,7 @@ local function fn(Sim)
     inst.Light:SetColour(235/255,62/255,12/255)
     
     inst:AddTag("structure")
+    inst:AddTag("teleportato_part")
     MakeObstaclePhysics(inst, .5)
     
     -- inst.AnimState:SetBank("smelter")
@@ -312,14 +325,15 @@ local function fn(Sim)
     inst.AnimState:PlayAnimation("idle")
     -- inst.AnimState:SetMultColour(.1, 1, .1, 1)
 
-    inst:AddComponent("tpmelter")
-    inst.components.tpmelter.onstartcooking = startcookfn
-    inst.components.tpmelter.oncontinuecooking = continuecookfn
-    inst.components.tpmelter.oncontinuedone = continuedonefn
-    inst.components.tpmelter.ondonecooking = donecookfn
-    inst.components.tpmelter.onharvest = harvestfn
-    inst.components.tpmelter.onspoil = spoilfn
-    
+    inst:AddComponent("tpstewer")
+    inst.components.tpstewer.onstartcooking = startcookfn
+    inst.components.tpstewer.oncontinuecooking = continuecookfn
+    inst.components.tpstewer.oncontinuedone = continuedonefn
+    inst.components.tpstewer.ondonecooking = donecookfn
+    inst.components.tpstewer.onharvest = harvestfn
+    inst.components.tpstewer.onspoil = spoilfn
+    inst.components.tpstewer.product_tbl = WARGON.DATA.tp_data_composed.smelter_items
+ --    
     inst:AddComponent("container")
     inst.components.container.itemtestfn = itemtest
     inst.components.container:SetNumSlots(4)
@@ -329,7 +343,7 @@ local function fn(Sim)
     inst.components.container.widgetpos = Vector3(200,0,0)
     inst.components.container.side_align_tip = 100
     inst.components.container.widgetbuttoninfo = widgetbuttoninfo
-    inst.components.container.acceptsstacks = false
+    -- inst.components.container.acceptsstacks = false
     inst.components.container.type = "cooker"
 
     inst.components.container.onopenfn = onopen

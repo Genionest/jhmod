@@ -66,9 +66,9 @@ local function pick_plant(inst)
 	local target = WARGON.find(inst, see_food_dist, is_plant)
 	if target then
 		local scary_tag = "scarytoprey"
-			if type(scary_test) == "string" then
-				scary_tag = scary_test
-			end
+		-- 	if type(scary_test) == "string" then
+		-- 		scary_tag = scary_test
+		-- 	end
 		local predator = WARGON.find_close(inst, scary_tag, see_player_dist)
 		if predator and not predator:HasTag("player") then target = nil end
 	end

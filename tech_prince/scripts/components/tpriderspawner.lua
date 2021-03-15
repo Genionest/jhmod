@@ -2,17 +2,22 @@ local TpRiderSpawner = Class(function(self, inst)
 	self.inst = inst
 	self.inst:ListenForEvent("killed", function(inst, data)
 		if data.victim and data.victim:HasTag("beefalo") then
-			self:Trigger(data)
+			self:Trigger()
 		end
 	end)
 end)
 
 function TpRiderSpawner:Trigger()
-	local days = GetClock().numcycles
-	local rand = math.min(days, 10) * 0.09
+	-- local days = GetClock().numcycles
+	-- local rand = math.min(days, 10) * 0.09
 	local judge = math.random()
+	local days = GetClock():GetNumCycles()
+	local must = GetPlayer().components.tpprefabspawner:CanSpawn("tp_sign_rider") and days > 40
 	print("TpRiderSpawner", judge)
-	if judge > .99-rand then
+	if judge <= 1/40 or must then
+		if must then
+			GetPlayer().components.tpprefabspawner:TriggerPrefab("tp_sign_rider")
+		end
 		local rider = c_find('tp_sign_rider')
 		if rider == nil then
 			local inst = self.inst

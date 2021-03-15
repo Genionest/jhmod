@@ -5,15 +5,17 @@ end)
 
 function TpBeBird:CanChange()
 	local inst = self.inst
-	return not (inst.components.stewer.done or inst.components.stewer.cooking)
+    return not (inst.components.stewer.done 
+        or inst.components.stewer.cooking) and (self.bird ~= nil)
 end
 
 function TpBeBird:BeBird()
-	if not self.bird then
+	if not self:CanChange() then
 		return
 	end
 	self.inst:RemoveChild(self.bird)
-	self.bird:ReturnToScene()
+    self.bird:ReturnToScene()
+    self.bird.components.tpbepot.cookpot = nil
 	if self.bird.Physics ~= nil then
         self.bird.Physics:Teleport(self.inst.Transform:GetWorldPosition())
     else
@@ -43,6 +45,7 @@ function TpBeBird:OnLoad(data)
         self.bird = SpawnSaveRecord(data.bird)
         self.bird.components.tpbepot:Hide()
         self.inst:AddChild(self.bird)
+        self.bird.components.cookpot = self.inst
     end
 end
 

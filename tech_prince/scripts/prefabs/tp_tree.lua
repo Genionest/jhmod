@@ -7,24 +7,30 @@ end
 
 local function kill_fx(inst)
 	if inst.fx then
-		inst.fx:kill(inst.fx)
+		-- inst.fx:kill(inst.fx)
+		inst.fx:Remove()
 		inst.fx = nil
 	end
 end
 
 local function spawn_fx(inst)
-	if not inst.fx then
-		inst.fx = WARGON.make_fx(inst, "tp_fx_spore_three")
-		inst.fx.num = inst.components.growable.stage
+	if inst:HasTag("stump") or inst:HasTag("fire") or inst:HasTag("burnt") then
+		return
+	end
+	if inst.components.growable then
+		if not inst.fx then
+			-- inst.fx = WARGON.make_fx(inst, "tp_fx_spore_three")
+			-- inst.fx.num = inst.components.growable.stage
+			inst.fx = WARGON.make_fx(inst, "tp_tree_elf")
+		end
 	end
 end
 
 local function spawn_blue_fx(inst)
-	if not inst.fx then
-		inst.fx = WARGON.make_fx(inst, "tp_fx_spore_three")
-		inst.fx.num = inst.components.growable.stage
-		inst:AddTag("spore_blue")
-	end
+	spawn_fx(inst)
+	-- if inst.fx then
+	-- 	inst.fx:AddTag("spore_blue")
+	-- end
 end
 
 local function growth_tree(inst, last_stage, stage)
@@ -189,7 +195,7 @@ end
 local function defense_tree_near(inst)
 	if inst.task == nil then
 		inst.task = WARGON.per_task(inst, 3, function()
-			if inst.components.growable.stage >= 3
+			if inst.components.growable and inst.components.growable.stage >= 3
 			and not (inst:HasTag("fire") or inst:HasTag("burnt")) then
 				local nuts = WARGON.finds(inst, 20, {"birchnutdrake", "tp_defense_tree_nut"})
 				local num = 0
@@ -260,6 +266,10 @@ local life_tree_builds =
     },
 }
 
+local function life_tree_growth(inst, last_stage, stage)
+	growth_tree(inst, last_stage, stage)
+end
+
 local function life_tree_fn(inst)
 	inst.components.growable.loopstages = false
 	inst:AddComponent("tpplantspawner")
@@ -271,6 +281,16 @@ local function life_tree_fn(inst)
 		onignite = on_ignite_tree,
 		onextinguish = on_extinguish_tree,
 		})
+	-- WARGON.do_task(inst, 0, function()
+	-- 	if inst.components.growable.stage >= 3 then
+	-- 		if c_find("tp_leif") == nil then
+	-- 			kill_fx(inst)
+	-- 			local pos = inst:GetPosition()
+	-- 			inst:Remove()
+	-- 			WARGON.make_spawn(pos, "tp_leif")
+	-- 		end
+	-- 	end
+	-- end)
 	inst.components.growable:SetOnGrowthFn(growth_tree)
 end
 

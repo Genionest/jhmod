@@ -1,267 +1,267 @@
-Óï·¨´íÎó£¬localÊÇ¾ÖÓò±äÁ¿£¬²»ÊÇÈ«¾Ö±äÁ¿
-µ±´æÔÚÓï·¨´íÎó¶ø·ÇÒ»°ãµÄ±äÁ¿Ãû´íÎóÊ±£¬½øÈëÓÎÏ·»áÎÞ·¨Ñ¡Ôñ
-¶àÐÐ×¢ÊÍ·ûÄÚ²»ÄÜÓÐ¶àÐÐ×¢ÊÍ·û
+ï¿½ï·¨ï¿½ï¿½ï¿½ï¿½localï¿½Ç¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È«ï¿½Ö±ï¿½ï¿½ï¿½
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï·¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ä±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿½Þ·ï¿½Ñ¡ï¿½ï¿½
+ï¿½ï¿½ï¿½ï¿½×¢ï¿½Í·ï¿½ï¿½Ú²ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½ï¿½×¢ï¿½Í·ï¿½
 
-health×î´óÖµÊ±maxhealth
+healthï¿½ï¿½ï¿½ÖµÊ±maxhealth
 
-ScaleTo(1.3, 1, .7)ÕâÊÇÒ»¸öÓÐÈý¸ö±äÁ¿µÄº¯Êý
+ScaleTo(1.3, 1, .7)ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äºï¿½ï¿½ï¿½
 
-²»°´´íÎóÎ»ÖÃÕÒbug
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½bug
 
-spriterÖÆ×÷¶¯»­£¬ÏÈ½¨Á¢Ò»¸öÎÄ¼þ¼Ðfile£¬ÔÚÎÄ¼þ¼ÐÏÂÊÇmodÃûÎÄ¼þ¼Ðfile/item£¬
-ÏîÄ¿ÀïÃæÓÐÍ¼Æ¬file/item/item.png£¬×ö³ÉµÄscmlÎÄ¼þ±£´æÔÚmodÃûÎÄ¼þ¼ÐÏÂ
-file/item/item.scml£¬È»ºó°Ñfile/itemÎÄ¼þ¼Ð¸´ÖÆµ½exportedÎÄ¼þ¼ÐÀï£¬ÏÖÔÚ
-ÊÇexported/item£¬ÔÙ°ÑscmlÎÄ¼þ´ÓitemÎÄ¼þ¼ÐÀïÃæÄÃ³öÀ´£¬Ò²¾ÍÊÇ´Ó
-exported/item/item.scmlµ½exported/item.scml
+spriterï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½fileï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½modï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½file/itemï¿½ï¿½
+ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼Æ¬file/item/item.pngï¿½ï¿½ï¿½ï¿½ï¿½Éµï¿½scmlï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½modï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½
+file/item/item.scmlï¿½ï¿½È»ï¿½ï¿½ï¿½file/itemï¿½Ä¼ï¿½ï¿½Ð¸ï¿½ï¿½Æµï¿½exportedï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï£¬ï¿½ï¿½ï¿½ï¿½
+ï¿½ï¿½exported/itemï¿½ï¿½ï¿½Ù°ï¿½scmlï¿½Ä¼ï¿½ï¿½ï¿½itemï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã³ï¿½ï¿½ï¿½ï¿½ï¿½Ò²ï¿½ï¿½ï¿½Ç´ï¿½
+exported/item/item.scmlï¿½ï¿½exported/item.scml
 17:10 2019/11/6
 
-Áª»ú°æicon.xmlºÍµ¥»ú°æ²»¼æÈÝ£¬Í¼Æ¬²»Çå³þ£¬×îºÃ±ð»ìÓÃ
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½icon.xmlï¿½Íµï¿½ï¿½ï¿½ï¿½æ²»ï¿½ï¿½ï¿½Ý£ï¿½Í¼Æ¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã±ï¿½ï¿½ï¿½ï¿½
 17:20 2019/11/6
 
-µ¥»ú°æÔÚscripts/prefabs/ÀïµÄÎïÌå´úÂë£¬×îºó·µ»ØµÄÊÇ
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½scripts/prefabs/ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ë£¬ï¿½ï¿½ó·µ»Øµï¿½ï¿½ï¿½
 return Prefab("common/iventory/xxx", fn, assets, prefabs)
 17:53 2019/11/6
 
-sanityrockÔÚprefabs/nightmarerockÀï
+sanityrockï¿½ï¿½prefabs/nightmarerockï¿½ï¿½
 13:54 2020/8/1
 
-scripts/prefabs/ÀïµÄÎïÌå´úÂë£¬Ò»¶¨ÒªÓÐMakeInventoryPhysics(inst)
-setBank()£¬setBuild()£¬playAnimation()
+scripts/prefabs/ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ë£¬Ò»ï¿½ï¿½Òªï¿½ï¿½MakeInventoryPhysics(inst)
+setBank()ï¿½ï¿½setBuild()ï¿½ï¿½playAnimation()
 17:55 2019/11/6
 
-ÔÚlogÎÄ¼þÀï´ÓÏÂÍùÉÏÂýÂýÕÒ´íÎó¼ÇÂ¼
+ï¿½ï¿½logï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò´ï¿½ï¿½ï¿½ï¿½Â¼
 14:44 2019/11/7
 
-jhµ¥»ú°æ²»ÄÜÓÃAddRecipe()
+jhï¿½ï¿½ï¿½ï¿½ï¿½æ²»ï¿½ï¿½ï¿½ï¿½AddRecipe()
 20:27 2019/11/8
 
-¶¯»­¹âÊÇ·ÂÖÆspriterÀï×óÏÂÄÇ¼¸¸öÊôÐÔÊÇ²»¹»µÄ£¬¾ßÌå¿´scmlÎÄ¼þÀïÔõÃ´Ð´£¬
-×îºÃÊÇÔÚÄ£°åÉÏ¸Ä
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½spriterï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç²ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½å¿´scmlï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½Ã´Ð´ï¿½ï¿½
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½Ï¸ï¿½
 22:54 2019/11/8
 
-ÒªÒýÓÃÆäËûµÄÍ¼Æ¬×ÊÔ´µÄ¶¯»­Ö»ÐèÒªanim¾ÍÐÐÁË£¬´úÂëÀïÐÞ¸ÄÏà¹Øanim¼´¿É
+Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼Æ¬ï¿½ï¿½Ô´ï¿½Ä¶ï¿½ï¿½ï¿½Ö»ï¿½ï¿½Òªanimï¿½ï¿½ï¿½ï¿½ï¿½Ë£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Þ¸ï¿½ï¿½ï¿½ï¿½animï¿½ï¿½ï¿½ï¿½
 23:02 2019/11/8
 
-Ìæ»»·¨ Ìæ»»ÎïÆ·Æ¤·ôµÄÌùÍ¼£¬ÊÖ³ÖµÄ×°±¸£ºsetBuild("Òª¸Ä")
-owner.AnimState:OverrideSymbol("xx","Òª¸Ä","xx")£¬
-assetsÀïÃæÒª¸ÄÊÇµ±È»µÄ
+ï¿½æ»»ï¿½ï¿½ ï¿½æ»»ï¿½ï¿½Æ·Æ¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½Ö³Öµï¿½×°ï¿½ï¿½ï¿½ï¿½setBuild("Òªï¿½ï¿½")
+owner.AnimState:OverrideSymbol("xx","Òªï¿½ï¿½","xx")ï¿½ï¿½
+assetsï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½Çµï¿½È»ï¿½ï¿½
 14:44 2019/11/10
 
-ÎïÆ·À¸Æ¤·ôÔÚmodmain´´½¨Recipe¶ÔÏóÊ±¶¨ÒåµÄ£¬¾ÍÊÇÎïÆ·À¸Í¼Æ¬
+ï¿½ï¿½Æ·ï¿½ï¿½Æ¤ï¿½ï¿½ï¿½ï¿½modmainï¿½ï¿½ï¿½ï¿½Recipeï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ·ï¿½ï¿½Í¼Æ¬
 16:51 2019/11/10
 
-´´½¨½¨ÖþµÄRecipe¶ÔÏóÊ±×îºó»¹ÓÐ"name_placer"
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Recipeï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½"name_placer"
 16:52 2019/11/10
 
-½¨ÖþÀ¸ÌùÍ¼ºÍÎïÆ·À¸ÌùÍ¼Ãû×Ö±ØÐëºÍÎïÆ·Ãû×ÖÒ»Ñù£¬²»ÄÜÂÒÈ¡
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½Æ·ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½Ö±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ·ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡
 16:56 2019/11/11
 
-½¨ÖþÀ¸ÌùÍ¼ÎÄ¼þÔÚmodmainÀïÒª¼ÓÔØ(Assets)Ò»±é£¬²»È»²»ÏÔÊ¾
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½Ä¼ï¿½ï¿½ï¿½modmainï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½(Assets)Ò»ï¿½é£¬ï¿½ï¿½È»ï¿½ï¿½ï¿½ï¿½Ê¾
 13:26 2019/11/14
 
-ÓÐÐ©ÎïÆ·Òª¼æÈÝdlc3ÐèÒªÔÚrecipeÀïÐèÒªÌí¼ÓGLOBAL.RECIPE_GAME_TYPE.COMMON,
+ï¿½ï¿½Ð©ï¿½ï¿½Æ·Òªï¿½ï¿½ï¿½ï¿½dlc3ï¿½ï¿½Òªï¿½ï¿½recipeï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½GLOBAL.RECIPE_GAME_TYPE.COMMON,
 16:50 2019/11/14
 
-ÓÃmod toolsÀ´´ò°üinventoryimagesÀïµÄÍ¼Æ¬¾Í²»»á³öÏÖ
-¿Õ°×±ä°×É«µÄÎÊÌâ
+ï¿½ï¿½mod toolsï¿½ï¿½ï¿½ï¿½ï¿½inventoryimagesï¿½ï¿½ï¿½Í¼Æ¬ï¿½Í²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ï¿½Õ°×±ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 16:17 2019/11/15
 
-¼ÓÔØÓÎÏ·µÄÒÑÓÐµÄ×ÊÔ´¾Í²»ÒªÔÙ·ÅanimÁË£¬¾ßÌåÎïÆ·µÄ½Å±¾ÀïÒ²±ð¼Óanim½ø×ÊÔ´±í
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½ï¿½ï¿½Ô´ï¿½Í²ï¿½Òªï¿½Ù·ï¿½animï¿½Ë£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ·ï¿½Ä½Å±ï¿½ï¿½ï¿½Ò²ï¿½ï¿½ï¿½animï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½
 15:33 2019/11/18
 
-DoTaskInTime() µÄÈÎÎñÁÐ±í³¤¶ÈÊ±ÓÐÏÞµÄ
+DoTaskInTime() ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð±ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½Þµï¿½
 15:40 2019/11/18
 
-¼¢»ÄÀïµÄº¯ÊýÒ»°ãÊÇ´óÐ´ÍÕ·å£¨¿ªÍ·¾Í´óÐ´£©
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äºï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ç´ï¿½Ð´ï¿½Õ·å£¨ï¿½ï¿½Í·ï¿½Í´ï¿½Ð´ï¿½ï¿½
 19:35 2019/11/21
 
 x, y = GetWorld().Map:GetTileCoordsAtPoint(pt.x, pt.y, pt.z)
-·µ»ØµÄx, y±íÊ¾µÄÊÇÕâ¸öptÎ»ÖÃµÄµØÆ¤ÊÇµÚxÐÐ£¬µÚyÁÐµÄµØÆ¤£¬ÓëptÎ»ÖÃÎÞ¹Ø
+ï¿½ï¿½ï¿½Øµï¿½x, yï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ptÎ»ï¿½ÃµÄµï¿½Æ¤ï¿½Çµï¿½xï¿½Ð£ï¿½ï¿½ï¿½yï¿½ÐµÄµï¿½Æ¤ï¿½ï¿½ï¿½ï¿½ptÎ»ï¿½ï¿½ï¿½Þ¹ï¿½
 14:06 2019/11/27
 
-½¨Öþ¼¸ºÎÑ§ÀïµÄ×îÐ¡¸ñ×Ó¼ä¾àÊÇ0.5
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ§ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡ï¿½ï¿½ï¿½Ó¼ï¿½ï¿½ï¿½ï¿½0.5
 14:34 2019/11/27
 
-µØÆ¤Íø¸ñÄÚµÄx£¬y×î´óÖµÎ»ÖÃÊÇÔÚÒ»¸ö½ÇÉÏ
+ï¿½ï¿½Æ¤ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½xï¿½ï¿½yï¿½ï¿½ï¿½ÖµÎ»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 14:35 2019/11/27
 
-inst:GetPosition()µÃµ½µÄÓ¦¸ÃÊÇVector3¶ÔÏó
-inst.Transform:GetWorldPosition()·µ»ØµÄÓ¦¸ÃÊÇx, y, zÈý¸öÖµ
+inst:GetPosition()ï¿½Ãµï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½Vector3ï¿½ï¿½ï¿½ï¿½
+inst.Transform:GetWorldPosition()ï¿½ï¿½ï¿½Øµï¿½Ó¦ï¿½ï¿½ï¿½ï¿½x, y, zï¿½ï¿½ï¿½ï¿½Öµ
 15:20 2019/11/27
 
-luaÀïÃæ0ºÃÏñ²»±í·ñ
+luaï¿½ï¿½ï¿½ï¿½0ï¿½ï¿½ï¿½ñ²»±ï¿½ï¿½ï¿½
 16:08 2019/11/27
 
-½øÐÐÃ÷Öª²»¶ÔµÄ³¢ÊÔÖ»»áÀË·ÑÊ±¼ä£¬¸ü¶àµÄÊ±ºòÐèÒªÕÒ³öÄÇ¶Î´úÂëbugÁË
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öªï¿½ï¿½ï¿½ÔµÄ³ï¿½ï¿½ï¿½Ö»ï¿½ï¿½ï¿½Ë·ï¿½Ê±ï¿½ä£¬ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Òªï¿½Ò³ï¿½ï¿½Ç¶Î´ï¿½ï¿½ï¿½bugï¿½ï¿½
 18:36 2019/11/27
 
-ÉÏÃæµÄº¯Êý²»ÄÜµ÷ÓÃÏÂÃæµÄº¯Êý£¬Ö»ÄÜÏÂÃæµÄº¯Êýµ÷ÓÃÉÏÃæµÄº¯Êý
+ï¿½ï¿½ï¿½ï¿½Äºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Üµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äºï¿½ï¿½ï¿½ï¿½ï¿½Ö»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äºï¿½ï¿½ï¿½
 17:39 2019/11/28
 
-Ã¿´Î¸üÐÂÒª°Ñmod°æ±¾Ò²¸úÐÂÁË
+Ã¿ï¿½Î¸ï¿½ï¿½ï¿½Òªï¿½ï¿½modï¿½æ±¾Ò²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 17:50 2019/11/28
 
-ÓÐÊ±ºò¸ø²»ÁËÎïÆ·µ½ÎïÆ·À¸£¬¾ÍÐèÒªÉèÖÃstackable:SetStackSize()Õâ²¿·Ö
+ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ·ï¿½ï¿½ï¿½ï¿½Æ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½stackable:SetStackSize()ï¿½â²¿ï¿½ï¿½
 16:05 2019/12/1
 
-basecapsuleµÄsetTerraformº¯Êý£¬ter_t±íÄÚµÄ¶¼Ê±{x,z}£¬Ã¿¸öÔªËØÖ»ÓÐ
-Ò»¸ö×ø±ê£¬Ã»ÓÐÆäËûµÄÁË
+basecapsuleï¿½ï¿½setTerraformï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ter_tï¿½ï¿½ï¿½ÚµÄ¶ï¿½Ê±{x,z}ï¿½ï¿½Ã¿ï¿½ï¿½Ôªï¿½ï¿½Ö»ï¿½ï¿½
+Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ê£¬Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 14:44 2019/12/3
 
-if i ~= -2 and j~= -2 thenÊÇÖ¸i»òj¶¼²»Îª-2
-if i ~= -2 or j ~= -2 then ÊÇÖ¸iºÍj²»Í¬Ê±Îª-2
+if i ~= -2 and j~= -2 thenï¿½ï¿½Ö¸iï¿½ï¿½jï¿½ï¿½ï¿½ï¿½Îª-2
+if i ~= -2 or j ~= -2 then ï¿½ï¿½Ö¸iï¿½ï¿½jï¿½ï¿½Í¬Ê±Îª-2
 15:36 2019/12/3
 
-×¢ÒâÇ¶Ì×Ñ­»·µÄÑ­Ðò£¬basecapsuleÀïkÔÚ×îÀï²ã£¬ËùÒÔµÚÒ»´Îi£¬j£¬kÊ±£¬
-kÏÈµ½1£¬È»ºóz_chest¾Í±äÁË£¬ËùÒÔÒ»¸ö¾Å¹¬¸ñÀïÔ­Ê¼z_chest×ø±êµÄÏä×Ó
-Ö»ÓÐÒ»¸ö
+×¢ï¿½ï¿½Ç¶ï¿½ï¿½Ñ­ï¿½ï¿½ï¿½ï¿½Ñ­ï¿½ï¿½basecapsuleï¿½ï¿½kï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ã£¬ï¿½ï¿½ï¿½Ôµï¿½Ò»ï¿½ï¿½iï¿½ï¿½jï¿½ï¿½kÊ±ï¿½ï¿½
+kï¿½Èµï¿½1ï¿½ï¿½È»ï¿½ï¿½z_chestï¿½Í±ï¿½ï¿½Ë£ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Å¹ï¿½ï¿½ï¿½ï¿½ï¿½Ô­Ê¼z_chestï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+Ö»ï¿½ï¿½Ò»ï¿½ï¿½
 15:39 2019/12/3
 
-luaº¯Êý¶ÔÓÚÃ»ÓÐ´«²ÎµÄ²ÎÊý£¬Ä¬ÈÏÎªnil
+luaï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ð´ï¿½ï¿½ÎµÄ²ï¿½ï¿½ï¿½ï¿½ï¿½Ä¬ï¿½ï¿½Îªnil
 17:04 2019/12/6
 
-Å©³¡µÄ½Ç¶ÈÊÇÍ¨¹ýinst.Transform:SetRotation( angle )À´ÐÞ¸ÄµÄ
+Å©ï¿½ï¿½ï¿½Ä½Ç¶ï¿½ï¿½ï¿½Í¨ï¿½ï¿½inst.Transform:SetRotation( angle )ï¿½ï¿½ï¿½Þ¸Äµï¿½
 17:54 2019/12/6
 
-scripts/constants.luaÎÄ¼þÀïÓÐÄ¬ÈÏµÄ³£Á¿
+scripts/constants.luaï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½Ä¬ï¿½ÏµÄ³ï¿½ï¿½ï¿½
 14:12 2019/12/15
 
-fence_gateÒª¸Ä±ä¶¯»­ÐèÒªinst.dooranim.AnimState¶ø²»ÊÇinst.AnimState
+fence_gateÒªï¿½Ä±ä¶¯ï¿½ï¿½ï¿½ï¿½Òªinst.dooranim.AnimStateï¿½ï¿½ï¿½ï¿½ï¿½ï¿½inst.AnimState
 23:13 2019/12/16
 
-luaÊý×é´Ó1¿ªÊ¼£¬ËùÒÔ¼ÆÊýcountÒ²Òª´Ó1¿ªÊ¼
+luaï¿½ï¿½ï¿½ï¿½ï¿½1ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½countÒ²Òªï¿½ï¿½1ï¿½ï¿½Ê¼
 21:56 2019/12/17
 
-¼¢»Ä´úÂëÀïµÄÊ±¼äÉèÖÃÊÇÒÔÃëÎªµ¥Î»µÄ
+ï¿½ï¿½ï¿½Ä´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½Î»ï¿½ï¿½
 15:40 2019/12/20
 
-Ö±½Ó»»animÀïÃæµÄatlas-0.texÔÚÑ¹ËõËÆºõ²»ÏÖÊµ
+Ö±ï¿½Ó»ï¿½animï¿½ï¿½ï¿½ï¿½ï¿½atlas-0.texï¿½ï¿½Ñ¹ï¿½ï¿½ï¿½Æºï¿½ï¿½ï¿½ï¿½ï¿½Êµ
 16:06 2019/12/21
 
-½âÑ¹µÄscmlÎÄ¼þÀïµÄÆäËûÎÄ¼þÓÃ²»µ½µÄÒ²±ðÉ¾³ý£¬µ½Ê±ºò´ò°ü²»ÁË
+ï¿½ï¿½Ñ¹ï¿½ï¿½scmlï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½Ã²ï¿½ï¿½ï¿½ï¿½ï¿½Ò²ï¿½ï¿½É¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 22:58 2019/12/21
 
-ÓÎÏ·¿ªÊ¼Ê±»á¼ÓÔØprefabÀïÃæµÄassetsÎÄ¼þ
+ï¿½ï¿½Ï·ï¿½ï¿½Ê¼Ê±ï¿½ï¿½ï¿½ï¿½ï¿½prefabï¿½ï¿½ï¿½ï¿½ï¿½assetsï¿½Ä¼ï¿½
 13:23 2019/12/28
 
-DLC1ÀïµÄ±ØÐëÔÚDLC1ÀïÃæ¸Ä£¬ÆäËûÒ²Ò»Ñù
+DLC1ï¿½ï¿½Ä±ï¿½ï¿½ï¿½ï¿½ï¿½DLC1ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½Ò²Ò»ï¿½ï¿½
 2:12 2020/1/2
 
-"daytime"ÊÂ¼þµÄ¼àÌý±ØÐëÓÉworldÀ´½øÐÐ£¬ËùÒÔ¸ñÊ½ÊÇ
+"daytime"ï¿½Â¼ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½worldï¿½ï¿½ï¿½ï¿½ï¿½Ð£ï¿½ï¿½ï¿½ï¿½Ô¸ï¿½Ê½ï¿½ï¿½
 inst:ListenForEvent( "daytime", function() fn(inst) end , GetWorld())
 15:14 2020/1/2
 
-ËùÓÐ¿ÉÒÔÖÖµÄ¶«Î÷¶¼ÔÚprefabs/plantableÀï
+ï¿½ï¿½ï¿½Ð¿ï¿½ï¿½ï¿½ï¿½ÖµÄ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½prefabs/plantableï¿½ï¿½
 22:27 2020/1/8
 
-chop_worker_brain.luaÀïµÄdeployPlantº¯ÊýÀï£¬ËäÈ»plant_rootºÍplant_pos¶¼Ã»ÓÐ£¬
-µ«ÏÂÃæµÄ²¿·Ö»¹ÊÇ»áreturn bufferedaction
+chop_worker_brain.luaï¿½ï¿½ï¿½deployPlantï¿½ï¿½ï¿½ï¿½ï¿½ï£¬ï¿½ï¿½È»plant_rootï¿½ï¿½plant_posï¿½ï¿½Ã»ï¿½Ð£ï¿½
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä²ï¿½ï¿½Ö»ï¿½ï¿½Ç»ï¿½return bufferedaction
 22:04 2020/1/9
 
-chop_worker_brain.luaÀïµÄdeployPlantÊÔÑé²¿·ÖÀï£¬obj²»ÄÜÈ¥¼ì²âinventory£¬ÒòÎª
-chop_workerÓÐÒ»¸öÎïÆ·À¸£¬ÊÇÏÈ¼ñ¶«Î÷½øÈëÎïÆ·À¸£¬ÔÙÈ¥ÖÖ£¬ËùÒÔÎïÆ·À¸µÄ¶«Î÷µÄÒ»¸ö
-ÖÖ×Ó»á±»ÓÃµô£¬µ«È´²»»á±»ÖÖ³ö¡£
+chop_worker_brain.luaï¿½ï¿½ï¿½deployPlantï¿½ï¿½ï¿½é²¿ï¿½ï¿½ï¿½ï£¬objï¿½ï¿½ï¿½ï¿½È¥ï¿½ï¿½ï¿½inventoryï¿½ï¿½ï¿½ï¿½Îª
+chop_workerï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Æ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¥ï¿½Ö£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ·ï¿½ï¿½ï¿½Ä¶ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½
+ï¿½ï¿½ï¿½Ó»á±»ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½È´ï¿½ï¿½ï¿½á±»ï¿½Ö³ï¿½ï¿½ï¿½
 1:00 2020/1/10
 
-placerÒ²ÊÇprefab£¬µ«ÊÇËûÓÐplacerÊôÐÔ
+placerÒ²ï¿½ï¿½prefabï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½placerï¿½ï¿½ï¿½ï¿½
 1:32 2020/1/10
 
-Ò»ÇÐµÄÔ­Òò¶¼ÊÇÒòÎª¹¤¾ßÈËµ½ÁËÖÖÖ²µØ£¬¿ÉÖÖÖ²µÄÅÐ¶¨¾ÍÎª·ñ£¬ËùÒÔ¾Í²»»áÖ´ÐÐ½ÓÏÂÀ´µÄ
-Ò»ÏµÁÐ²Ù×÷¡£Ìí¼ÓÈý¸ö±êÇ©Ö®Ò»Ò²¿É½â¾ö{"NOBLOCK","player","fx"}
+Ò»ï¿½Ðµï¿½Ô­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½ï¿½Ö²ï¿½Ø£ï¿½ï¿½ï¿½ï¿½ï¿½Ö²ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½Ô¾Í²ï¿½ï¿½ï¿½Ö´ï¿½Ð½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+Ò»Ïµï¿½Ð²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç©Ö®Ò»Ò²ï¿½É½ï¿½ï¿½{"NOBLOCK","player","fx"}
 2:04 2020/1/10
 
-´ò¿ªmachineµÄ¶¯×÷ÎÞ·¨ÔÚ´¬ÉÏ½øÐÐ
+ï¿½ï¿½machineï¿½Ä¶ï¿½ï¿½ï¿½ï¿½Þ·ï¿½ï¿½Ú´ï¿½ï¿½Ï½ï¿½ï¿½ï¿½
 2:42 2020/1/24
 
-Ã»ÓÐÔÚprefabÀïÉèÖÃphysics¾Í²»ÒªÔÚSGÀïµ÷ÓÃphysicsÁË
+Ã»ï¿½ï¿½ï¿½ï¿½prefabï¿½ï¿½ï¿½ï¿½ï¿½ï¿½physicsï¿½Í²ï¿½Òªï¿½ï¿½SGï¿½ï¿½ï¿½ï¿½ï¿½physicsï¿½ï¿½
 0:04 2020/1/31
 
-²»ÉèÖÃsetFourFaced()ËÆºõ¾ÍÃ»ÓÐËÄ¸ö³¯Ïò
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½setFourFaced()ï¿½Æºï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½Ä¸ï¿½ï¿½ï¿½ï¿½ï¿½
 0:41 2020/1/31
 
-lua¿ÉÒÔÔÙÁÐ±íÖÐ·Åº¯Êý£¬
+luaï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð±ï¿½ï¿½Ð·Åºï¿½ï¿½ï¿½ï¿½ï¿½
 a = {function(b) print(b) end}
 a[1](123)
 22:15 2020/2/2
 
 GetModConfigData(config_data)
-²»ÄÜÔÙmodmainÍâµÄÆäËûµØ·½Ê¹ÓÃ
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½modmainï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø·ï¿½Ê¹ï¿½ï¿½
 1:27 2020/2/22
 
-ÒªÓÃÕâÖÖ¸ñÊ½ language and "base" or "»ùµØ"
+Òªï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½Ê½ language and "base" or "ï¿½ï¿½ï¿½ï¿½"
 1:49 2020/2/22
 
 return Prefab("xx", fn, assets)
-fnÊÇ²»ÄÜ´ø²ÎÊý±íµÄ
+fnï¿½Ç²ï¿½ï¿½Ü´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 0:03 2020/3/2
 
-luaÀïÃæ£¬aÊÇÒ»¸ö±í£¬a.bºÍa["b"]ÊÇÒ»ÑùµÄ
+luaï¿½ï¿½ï¿½æ£¬aï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½a.bï¿½ï¿½a["b"]ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½
 0:51 2020/3/2
 
-mangrovetree_shortÊÇmangrovetree_tallµÄÊ÷×®£¬
-mangrovetree_stumpÊÇmangrovetree_normalµÄÊ÷×´
-mangrovetree_normalÊÇÐ¡£¬mangrovetree_tallÊÇÖÐ
+mangrovetree_shortï¿½ï¿½mangrovetree_tallï¿½ï¿½ï¿½ï¿½×®ï¿½ï¿½
+mangrovetree_stumpï¿½ï¿½mangrovetree_normalï¿½ï¿½ï¿½ï¿½×´
+mangrovetree_normalï¿½ï¿½Ð¡ï¿½ï¿½mangrovetree_tallï¿½ï¿½ï¿½ï¿½
 0:34 2020/3/4
 
-ÀàËÆ true and 4 ÕâÖÖ¸³Öµ¸ñÊ½£¬true±ØÐëÔÚÇ°Ãæ
+ï¿½ï¿½ï¿½ï¿½ true and 4 ï¿½ï¿½ï¿½Ö¸ï¿½Öµï¿½ï¿½Ê½ï¿½ï¿½trueï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½
 1:28 2020/3/4
 
-inspectable.getstatusÖ»ÄÜ·µ»Ø´óÐ´µÄ£¬ÒòÎªÊÇSTRINGSÀïÃæµÄ
+inspectable.getstatusÖ»ï¿½Ü·ï¿½ï¿½Ø´ï¿½Ð´ï¿½Ä£ï¿½ï¿½ï¿½Îªï¿½ï¿½STRINGSï¿½ï¿½ï¿½ï¿½ï¿½
 20:38 2020/3/4
 
-steamÉçÇø²»ÄÜ½ø£¬ÒòÎªÓÃsteamcommunity¹¤¾ßÐÞ¸ÄÁËhost£¬
-°ÑhostÐÞ¸´»¹Ô­¾Í¿ÉÒÔÁË¡£
+steamï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½steamcommunityï¿½ï¿½ï¿½ï¿½ï¿½Þ¸ï¿½ï¿½ï¿½hostï¿½ï¿½
+ï¿½ï¿½hostï¿½Þ¸ï¿½ï¿½ï¿½Ô­ï¿½Í¿ï¿½ï¿½ï¿½ï¿½Ë¡ï¿½
 17:03 2020/3/10
 
-Ã±×ÓµÄÖÐÐÄµã¸úheadbase
-ÑÛ¾µµÄÖÐÐÄµã¸úface
-ÒÂ·þµÄÖÐÐÄµã¸útorso
+Ã±ï¿½Óµï¿½ï¿½ï¿½ï¿½Äµï¿½ï¿½headbase
+ï¿½Û¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äµï¿½ï¿½face
+ï¿½Â·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äµï¿½ï¿½torso
 16:32 2020/3/12
 
-Èç¹ûaÊÇbµÄspawner£¬bÊÇcµÄspawner
-ÄÇÃ´±£´æÍË³öÖØ½øÖ®ºó£¬a¾Í»áÖØÐÂÉú³ÉÒ»¸öbÌæ»»Ô­À´µÄb£¨ËäÈ»
-ÊôÐÔÒ»ÖÂ£©£¬µ«Õâ»áµ¼ÖÂcÊ§È¥ÁËËüµÄspawner
+ï¿½ï¿½ï¿½aï¿½ï¿½bï¿½ï¿½spawnerï¿½ï¿½bï¿½ï¿½cï¿½ï¿½spawner
+ï¿½ï¿½Ã´ï¿½ï¿½ï¿½ï¿½ï¿½Ë³ï¿½ï¿½Ø½ï¿½Ö®ï¿½ï¿½aï¿½Í»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½bï¿½æ»»Ô­ï¿½ï¿½ï¿½ï¿½bï¿½ï¿½ï¿½ï¿½È»
+ï¿½ï¿½ï¿½ï¿½Ò»ï¿½Â£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½áµ¼ï¿½ï¿½cÊ§È¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½spawner
 1:10 2020/3/14
 
-Ô´ÂëÀïÓÐinventoryitem×é¼þºÍatlasname£¬imagesnameµÄ¿ÉÒÔÕÕ°áËüµÄÌùÍ¼
+Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½inventoryitemï¿½ï¿½ï¿½ï¿½ï¿½atlasnameï¿½ï¿½imagesnameï¿½Ä¿ï¿½ï¿½ï¿½ï¿½Õ°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼
 19:29 2020/3/14
 
 AddLevelPreInit(id, function(level) end)
-idÊÇ¶¨ÒåµÄlevelµÄidÊôÐÔ£¬Èç¡°SURVIVAL_DEFAULT¡±
+idï¿½Ç¶ï¿½ï¿½ï¿½ï¿½levelï¿½ï¿½idï¿½ï¿½ï¿½Ô£ï¿½ï¿½ç¡°SURVIVAL_DEFAULTï¿½ï¿½
 20:36 2020/4/2
 
-¿ÆÑ§ÒÇÆ÷ÔÚprefabs/scienceprototyperÎÄ¼þÀï
+ï¿½ï¿½Ñ§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½prefabs/scienceprototyperï¿½Ä¼ï¿½ï¿½ï¿½
 23:08 2020/4/2
 
-¿Æ¼¼ÒÇÆ÷²»½öÒªÓÐprototyper×é¼þ£¬prototyper.tree»¹ÒªÓÐ
+ï¿½Æ¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½prototyperï¿½ï¿½ï¿½ï¿½ï¿½prototyper.treeï¿½ï¿½Òªï¿½ï¿½
 tag prototyper
 23:42 2020/4/2
 
-Î»ÖÃ0,0,0ÔÚµØÆ¤µÄÒ»½ÇÉÏ¿ÉÒÔËãÊÇµØÆ¤×ø±êÖáµÄÔ­µã¡£
-Ò²¾ÍÊÇËµµØÆ¤Ò»½ÇÉÏµÄ×ø±êÊÇ¿ÉÒÔÕû³ý4µÄ
+Î»ï¿½ï¿½0,0,0ï¿½Úµï¿½Æ¤ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ï¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Çµï¿½Æ¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ã¡£
+Ò²ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½Æ¤Ò»ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½4ï¿½ï¿½
 20:21 2020/4/4
 
-¸Ä±älevelµÄidÊÇÓÐÓÃµÄ£¬µ«¸Ä±älevelµÄoverridesºÃÏñÃ»Ê²Ã´ÓÃ£¬
-¿ÉÄÜÊÇÒòÎªÉèÖÃÀï±£´æ×ÅÊý¾Ý£¬ÎÞ·¨¸²¸Ç¡£
+ï¿½Ä±ï¿½levelï¿½ï¿½idï¿½ï¿½ï¿½ï¿½ï¿½ÃµÄ£ï¿½ï¿½ï¿½ï¿½Ä±ï¿½levelï¿½ï¿½overridesï¿½ï¿½ï¿½ï¿½Ã»Ê²Ã´ï¿½Ã£ï¿½
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï±£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½ï¿½Þ·ï¿½ï¿½ï¿½ï¿½Ç¡ï¿½
 20:22 2020/4/4
 
 AddLevelPreInit(level_id, function(level)
-	level = {}ÕâÖÖ°ì·¨ÊÇÐÐ²»Í¨µÄ
+	level = {}ï¿½ï¿½ï¿½Ö°ì·¨ï¿½ï¿½ï¿½Ð²ï¿½Í¨ï¿½ï¿½
 end)
 21:36 2020/4/4
 
-¿¿½ü¸Ärecipe.levelÕâÖÖ°ì·¨Ö»ÄÜ°Ñlevel¸ÄÎª0£¬²»È»¾Í»á±¨´í
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½recipe.levelï¿½ï¿½ï¿½Ö°ì·¨Ö»ï¿½Ü°ï¿½levelï¿½ï¿½Îª0ï¿½ï¿½ï¿½ï¿½È»ï¿½Í»á±¨ï¿½ï¿½
 2:17 2020/4/5
 
-StateGraph(name, ...)  Õâ¸önameÊÇ¶ÔÓ¦ÉúÎïµÄname£¬
-Ó¦¸ÃÊÇ·½±ãAddStateGraphPostInitÓÃµÄ
+StateGraph(name, ...)  ï¿½ï¿½ï¿½nameï¿½Ç¶ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½nameï¿½ï¿½
+Ó¦ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½AddStateGraphPostInitï¿½Ãµï¿½
 0:54 2020/4/6
 
-locomotor×é¼þ±ØÐëÔÚÉèÖÃ×´Ì¬Í¼Ç°Ìí¼Ó£¬
-×îºÃ·ÅÔÚËùÓÐ×é¼þÌí¼ÓÖ®ºó
+locomotorï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬Í¼Ç°ï¿½ï¿½ï¿½Ó£ï¿½
+ï¿½ï¿½Ã·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö®ï¿½ï¿½
 1:02 2020/4/6
 
-×îºÃÓÃÕâÖÖ¸ñÊ½À´Ð´
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½Ê½ï¿½ï¿½Ð´
 local function makeprefab(...)
   local function fn()
     local inst = CreateEntity()
@@ -270,335 +270,299 @@ local function makeprefab(...)
   end
   return Prefab(..., fn, ...) 
 end
-²»È»ÈÝÒ×±¨´í
+ï¿½ï¿½È»ï¿½ï¿½ï¿½×±ï¿½ï¿½ï¿½
 15:51 2020/4/6
 
-¹âÑ§ÈýÔ­É«
-ºì1£¬1£¬1£»»Æ1£¬1£¬0£»ºÚ0£¬0£¬0£»°×1£¬1£¬1£»
+ï¿½ï¿½Ñ§ï¿½ï¿½Ô­É«
+ï¿½ï¿½1ï¿½ï¿½1ï¿½ï¿½1ï¿½ï¿½ï¿½ï¿½1ï¿½ï¿½1ï¿½ï¿½0ï¿½ï¿½ï¿½ï¿½0ï¿½ï¿½0ï¿½ï¿½0ï¿½ï¿½ï¿½ï¿½1ï¿½ï¿½1ï¿½ï¿½1ï¿½ï¿½
 16:45 2020/4/6
 
-ÔÚsgÀïÌí¼ÓÄÚÈÝ£¬ÈÝÒ×ÒòÎª½øÈëÆäËû×´Ì¬¶ø´ò¶Ï
+ï¿½ï¿½sgï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½
 17:55 2020/4/6
 
-ÆïÅ£µÄ¹Ø¼üÔÚÓÚsetBank("wilsonbeefalo")ÈÃÍæ¼Ò¸¡ÆðÀ´
-AddOverrideBuild("beefalo_build")ÈÃÍæ¼ÒÏÂÃæÏÔÊ¾ÁËÅ£
+ï¿½ï¿½Å£ï¿½Ä¹Ø¼ï¿½ï¿½ï¿½ï¿½ï¿½setBank("wilsonbeefalo")ï¿½ï¿½ï¿½ï¿½Ò¸ï¿½ï¿½ï¿½ï¿½ï¿½
+AddOverrideBuild("beefalo_build")ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½Å£
 22:27 2020/4/6
 
-AddPrefabPostInit()Ìí¼Óstate£¬AddStategraphPostInit()
-ÐÞ¸Ästate£¬¿ÉÄÜ»áÕÒ²»µ½Õâ¸östate£¬ËùÒÔ»¹ÊÇÒªÏÈÅÐ¶ÏÊÇ·ñÎª¿Õ
+AddPrefabPostInit()ï¿½ï¿½ï¿½ï¿½stateï¿½ï¿½AddStategraphPostInit()
+ï¿½Þ¸ï¿½stateï¿½ï¿½ï¿½ï¿½ï¿½Ü»ï¿½ï¿½Ò²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½stateï¿½ï¿½ï¿½ï¿½ï¿½Ô»ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½Ð¶ï¿½ï¿½Ç·ï¿½Îªï¿½ï¿½
 3:34 2020/4/7
 
-³¯ÏòÕâ¸ö¶«Î÷ÊÇÓÉTransform:SetRotation(rot)¿ØÖÆµÄ£¬
-¿ÉÒÔÍ¨¹ýTransform:GetRotation()À´»ñµÃ½Ç¶È
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Transform:SetRotation(rot)ï¿½ï¿½ï¿½ÆµÄ£ï¿½
+ï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½Transform:GetRotation()ï¿½ï¿½ï¿½ï¿½Ã½Ç¶ï¿½
 4:21 2020/4/7
 
-yellowstaffµÄinventoryitem.altasnameÊÇ
+yellowstaffï¿½ï¿½inventoryitem.altasnameï¿½ï¿½
 images/inventoryimages_2.xml
 16:17 2020/4/7
 
-¿ÉÒÔÍ¨¹ýÕâÑùµÄ·½Ê½À´»ñÈ¡SGÀïµÄÒ»Ð©ÄÚÈÝ
+ï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä·ï¿½Ê½ï¿½ï¿½ï¿½ï¿½È¡SGï¿½ï¿½ï¿½Ò»Ð©ï¿½ï¿½ï¿½ï¿½
 AddStategraphPostInit(sg_name, function(sg)
   sg.states[state_name].onenter
 end)
 17:58 2020/4/7
 
-ÆïÅ£Ö®ºó£¬Òª°ÑÅ£´«µ½0£¬0£¬0È¥£¬ÕâÑùÖØ½øµÄÊ±ºò²Å²»»á
-ÂÒ´«
+ï¿½ï¿½Å£Ö®ï¿½ï¿½Òªï¿½ï¿½Å£ï¿½ï¿½ï¿½ï¿½0ï¿½ï¿½0ï¿½ï¿½0È¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½Å²ï¿½ï¿½ï¿½
+ï¿½Ò´ï¿½
 3:22 2020/4/8
 
 inst:RemoveChild(child), inst:AddChild(child),
 inst.entity:SetParent(parent.entity)
 3:24 2020/4/8
 
-stateÀïÃæÈç¹ûÃ»ÓÐinst:PerformBufferedAction()£¬
-¾Í²»»á´¥·¢actionsÀïµÄº¯Êý
+stateï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½inst:PerformBufferedAction()ï¿½ï¿½
+ï¿½Í²ï¿½ï¿½á´¥ï¿½ï¿½actionsï¿½ï¿½Äºï¿½ï¿½ï¿½
 20:50 2020/4/8
 
-childµÄÔ­µã»á±»ÉèÖÃ³ÉparentµÄ×ø±ê
+childï¿½ï¿½Ô­ï¿½ï¿½á±»ï¿½ï¿½ï¿½Ã³ï¿½parentï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 21:05 2020/4/8
 
 for i, v in pairs(getmetatable(inst.AnimState).__index) do
 	print(i, type(v))
 end
-ÕâÑùµÄ·½Ê½¿ÉÒÔ´òÓ¡ÈÎºÎÊý¾ÝÀàÐÍ
+ï¿½ï¿½ï¿½ï¿½ï¿½Ä·ï¿½Ê½ï¿½ï¿½ï¿½Ô´ï¿½Ó¡ï¿½Îºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 22:16 2020/4/9
 
-Ò»¼üGOLBALÓ¦¸Ã·ÅÔÚmodmain×îÇ°Ãæ
+Ò»ï¿½ï¿½GOLBALÓ¦ï¿½Ã·ï¿½ï¿½ï¿½modmainï¿½ï¿½Ç°ï¿½ï¿½
 2:45 2020/4/11
 
-hook×é¼þµÄº¯ÊýÊ±£¬»ñÈ¡µÄÔ­º¯ÊýÔÙ¼ÓÉÏÊ±µÚÒ»¸öÒª²ÎÊýµÃÊÇ×ÔÉí
+hookï¿½ï¿½ï¿½ï¿½Äºï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½Ô­ï¿½ï¿½ï¿½ï¿½ï¿½Ù¼ï¿½ï¿½ï¿½Ê±ï¿½ï¿½Ò»ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 AddComponentPostInit("health", function(self)
   local old_fn = self.DoDelta
   function self:DoDelta(...) old_fn(self, ...) end
 end
 16:35 2020/4/11
 
-widget£¬screenÕâÐ©Àà¶¨ÒåÀïµÚÒ»¸öº¯ÊýÃ»instÖ»ÓÐself
-¶øÇÒ¶¨ÒåÊ±²»ÄÜÏñ×é¼þÄÇÑù£¬ÒòÎªÊ±¶¨ÒåµÄ×ÓÀà£¬ËùÒÔÒª´«¸¸Àà
+widgetï¿½ï¿½screenï¿½ï¿½Ð©ï¿½à¶¨ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»instÖ»ï¿½ï¿½self
+ï¿½ï¿½ï¿½Ò¶ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÎªÊ±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½à£¬ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 local screen = Class(Screen, function(self) end
 3:12 2020/4/12
 
-»ñÈ¡µÄÍ¼ÐÎ½çÃæÊÇ¸öÀà£¬ÒªÊµÀý»¯
+ï¿½ï¿½È¡ï¿½ï¿½Í¼ï¿½Î½ï¿½ï¿½ï¿½ï¿½Ç¸ï¿½ï¿½à£¬ÒªÊµï¿½ï¿½ï¿½ï¿½
 local screen = require "screen/screen"
 TheFrontEnd:PushScreen(screen())
 3:33 2020/4/12
 
-badge(self, anim, owner) µÚ¶þ¸ö²ÎÊý¾ÍÊÇÆä±³¾°Í¼Æ¬
+badge(self, anim, owner) ï¿½Ú¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ä±³ï¿½ï¿½Í¼Æ¬
 1:27 2020/4/14
 
-Èç¹ûÔÚ¶©ÔÄµÄ´´Òâ¹¤·»modÀï½øÐÐÐÞ¸Ä£¬ÔÚÏßÄ£Ê½ÏÂ¿ÉÄÜ»á±»¸Ä»ØÀ´
+ï¿½ï¿½ï¿½ï¿½Ú¶ï¿½ï¿½ÄµÄ´ï¿½ï¿½â¹¤ï¿½ï¿½modï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Þ¸Ä£ï¿½ï¿½ï¿½ï¿½ï¿½Ä£Ê½ï¿½Â¿ï¿½ï¿½Ü»á±»ï¿½Ä»ï¿½ï¿½ï¿½
 14:59 2020/4/14
 
-Í¼Æ¬×ÊÔ´²»ÍêÕûµÄ»°£¬autocompiler.exe¾ÍÎÞ·¨´ò°ü
+Í¼Æ¬ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä»ï¿½ï¿½ï¿½autocompiler.exeï¿½ï¿½ï¿½Þ·ï¿½ï¿½ï¿½ï¿½
 23:09 2020/4/14
 
-mk_sample_uiÀï¶¨ÒåµÄself:mk_fn(self.owner)
-È»ºóÔÚmk_back_ui(¼Ì³Ðmk_sample_ui)Àï´«Èë
+mk_sample_uiï¿½ï¶¨ï¿½ï¿½ï¿½self:mk_fn(self.owner)
+È»ï¿½ï¿½ï¿½ï¿½mk_back_ui(ï¿½Ì³ï¿½mk_sample_ui)ï¿½ï´«ï¿½ï¿½
 self.mk_fn = BackMonkey --BackMonkey(inst) end
-ÕâÊ±ºò¾ÍBackMonkeyÔÚµ÷ÓÃµÄÊ±ºò½ÓÊÜ²»µ½self.owner
-Ö»ÄÜÊÇÔÚmk_back_uiÀï¶¨ÒåÒ»¸öself.mk_fn£¬
-È»ºóÔÙµ÷ÓÃself:mk_fn(self.owner)
+ï¿½ï¿½Ê±ï¿½ï¿½ï¿½BackMonkeyï¿½Úµï¿½ï¿½Ãµï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ü²ï¿½ï¿½ï¿½self.owner
+Ö»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mk_back_uiï¿½ï¶¨ï¿½ï¿½Ò»ï¿½ï¿½self.mk_fnï¿½ï¿½
+È»ï¿½ï¿½ï¿½Ùµï¿½ï¿½ï¿½self:mk_fn(self.owner)
 23:40 2020/4/25
 
-OnLoadº¯Êý¼ÓÔØÊ±Ò»¶¨Òª¸ø¸öÄ¬ÈÏÖµ
+OnLoadï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±Ò»ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½Ä¬ï¿½ï¿½Öµ
 23:41 2020/4/25
 
-Ð´printÀ´°ïÖúµ÷ÊÔµÄÊ±ºò£¬²»ÒªÖ»ÊÇ¸øº¯ÊýÐ´¸ö¾ÍÍêÁË£¬
-»¹ÒªÏëÏëÇ°ºóÂß¼­
+Ð´printï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ôµï¿½Ê±ï¿½ò£¬²ï¿½ÒªÖ»ï¿½Ç¸ï¿½ï¿½ï¿½ï¿½ï¿½Ð´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë£ï¿½
+ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ß¼ï¿½
 23:56 2020/4/25
 
-a,bÊÇ±í£¬ÄÇÃ´a = bÊÇÖ¸ÕëµÄ¸³Öµ
+a,bï¿½Ç±ï¿½ï¿½ï¿½ï¿½ï¿½Ã´a = bï¿½ï¿½Ö¸ï¿½ï¿½Ä¸ï¿½Öµ
 16:31 2020/4/26
 
-Ð¡ÐÄnil°É£¬¶àÅÐ¶ÏÒ»ÏÂ°É
+Ð¡ï¿½ï¿½nilï¿½É£ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½Ò»ï¿½Â°ï¿½
 0:20 2020/4/27
 
-physics:CollidesWith(COLLISION.xx) Óëxx·¢ÉúÅö×²
-physics:SetCollisionGroup(COLLISION.xx) ½«×Ô¼ºÉèÎªxx
+physics:CollidesWith(COLLISION.xx) ï¿½ï¿½xxï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×²
+physics:SetCollisionGroup(COLLISION.xx) ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½Îªxx
 2:59 2020/4/27
 
-Íæ¼ÒµÄkeeponlandÊôÐÔ»áÈÃÍæ¼ÒÁôÔÚÂ½µØÉÏ£¨²»³Ë´¬Ê±£©
+ï¿½ï¿½Òµï¿½keeponlandï¿½ï¿½ï¿½Ô»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â½ï¿½ï¿½ï¿½Ï£ï¿½ï¿½ï¿½ï¿½Ë´ï¿½Ê±ï¿½ï¿½
 15:51 2020/4/27
 
-Ïñ¶¨Òåclass£¬È»ºófunctionÕâÖÖµÄº¯Êý£¬ÐèÒªself£¬ÆäËûµÄ¾Í²»ÓÃ
+ï¿½ï¿½ï¿½ï¿½classï¿½ï¿½È»ï¿½ï¿½functionï¿½ï¿½ï¿½ÖµÄºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªselfï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¾Í²ï¿½ï¿½ï¿½
 17:05 2020/4/27
 
-stateÀïÃæÈç¹ûÓÐÑ­»·²¥·ÅµÄ£¬ÓÉÓÚµÈ²»µ½animqueueover£¬ÇÒ²»´òËã
-ÓÃanimover£¬¿ÉÒÔÓÃinst.sg:SetTimeout(time)£¬È»ºóÔÚ
-ontimeout = function(inst) end ÀïÍË³ö
+stateï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ÅµÄ£ï¿½ï¿½ï¿½ï¿½ÚµÈ²ï¿½ï¿½ï¿½animqueueoverï¿½ï¿½ï¿½Ò²ï¿½ï¿½ï¿½ï¿½ï¿½
+ï¿½ï¿½animoverï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½inst.sg:SetTimeout(time)ï¿½ï¿½È»ï¿½ï¿½ï¿½ï¿½
+ontimeout = function(inst) end ï¿½ï¿½ï¿½Ë³ï¿½
 3:28 2020/4/28
 
-ImageµÄSetScale(x, y, z) xÊÇ³¤£¬yÊÇ¿í£¬¶ø²»ÊÇz
+Imageï¿½ï¿½SetScale(x, y, z) xï¿½Ç³ï¿½ï¿½ï¿½yï¿½Ç¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½z
 4:12 2020/4/28
 
-hook combat×é¼þµÄCanTargetº¯Êý£¬ÓÉÓÚÕâ¸öº¯ÊýÊÇ·µ»ØboolµÄ£¬
-ËùÒÔÔÚhookµÄº¯ÊýÀïÒªreturn old_fn(self, ...)
+hook combatï¿½ï¿½ï¿½ï¿½ï¿½CanTargetï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½boolï¿½Ä£ï¿½
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½hookï¿½Äºï¿½ï¿½ï¿½ï¿½ï¿½Òªreturn old_fn(self, ...)
 19:05 2020/4/28
 
-Íæ¼Ò¹¥»÷ºó°´ÒÆ¶¯¼ü»á³öÏÖÒÆ¶¯²»ÁËµÄÇé¿öÊÇÒòÎª
-run_start, run, run_stopÕâÈý¸östate²»È«
+ï¿½ï¿½Ò¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª
+run_start, run, run_stopï¿½ï¿½ï¿½ï¿½ï¿½ï¿½stateï¿½ï¿½È«
 19:06 2020/4/28
 
-TheInput():GetScreenPosition()µÄ×ø±ê×óÏÂ½ÇÊÇ0£¬0
+TheInput():GetScreenPosition()ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â½ï¿½ï¿½ï¿½0ï¿½ï¿½0
 21:43 2020/4/30
 
-widget:OnControl(control, down) ÄÚÊÇ ¾Û½¹ÇÒ·¢Éú Êó±ê×ó¼üÊÂ¼þ»ò¼üÅÌÊÂ¼þ
-control == CONTROL_ACCEPT Çé¿ö¶ÔÓ¦µÄÊÇ ¾Û½¹ÇÒ·¢Éú Êó±ê×ó¼üÊÂ¼þ
+widget:OnControl(control, down) ï¿½ï¿½ï¿½ï¿½ ï¿½Û½ï¿½ï¿½Ò·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¼ï¿½
+control == CONTROL_ACCEPT ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ ï¿½Û½ï¿½ï¿½Ò·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¼ï¿½
 2:54 2020/5/1
 
-ÀàÃû._base¾Í¿ÉÒÔ»ñÈ¡¸¸Àà
-Àý×Ó£ºButton._base.OnLoseFocus(self)
+ï¿½ï¿½ï¿½ï¿½._baseï¿½Í¿ï¿½ï¿½Ô»ï¿½È¡ï¿½ï¿½ï¿½ï¿½
+ï¿½ï¿½ï¿½Ó£ï¿½Button._base.OnLoseFocus(self)
 3:03 2020/5/1
 
-widgetµÄOnControl(control, down)
+widgetï¿½ï¿½OnControl(control, down)
 
-brainÀïµÄchaseandattackÀïµÄ¾àÀëºÍcombat.retargetfnÀïµÄ
-ËÑË÷¾àÀë×îºÃÊÇÒ»ÑùµÄ£¬»òÕßÇ°Õß´óÓÚºóÕß¡£
+brainï¿½ï¿½ï¿½chaseandattackï¿½ï¿½Ä¾ï¿½ï¿½ï¿½ï¿½combat.retargetfnï¿½ï¿½ï¿½
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ß´ï¿½ï¿½Úºï¿½ï¿½ß¡ï¿½
 0:01 2020/5/5
 
-sgÀïµÄ×´Ì¬ÒªÓÐÏàÓ¦µÄ´¥·¢Æ÷À´´¥·¢¡£
+sgï¿½ï¿½ï¿½×´Ì¬Òªï¿½ï¿½ï¿½ï¿½Ó¦ï¿½Ä´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 22:17 2020/5/5
 
-ÓÐreplicaµÄ¼ÇµÃreplicaÅÐ¶Ï²»Îªnil
+ï¿½ï¿½replicaï¿½Ä¼Çµï¿½replicaï¿½Ð¶Ï²ï¿½Îªnil
 14:45 2020/5/7
 
-next(tbl)»ñÈ¡tblÁÐ±íµÄÏÂÒ»¸öÔªËØ£¬¿ÉÒÔÅÐ¶ÏtblÊÇ·ñÎª¿Õ
-£¨Ò»¿ªÊ¼¾Í·µ»Ønil¼ÈÎª¿Õ£©
+next(tbl)ï¿½ï¿½È¡tblï¿½Ð±ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ôªï¿½Ø£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½tblï¿½Ç·ï¿½Îªï¿½ï¿½
+ï¿½ï¿½Ò»ï¿½ï¿½Ê¼ï¿½Í·ï¿½ï¿½ï¿½nilï¿½ï¿½Îªï¿½Õ£ï¿½
 14:48 2020/5/8
 
-Áª»úµÄAddPrefabPostInit(prefab, fn)
-fnÀïÒª¼Ó if not TheWorld.ismastersim then return inst end
-´úÂë¸ù¾ÝÇé¿öÑ¡ÔñÔÚÇ°»¹ÊÇÔÚºó
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½AddPrefabPostInit(prefab, fn)
+fnï¿½ï¿½Òªï¿½ï¿½ if not TheWorld.ismastersim then return inst end
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½Úºï¿½
 16:29 2020/5/8
 
-netvar:set(x)ÉèÖÃµÄÖµºÍÔ­À´²»Ò»ÑùµÄ»°¾Í»á×Ô¶¯´¥·¢dirtyÊÂ¼þ£¬
-ÎÞÐèÍÆËÍ
+netvar:set(x)ï¿½ï¿½ï¿½Ãµï¿½Öµï¿½ï¿½Ô­ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ä»ï¿½ï¿½Í»ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½dirtyï¿½Â¼ï¿½ï¿½ï¿½
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 17:29 2020/5/8
 
-brainÀïµÄActionÐèÒªÌõ¼þÖ§³Ö²ÅÄÜÖ´ÐÐ£¬²»È»¾ÍËãÔÚÖ´ÐÐ¹ý³ÌÖÐ£¬
-Ò²»á±»´ò¶Ï¡£
+brainï¿½ï¿½ï¿½Actionï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½Ö§ï¿½Ö²ï¿½ï¿½ï¿½Ö´ï¿½Ð£ï¿½ï¿½ï¿½È»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½Ð¹ï¿½ï¿½ï¿½ï¿½Ð£ï¿½
+Ò²ï¿½á±»ï¿½ï¿½Ï¡ï¿½
 18:30 2020/5/8
 
 AddModRPCHandler(modname, rpcname, fn)
-  fnµÄµÚÒ»¸ö²ÎÊýÎªinst£¬¾ÍÊÇË­·¢ËÍµÄ
+  fnï¿½Äµï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªinstï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë­ï¿½ï¿½ï¿½Íµï¿½
   SendModRPCToServer(MOD_RPC[modname][rpcname])
-  ¾ÍÊÇË­
+  ï¿½ï¿½ï¿½ï¿½Ë­
 21:56 2020/5/8
 
-inspectableµÄgetstatusÊÇ¶ÔÓÚDESCRIBEµÄ
+inspectableï¿½ï¿½getstatusï¿½Ç¶ï¿½ï¿½ï¿½DESCRIBEï¿½ï¿½
 1:16 2020/5/10
 
 AddComponentAction("SCENE", "skyhoundpet", test_fn)
-ÕâÀïµÄtest_fnÖ»ÄÜÓÃÒ»ÖÖÀ´ÅÐ¶Ï¶àÖÖ¶¯×÷
+ï¿½ï¿½ï¿½ï¿½ï¿½test_fnÖ»ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶Ï¶ï¿½ï¿½Ö¶ï¿½ï¿½ï¿½
 21:58 2020/5/13
 
-statusdisplaysÊÇinst.HUD.controls.status£¨instÊÇÈËÎï£©
+statusdisplaysï¿½ï¿½inst.HUD.controls.statusï¿½ï¿½instï¿½ï¿½ï¿½ï¿½ï¿½ï£©
 1:00 2020/5/15
 
-ÄÜÓÃ¹Ù·½µÄbank£¬¾Í¾¡Á¿ÓÃ¹Ù·½µÄbank
+ï¿½ï¿½ï¿½Ã¹Ù·ï¿½ï¿½ï¿½bankï¿½ï¿½ï¿½Í¾ï¿½ï¿½ï¿½ï¿½Ã¹Ù·ï¿½ï¿½ï¿½bank
 16:03 2020/5/15
 
-³ß´çµÄ±ä»¯»áµ¼ÖÂËÙ¶ÈµÄ±ä»¯
+ï¿½ß´ï¿½Ä±ä»¯ï¿½áµ¼ï¿½ï¿½ï¿½Ù¶ÈµÄ±ä»¯
 16:03 2020/5/15
 
-ÄÜ¸Äº¯Êý¾Í²»¸²¸Ç£¬ÄÜ¸Ä±äÁ¿¾Í²»¸Ãº¯Êý
+ï¿½Ü¸Äºï¿½ï¿½ï¿½ï¿½Í²ï¿½ï¿½ï¿½ï¿½Ç£ï¿½ï¿½Ü¸Ä±ï¿½ï¿½ï¿½ï¿½Í²ï¿½ï¿½Ãºï¿½ï¿½ï¿½
 1:12 2020/5/16
 
-ÓÐcritter±êÇ©µÄÉúÎï²ÅÄÜ±»Î¹Ñø
+ï¿½ï¿½critterï¿½ï¿½Ç©ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü±ï¿½Î¹ï¿½ï¿½
 3:01 2020/5/17
 
-Ò»°ãÓÃ
+Ò»ï¿½ï¿½ï¿½ï¿½
 inst._mynetvar:set_local(false)
 inst._mynetvar:set(true)
-À´±£Ö¤dirtyÊÂ¼þµÄ´¥·¢
+ï¿½ï¿½ï¿½ï¿½Ö¤dirtyï¿½Â¼ï¿½ï¿½Ä´ï¿½ï¿½ï¿½
 1:03 2020/5/18
 
-ÍøÂç±äÁ¿ºÍdirtyÊÂ¼þµÄ¼àÌýÒ»°ã·ÅÔÚ·þÎñ¶Ë´úÂë£¬²»È»¿ÉÄÜ»áÓ°ÏìÆäËûdirtyÊÂ¼þ
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½dirtyï¿½Â¼ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ï¿½ï¿½Ë´ï¿½ï¿½ë£¬ï¿½ï¿½È»ï¿½ï¿½ï¿½Ü»ï¿½Ó°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½dirtyï¿½Â¼ï¿½
 1:04 2020/5/18
 
-perloadÔÚ×é¼þ¼ÓÔØÇ°£¬loadÔÚ×é¼þ¼ÓÔØºó
+perloadï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½loadï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Øºï¿½
 15:26 2020/5/18
 
-t.a£¬¼°Ê±Ö®Ç°ÓÐ¶¨Òåa£¬t.aÒ²²»»á×ªÒå
+t.aï¿½ï¿½ï¿½ï¿½Ê±Ö®Ç°ï¿½Ð¶ï¿½ï¿½ï¿½aï¿½ï¿½t.aÒ²ï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½
 1:02 2020/5/27
 
-¸øÎäÆ÷Ìí¼Óslowattak±êÇ©£¬¾Í¿ÉÒÔ¹¥»÷ºóÒ¡´ó
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½slowattakï¿½ï¿½Ç©ï¿½ï¿½ï¿½Í¿ï¿½ï¿½Ô¹ï¿½ï¿½ï¿½ï¿½ï¿½Ò¡ï¿½ï¿½
 23:23 2020/5/29
 
-physics:SetVal(x, y, z) yÖµÒª´óÓÚÖØÁ¦²Å·ÉµÃÆðÀ´
+physics:SetVal(x, y, z) yÖµÒªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å·Éµï¿½ï¿½ï¿½ï¿½ï¿½
 13:49 2020/5/31
 
-¶¯×÷´¥·¢µÄµÚÒ»¸ösgÎÞ·¨Î»ÒÆ
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äµï¿½Ò»ï¿½ï¿½sgï¿½Þ·ï¿½Î»ï¿½ï¿½
 1:18 2020/6/1
 
-componentµÄonsaveÀï²»ÒªÓÃdata×ö±äÁ¿
+componentï¿½ï¿½onsaveï¿½ï²»Òªï¿½ï¿½dataï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 19:43 2020/6/11
 
-spawnprefabÈç¹û²»¸ø×ø±ê¾Í»áÉèÖÃÔÚ0£¬0£¬0´¦
+spawnprefabï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½0ï¿½ï¿½0ï¿½ï¿½0ï¿½ï¿½
 22:31 2020/6/14
 
-inst.fn Èç¹û¶¨ÒåÊ±µÚÒ»¸ö²ÎÊýÎªinst£¬ÄÇÃ´ÔÚµ÷ÓÃÊ±inst:fn()¾Í²»ÐèÒªÔÙ´«ÈëµÚÒ»¸ö²ÎÊý
-inst£¬Ö±½Ó´«ºóÃæµÄ¾Í¿ÉÒÔ
+inst.fn ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªinstï¿½ï¿½ï¿½ï¿½Ã´ï¿½Úµï¿½ï¿½ï¿½Ê±inst:fn()ï¿½Í²ï¿½ï¿½ï¿½Òªï¿½Ù´ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+instï¿½ï¿½Ö±ï¿½Ó´ï¿½ï¿½ï¿½ï¿½ï¿½Ä¾Í¿ï¿½ï¿½ï¿½
 22:40 2020/6/21
 
-brainÀïÖ»ÓÐwhilenodeÀïµÄ»áÑ­»·Ö´ÐÐ£¬ÆäËûÖ»Ö´ÐÐÒ»Á½´Î¾ÍÃ»ÁË
+brainï¿½ï¿½Ö»ï¿½ï¿½whilenodeï¿½ï¿½Ä»ï¿½Ñ­ï¿½ï¿½Ö´ï¿½Ð£ï¿½ï¿½ï¿½ï¿½ï¿½Ö»Ö´ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Î¾ï¿½Ã»ï¿½ï¿½
 12:26 2020/6/26
 
-brainÀïdoactionµÄreturn²¢²»»á½áÊøµ±Ç°¶¯×÷È¥Ö´ÐÐÏÂÒ»¸ö¶¯×÷£¬ËùÒÔ¶ÔÓÚ
-return BufferedActionµÄ²»ÒªËæ±ãreturn nil
+brainï¿½ï¿½doactionï¿½ï¿½returnï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½È¥Ö´ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½
+return BufferedActionï¿½Ä²ï¿½Òªï¿½ï¿½ï¿½return nil
 12:29 2020/6/26
 
-prioritynode Èç¹ûË¢ÐÂ½ÏÂý¿ÉÄÜ¾Í»á³öÏÖÎÊÌâ¡£
+prioritynode ï¿½ï¿½ï¿½Ë¢ï¿½Â½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü¾Í»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½â¡£
 0:20 2020/6/29
 
-²»·´±àÒë»ù±¾²»ÄÜÍ¨¹ýÎÄ¼þ¼ÐµÃµ½ÕýÈ·µÄÍ¼²ã
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ÐµÃµï¿½ï¿½ï¿½È·ï¿½ï¿½Í¼ï¿½ï¿½
 19:25 2020/7/4
 
-buildrenameÊäÈëºÍÊä³ö¶¼Ñ¡Í¬Ò»¸öbuild¾ÍÐÐÁË
+buildrenameï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡Í¬Ò»ï¿½ï¿½buildï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 16:17 2020/7/6
 
-Ò»¸öprefabÈç¹û²»ÊÇchildÄÇÃ´spawnrecord²úÉúµÄ¾Í»á¶à³öÒ»¸ö£¬
-ÒòÎªÖ®Ç°µÄ»¹ÊÇ´æÔÚµÄ
+Ò»ï¿½ï¿½prefabï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½childï¿½ï¿½Ã´spawnrecordï¿½ï¿½ï¿½ï¿½ï¿½Ä¾Í»ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½
+ï¿½ï¿½ÎªÖ®Ç°ï¿½Ä»ï¿½ï¿½Ç´ï¿½ï¿½Úµï¿½
 16:19 2020/7/6
 
-±³°üµÄOverrideSymbol("swap_body", "swap_backpack", "backpack")
-±ØÐëÔÚOverrideSymbol("swap_body", "backpack_rabbit", "swap_body")Ç°Ãæ
-²»È»»á¸²¸Çµô±³°üµÄÍ¼²ã
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½OverrideSymbol("swap_body", "swap_backpack", "backpack")
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½OverrideSymbol("swap_body", "backpack_rabbit", "swap_body")Ç°ï¿½ï¿½
+ï¿½ï¿½È»ï¿½á¸²ï¿½Çµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½
 20:15 2020/7/6
 
-combat:DoAttack()±ØÐëÒªÔÚ¹¥»÷·¶Î§ÄÚ²Å»áÔì³ÉÉËº¦£¬ÉèÓÐtarget²ÎÊý£¬
-Ò²ÊÇ»áÅÐ¶ÏtargetÊÇ·ñÔÚ¹¥»÷·¶Î§ÄÚ
+combat:DoAttack()ï¿½ï¿½ï¿½ï¿½Òªï¿½Ú¹ï¿½ï¿½ï¿½ï¿½ï¿½Î§ï¿½Ú²Å»ï¿½ï¿½ï¿½ï¿½ï¿½Ëºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½targetï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+Ò²ï¿½Ç»ï¿½ï¿½Ð¶ï¿½targetï¿½Ç·ï¿½ï¿½Ú¹ï¿½ï¿½ï¿½ï¿½ï¿½Î§ï¿½ï¿½
 23:56 2020/7/6
 
-Get Clock()ÊÇworldµÄcomponent clock
+Get Clock()ï¿½ï¿½worldï¿½ï¿½component clock
 14:40 2020/7/14
 
-ice prefabÔÚinv_rocks_iceÎÄ¼þÀï
+ice prefabï¿½ï¿½inv_rocks_iceï¿½Ä¼ï¿½ï¿½ï¿½
 18:32 2020/7/15
 
 local a = {1, 2, 3}
-unpack(a), 4 µÄ½á¹ûÊÇ 1, 4
-4, unpack(a) µÄ½á¹ûÊÇ 4, 1, 2, 3
+unpack(a), 4 ï¿½Ä½ï¿½ï¿½ï¿½ï¿½ 1, 4
+4, unpack(a) ï¿½Ä½ï¿½ï¿½ï¿½ï¿½ 4, 1, 2, 3
 12:02 2020/7/28
 
-¶¨ÒåwidgetÊ±£¬self.textÕâÖÖ±äÁ¿×îºÃ²»Òª¶¨Òå£¬ºÜ¿ÉÄÜÊÇÒÑ¾­¶¨Òå¹ýÁËµÄ
+ï¿½ï¿½ï¿½ï¿½widgetÊ±ï¿½ï¿½self.textï¿½ï¿½ï¿½Ö±ï¿½ï¿½ï¿½ï¿½ï¿½Ã²ï¿½Òªï¿½ï¿½ï¿½å£¬ï¿½Ü¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½
 12:32 2020/7/31
 
-weapon×é¼þµÄrangeÊÇ¶îÍâÔÙ¼Ó¶àÉÙ³¤¶È
+weaponï¿½ï¿½ï¿½ï¿½ï¿½rangeï¿½Ç¶ï¿½ï¿½ï¿½ï¿½Ù¼Ó¶ï¿½ï¿½Ù³ï¿½ï¿½ï¿½
 18:09 2020/8/4
 
-µØÍ¼Éú³ÉÊ±£¬²»ÔÙÂ½µØÉÏµÄµ¥Î»¶¼»á±»É¾³ýµô
+ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â½ï¿½ï¿½ï¿½ÏµÄµï¿½Î»ï¿½ï¿½ï¿½á±»É¾ï¿½ï¿½ï¿½ï¿½
 13:52 2020/8/8
 
-Êß²ËºÍË®¹ûÔÚprefabs/veggie.luaÀï
+ï¿½ß²Ëºï¿½Ë®ï¿½ï¿½ï¿½ï¿½prefabs/veggie.luaï¿½ï¿½
 16:46 2020/8/22
 
-SetPrefabName()»áµ¼ÖÂ¼ÓÔØÊ±»á±ä³ÉÐÞ¸ÄºóµÄÉúÎï
+SetPrefabName()ï¿½áµ¼ï¿½Â¼ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Þ¸Äºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 17:07 2020/8/23
 
-ÓÐcompanion tagµÄÉúÎï²»ÄÜÖ±½Ó×ó¼ü¹¥»÷
+ï¿½ï¿½companion tagï¿½ï¿½ï¿½ï¿½ï¿½ï²»ï¿½ï¿½Ö±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 2:01 2020/9/28
 
-luaÖ§³Ö"1"+1£¬½á¹ûÎª2
+luaÖ§ï¿½ï¿½"1"+1ï¿½ï¿½ï¿½ï¿½ï¿½Îª2
 16:14 2020/10/10
 
-¶ÔÒ»¸öÃÅÊ¹ÓÃÀ©½¨Ðí¿ÉÖ¤ºó£¬¶ÔÓ¦·¿¼äµÄÎïÆ·²¢Ã»ÓÐÉú³É£¬¶øÊÇÉú³ÉÁË¶ÔÓ¦µÄÊý¾Ý£¬½øÈë
-Ö®ºó²Å»áÉú³É£¬ÃÅÒ²ÊÇÓÐpredoor tag£¬µ«ÒÆ¶¯µÄÊ±ºòÓÖÃ»ÓÐ
+ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¤ï¿½ó£¬¶ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ·ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½É£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë¶ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½ï¿½ï¿½ï¿½ï¿½
+Ö®ï¿½ï¿½Å»ï¿½ï¿½ï¿½ï¿½É£ï¿½ï¿½ï¿½Ò²ï¿½ï¿½ï¿½ï¿½predoor tagï¿½ï¿½ï¿½ï¿½ï¿½Æ¶ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½
 2:59 2020/10/29
 
-trans_door ÃÅÔÚÒÆ¶¯¹ý³ÌÖÐ²ÅÄÜÊÕ¼¯µ½reset_door¶¯×÷£¬ÒòÎªreset_door¶¯×÷µÄÓÅÏÈ¼¶µÍÁË
-20:31 2020/10/29
-
-a[1]:fn()ºÍa:[1].fn()ÕâÁ½ÖÖ¸ñÊ½¶¼ÊÇ²»¶ÔµÄ
-1:16 2020/11/5
-
-WgImgÖ»ÄÜÔÚmodmainµÄ»·¾³ÏÂÔËÓª£¬¹À¼ÆÒªÏñWARGONÒ»Ñù´«ÈëGLOBAL²ÅÄÜÔÚprefab
-»òscreenÀïÃæÐ´
-17:08 2020/11/10
-
-ÉÌÆ·µÄÌæ»»ÔÚshopinteriorÀï
-14:26 2020/11/18
-
-tpenchantment.attribute = ÉÏÃæ¶¨ÒåºÃµÄattributes£¬ÕâÑù¾Íµ¼ÖÂµÄtpenchantmentµÄattribute
-¶¼Ö¸ÏòÄÇ¸ötable£¬ËùÒÔ¶¨Òå×é¼þÊ±²»ÒªÈÃÊôÐÔÈ¥µÈÓÚÒ»¸öÖ®Ç°¶¨ÒåºÃµÄ±í£¬ÒòÎªÄÇ»áÖ¸ÏòÍ¬Ò»¸öÖ¸Õë£¬
-»òÕßÉî¸´ÖÆ¹ýÈ¥Ò²ÐÐ(luaÃ»ÓÐ¶¨Òå£¬µ«¼¢»Ä¶¨ÒåÁËdeepcopy)¡£
-23:39 2020/11/24
-
-ÓÃAddPrefabPostInit»ñÈ¡inst.brain»Ø±¨´í£¬ÒòÎªbrain»¹Î´Éú³É
-0:59 2020/11/29
-
-Ìí¼Ó½¨ÔìÀ¸Ê±sort±ðÐ´Ò»Ñù£¬·ñÔò»á¼Óµ½Ò»ÆðÈ¥
-1:03 2020/11/29
-
-¸¸aºÍ±»b¸Ç×¡£¬ÄÇÃ´¸¸aµÄ×ÓaaÒ²»á±»b¸Ç×¡
-1:27 2020/12/13
-
-×ÓuiÐý×ª£¬ÉèÖÃÎ»ÖÃÊÇx£¬y²»±ä£¬¸¸uiÐý×ª£¬×ÓuiÉèÖÃÎ»ÖÃx£¬y»á¸Ä±ä
-15:36 2021/1/16
-
-PlaySound(event, name)ÒªÉèÖÃÒ»¸öname£¬²ÅÄÜÓÃKillSound(name)Í£×¡
-2:35 2021/1/23
-
-ÉúÎï¹¥»÷Ö®Ç°Õ½ºðÔÚcombatµÄBattleCryº¯ÊýÀï£¬
-chaseandattack ºÍ standandattack ÀïÓÐ½øÐÐµ÷ÓÃ
-21:05 2021/1/31

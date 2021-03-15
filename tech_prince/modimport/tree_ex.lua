@@ -150,7 +150,7 @@ local function SetShort(inst)
 end
 
 local function GrowShort(inst)
-    inst.AnimState:PlayAnimation("grow_old_to_short")
+    inst.AnimState:PlayAnimation("grow_tall_to_short")
     inst.SoundEmitter:PlaySound("dontstarve/forest/treeGrowFromWilt")          
     PushSway(inst)
 end
@@ -572,9 +572,14 @@ end
 
 ----------------------- treeseeds ------------------------------
 local no_tags = {'NOBLOCK', "player", 'FX'}
-local function treeseed_test(inst, pt, dist)
+local function treeseed_test(inst, pt, dist, aquatic)
     local dist = dist or 2
-    local ok = WARGON.on_land(inst, pt)
+    local ok = nil
+    if aquatic then
+        ok = WARGON.on_water(inst, pt)
+    else
+        ok = WARGON.on_land(inst, pt)
+    end
     local tiletype = WARGON.get_tile(pt)
     ok = ok and tiletype ~= GROUND.ROCKY and tiletype ~= GROUND.ROAD 
     and tiletype ~= GROUND.IMPASSABLE and tiletype ~= GROUND.INTERIOR 

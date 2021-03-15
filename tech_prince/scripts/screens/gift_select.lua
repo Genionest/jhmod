@@ -36,7 +36,7 @@ local GiftDialog = Class(Screen, function(self, buttons)
     self.title = self.proot:AddChild(Text(TITLEFONT, 50))
     self.title:SetPosition(0, 180, 0)
     -- self.title:SetString(STRINGS.UI.ENDGAME.TITLE)
-    self.title:SetString("社区温暖礼包")
+    self.title:SetString(STRINGS.TP_STR.tp_select_tile)
 
 	--text
     self.text = self.proot:AddChild(Text(BODYTEXTFONT, 30))
@@ -48,25 +48,20 @@ local GiftDialog = Class(Screen, function(self, buttons)
     -- self.text:SetString(STRINGS.UI.ENDGAME.BODY1..
     -- 	STRINGS.CHARACTER_NAMES[character]..
     -- 	string.format(STRINGS.UI.ENDGAME.BODY2,STRINGS.UI.GENDERSTRINGS[GetGenderStrings(character)].ONE , STRINGS.UI.GENDERSTRINGS[GetGenderStrings(character)].TWO))
-    local strs = {
-    	"百万福利\n点击就送\n",
-    	"点一下，玩一年\n",
-    	"装备不花一分钱\n",
-    	"\n\n\n",
-    	"选择你的礼物",
-	}
-	local complete_str = ""
-	for k, v in pairs(strs) do
-		complete_str = complete_str..v
-	end
+    -- local strs = tp_select_word
+	local complete_str = STRINGS.TP_STR.tp_select_word
+	-- for k, v in pairs(strs) do
+	-- 	complete_str = complete_str..v
+	-- end
     self.text:SetString(complete_str)
     self.text:EnableWordWrap(true)
     self.text:SetRegionSize(700, 350)
     
 	
 	--create the menu itself
-	local button_w = 200
-	local space_between = 20
+	local scale = .8
+	local button_w = 200*scale
+	local space_between = 20*scale
 	local spacing = button_w + space_between
 	
 	self.menu = self.proot:AddChild(Widget("menu"))
@@ -86,6 +81,7 @@ local GiftDialog = Class(Screen, function(self, buttons)
 		button.text:SetColour(0,0,0,1)
 	    button:SetFont(BUTTONFONT)
 	    button:SetTextSize(40)    
+	    button:SetScale(scale, scale, scale)
 	    pos = pos + Vector3(spacing, 0, 0)  
 	    
 		self.default_focus = button

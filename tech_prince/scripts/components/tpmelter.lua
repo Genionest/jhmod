@@ -3,7 +3,10 @@ local Melter = require "components/melter"
 
 local TpMelter = Class(Melter, function(self, inst)
 	Melter._ctor(self, inst)
-	self.spoiledproduct = "tp_alloy"
+	self.spoiledproduct = "tp_spear_mix"
+    self.min_num_for_cook = 3
+    self.max_num_for_cook = 3
+    self.tp_ings = {}
 end)
 
 -- local TpMelter = Class(function(self, inst)
@@ -79,13 +82,14 @@ end
 -- end
 
 
--- function TpMelter:CanCook()
--- 	local num = 0
--- 	for k,v in pairs (self.inst.components.container.slots) do
--- 		num = num + 1 
--- 	end
--- 	return num >= self.min_num_for_cook and num <= self.max_num_for_cook
--- end
+function TpMelter:CanCook()
+	local num = 0
+	for k,v in pairs (self.inst.components.container.slots) do
+		num = num + 1 
+	end
+	return num >= self.min_num_for_cook and num <= self.max_num_for_cook
+		and self.product == nil
+end
 
 
 function TpMelter:StartCooking()
@@ -103,7 +107,11 @@ function TpMelter:StartCooking()
 
 			local spoilage_total = 0
 			local spoilage_n = 0
-			local ings = {}			
+			-- local ings = {}	
+			-- for k,v in pairs (self.inst.components.container.slots) do
+			-- 	table.insert(ings, v.prefab)
+			-- end		
+			-- self.ings = ings
 			--[[
 			local foundthespecial = false
 			local cooktime = 1
@@ -123,7 +131,7 @@ function TpMelter:StartCooking()
 				self.productcooker = cooker
 			end
  			]]
-			self.product = "tp_alloy"
+			self.product = "tp_spear_mix"
 			local cooktime = 0.2
 			self.productcooker = self.inst.prefab
 			
@@ -132,7 +140,7 @@ function TpMelter:StartCooking()
 			self.task = self.inst:DoTaskInTime(grow_time, dostew, "stew")
 
 			self.inst.components.container:Close()
-			self.inst.components.container:DestroyContents()
+			-- self.inst.components.container:DestroyContents()
 			self.inst.components.container.canbeopened = false
 		end
 		
@@ -279,8 +287,25 @@ function TpMelter:Harvest( harvester )
 		if self.product then
 			if harvester and harvester.components.inventory then
 				local loot = nil
-				loot = SpawnPrefab("tp_alloy")
-				loot.components.stackable:SetStackSize(4)
+				loot = SpawnPrefab("tp_spear_mix")
+				local ings = {}
+				for k,v in pairs(self.inst.components.container.slots) do
+					local insert = true
+					for k1, v1 in pairs(ings) do
+						if v1 == v.prefab then
+							insert = false
+							break
+						end
+					end
+					if insert then
+						table.insert(ings, v.prefab)
+					end
+				end	
+				self.inst.components.container:DestroyContents()
+				if loot.components.tpmixweapon then
+					loot.components.tpmixweapon:SetWeapons(ings)
+				end
+				-- loot.components.stackable:SetStackSize(4)
 				--[[
 				if self.product ~= "spoiledfood" then
 					loot = SpawnPrefab(self.product)
