@@ -1,0 +1,14 @@
+SetTwoFaced	
+SetScale	
+SetSixFaced	
+GetRotation	
+GetLocalPosition	
+SetEightFaced	
+SetPosition	
+SetNoFaced	
+GetFacing	
+UpdateTransform	
+SetFourFaced	
+SetRotation	
+GetScale	
+GetWorldPosition	

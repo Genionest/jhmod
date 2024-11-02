@@ -11,7 +11,7 @@ GetMotorSpeed
 SetCapsule
 	
 ClearMotorVelOverride()
-È¥³ı¶îÍâµÄËÙ¶È
+å»é™¤é¢å¤–çš„é€Ÿåº¦
 	
 SetMass	
 SetSphere	
@@ -19,10 +19,10 @@ GetCollisionMask
 IsPassable
 	
 ClearCollisionMask()
-È¥³ıËùÓĞÅö×²
+å»é™¤æ‰€æœ‰ç¢°æ’
 
 SetMotorVelOverride(x, y, z)
-ÉèÖÃ¶îÍâµÄËÙ¶È
+è®¾ç½®é¢å¤–çš„é€Ÿåº¦
 
 GeoProbe	
 CollidesWith	
@@ -39,6 +39,6 @@ SetCollides
 GetVelocity	
 
 SetActive(bool)
-ÉèÖÃÎïÀíÊÇ·ñ¿ÉÓÃ
+è®¾ç½®ç‰©ç†æ˜¯å¦å¯ç”¨
 
 GetHeight

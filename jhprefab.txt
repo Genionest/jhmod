@@ -1,45 +1,45 @@
-blunderbuss À®°ÈÇ¹
-rainforesttree ÓêÁÖÊ÷
-clawplamtree ×Øéµ×¦Ê÷
-teatree ²èÊ÷
-evergreen ³£ÇàÊ÷
-evergreen_sparse ²»½á¹ûµÄ³£ÇàÊ÷
-deciduoustree ÏğÊ÷
-jungletree º£ÄÑ´ÔÁÖÊ÷
-thumper ÖØ»÷Æ÷
-telipad ´«ËÍÆ½Ì¨
-telebrella ´«ËÍÉ¡
-oinc 1Ôªºôàà±Ò
-oinc10 10Ôª
-oinc100 100Ôª
-alloy ºÏ½ğ
-feather_thunder À×ÄñÓğÃ«
-lotus_flower Ë¯Á«
-beewax ·äÀ¯
-statue_transition °µÓ°ÌØĞ§1
-statue_transition_2 °µÓ°ÌØĞ§2
-collapse_small Ğ¡ÑÌÎí
-deciduoustree èëÊ÷
-birchnutdrake èëÊ÷¹û¾«
-acorn èëÊ÷¹û
-pinecone ËÉ¹û
-jungletreeseed º£ÄÑ´ÔÁÖÊ÷¹û
-boat_death ³Ë´¬ËÀÍöÊ±µÄÌØĞ§
-cork_bat ÈíÄ¾°ô
-onemanband ¶À×àÀÖÆ÷
-panflute ÅÅóï
-sewing_kit ÕëÏß°ü
-crawlingnightmare ¶´¶şµÄÅÀĞĞÓ°¹Ö
-nightmarebeak ¶´¶şµÄ¼â×ìÓ°¹Ö
-swimminghorror Ë®Ó°¹Ö
-flare ĞÅºÅ»ğ¼ı
-packim ğÃğÉ
-dragonfurnace ÁúÓ¬»ğÂ¯
-smallbird Ğ¡¸ßÄñ
-bird_egg Äñµ°
-tallbirdegg ¸ßÄñµ°
-twister ±ª¾í·ç
-tigershark »¢öè
-kraken º£Ñı
-pugalisk ´óÉß
-pugalisk_body ´óÉßÎŞÁÛÇûÌå
+blunderbuss å–‡å­æª
+rainforesttree é›¨æ—æ ‘
+clawplamtree æ£•æ¦ˆçˆªæ ‘
+teatree èŒ¶æ ‘
+evergreen å¸¸é’æ ‘
+evergreen_sparse ä¸ç»“æœçš„å¸¸é’æ ‘
+deciduoustree æ©¡æ ‘
+jungletree æµ·éš¾ä¸›æ—æ ‘
+thumper é‡å‡»å™¨
+telipad ä¼ é€å¹³å°
+telebrella ä¼ é€ä¼
+oinc 1å…ƒå‘¼å™œå¸
+oinc10 10å…ƒ
+oinc100 100å…ƒ
+alloy åˆé‡‘
+feather_thunder é›·é¸Ÿç¾½æ¯›
+lotus_flower ç¡è²
+beewax èœ‚èœ¡
+statue_transition æš—å½±ç‰¹æ•ˆ1
+statue_transition_2 æš—å½±ç‰¹æ•ˆ2
+collapse_small å°çƒŸé›¾
+deciduoustree æ¡¦æ ‘
+birchnutdrake æ¡¦æ ‘æœç²¾
+acorn æ¡¦æ ‘æœ
+pinecone æ¾æœ
+jungletreeseed æµ·éš¾ä¸›æ—æ ‘æœ
+boat_death ä¹˜èˆ¹æ­»äº¡æ—¶çš„ç‰¹æ•ˆ
+cork_bat è½¯æœ¨æ£’
+onemanband ç‹¬å¥ä¹å™¨
+panflute æ’ç®«
+sewing_kit é’ˆçº¿åŒ…
+crawlingnightmare æ´äºŒçš„çˆ¬è¡Œå½±æ€ª
+nightmarebeak æ´äºŒçš„å°–å˜´å½±æ€ª
+swimminghorror æ°´å½±æ€ª
+flare ä¿¡å·ç«ç®­
+packim é¹ˆé¹•
+dragonfurnace é¾™è‡ç«ç‚‰
+smallbird å°é«˜é¸Ÿ
+bird_egg é¸Ÿè›‹
+tallbirdegg é«˜é¸Ÿè›‹
+twister è±¹å·é£
+tigershark è™é²¨
+kraken æµ·å¦–
+pugalisk å¤§è›‡
+pugalisk_body å¤§è›‡æ— é³èº¯ä½“

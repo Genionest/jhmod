@@ -1,0 +1,4 @@
+SetPriority
+SetIconOffset
+SetIcon
+SetEnabled

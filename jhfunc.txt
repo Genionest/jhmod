@@ -1,145 +1,145 @@
-modiconÍ¼±ê 128*128
-ÎïÆ·À¸Í¼±ê 64*64
-½¨ÖşÀ¶Í¼±ê 96*96 £¨Í¼Æ¬±ğÔÚÖĞ¼ä£¬¿¿ÓÒÒ»µã£©
-[img]ÔÚsteamÀïÓÒ¼üÈ»ºóµã¸´ÖÆÁ´½Ó[/img] steamËµÃ÷ÀïÌí¼ÓÍ¼Æ¬
+modiconå›¾æ ‡ 128*128
+ç‰©å“æ å›¾æ ‡ 64*64
+å»ºç­‘è“å›¾æ ‡ 96*96 ï¼ˆå›¾ç‰‡åˆ«åœ¨ä¸­é—´ï¼Œé å³ä¸€ç‚¹ï¼‰
+[img]åœ¨steamé‡Œå³é”®ç„¶åç‚¹å¤åˆ¶é“¾æ¥[/img] steamè¯´æ˜é‡Œæ·»åŠ å›¾ç‰‡
 
-scmlµÄÎÄ¼şÃû¶ÔÓ¦×ÅBuild£¬¶¯»­ºÏ¼¯Ãû(entity)¶ÔÓ¦×Åbank£¬Ã¿Ò»¸ö¶¯»­Ãû¶ÔÓ¦×ÅAnimation¡£
-ÁíÍâ£¬Ã¿Ò»¸öÎÄ¼ş¼ĞµÄÃû×Ö¶ÔÓ¦×ÅÒ»¸ösymbol¡£²»¹ıÕâÖ»ÊÇÍêÈ«ÓÃspriterÖÆ×÷µÄ¶¯»­²Å»áÈç´Ë£¬
-¹Ù·½µÄ¶¯»­²»Ê¹ÓÃspriter½øĞĞÖÆ×÷£¬ËùÒÔÍùÍùÓĞ×Å¶ÀÌØµÄsymbolÃû£¬Õâ¾ÍĞèÒªµ½ÓÎÏ·µÄ´úÂëÖĞ
-È¥²éÑ¯ÁË¡£
+scmlçš„æ–‡ä»¶åå¯¹åº”ç€Buildï¼ŒåŠ¨ç”»åˆé›†å(entity)å¯¹åº”ç€bankï¼Œæ¯ä¸€ä¸ªåŠ¨ç”»åå¯¹åº”ç€Animationã€‚
+å¦å¤–ï¼Œæ¯ä¸€ä¸ªæ–‡ä»¶å¤¹çš„åå­—å¯¹åº”ç€ä¸€ä¸ªsymbolã€‚ä¸è¿‡è¿™åªæ˜¯å®Œå…¨ç”¨spriteråˆ¶ä½œçš„åŠ¨ç”»æ‰ä¼šå¦‚æ­¤ï¼Œ
+å®˜æ–¹çš„åŠ¨ç”»ä¸ä½¿ç”¨spriterè¿›è¡Œåˆ¶ä½œï¼Œæ‰€ä»¥å¾€å¾€æœ‰ç€ç‹¬ç‰¹çš„symbolåï¼Œè¿™å°±éœ€è¦åˆ°æ¸¸æˆçš„ä»£ç ä¸­
+å»æŸ¥è¯¢äº†ã€‚
 
-³£¼û´úÂë
-local inst = CreateEntity()  -- ´´½¨ÊµÌå
-local trans = inst.entity:AddTransform()  -- ´´½¨±ä»¯¶ÔÏó
-local anim = inst.entity:AddAnimState()  -- ´´½¨¶¯»­¶ÔÏó
-local sound = inst.entity:AddSoundEmitter()  -- ´´½¨ÉùÒô¶ÔÏó
-local light = inst.entity:AddLight()  -- ´´½¨¹âÔ´¶ÔÏó
+å¸¸è§ä»£ç 
+local inst = CreateEntity()  -- åˆ›å»ºå®ä½“
+local trans = inst.entity:AddTransform()  -- åˆ›å»ºå˜åŒ–å¯¹è±¡
+local anim = inst.entity:AddAnimState()  -- åˆ›å»ºåŠ¨ç”»å¯¹è±¡
+local sound = inst.entity:AddSoundEmitter()  -- åˆ›å»ºå£°éŸ³å¯¹è±¡
+local light = inst.entity:AddLight()  -- åˆ›å»ºå…‰æºå¯¹è±¡
 
-Éú²úprefabµÄº¯Êı£¬Ò»°ãÊÇ·µ»ØµÄÕâ¸ö
+ç”Ÿäº§prefabçš„å‡½æ•°ï¼Œä¸€èˆ¬æ˜¯è¿”å›çš„è¿™ä¸ª
 Prefab(prefab_name, entity_fn, assets, prefabs)
 
-ÉèÖÃ½Ç¶È
+è®¾ç½®è§’åº¦
 inst.Transform:SetRotation(rot)
 
-»ñÈ¡½Ç¶È
+è·å–è§’åº¦
 inst.Transform:GetRotation(rot)
 
-Ìí¼Ó×ÓÀà£¬×ÓÀà»á¸úËæ
+æ·»åŠ å­ç±»ï¼Œå­ç±»ä¼šè·Ÿéš
 inst:AddChild(child)
 
-ÉèÖÃÓëÊ²Ã´ÎïÀíÅö×²
+è®¾ç½®ä¸ä»€ä¹ˆç‰©ç†ç¢°æ’
 inst.physics:CollidesWith(COLLISION.XXX)
 
-ÉèÖÃ×Ô¼ºÎªÊ²Ã´ÎïÀí
+è®¾ç½®è‡ªå·±ä¸ºä»€ä¹ˆç‰©ç†
 inst.physics:SetCollisionGroup(COLLISION.XXX)
 
-ÊÇ·ñÔÚË®ÉÏ
+æ˜¯å¦åœ¨æ°´ä¸Š
 inst:GetIsOnWater()
 
-ÊÇ·ñÔÚµØÉÏ
+æ˜¯å¦åœ¨åœ°ä¸Š
 inst:GetIsOnLand()
 
-ÔÚ¿ÉÒÔµ½´ïµÄÎ»ÖÃ£¨DST£©
+åœ¨å¯ä»¥åˆ°è¾¾çš„ä½ç½®ï¼ˆDSTï¼‰
 inst:IsOnPassablePoint()
 
-´ÓÆÁÄ»ÉÏÏûÊ§
+ä»å±å¹•ä¸Šæ¶ˆå¤±
 inst:RemoveFormScene()
 
-ÖØ·µÆÁÄ»
+é‡è¿”å±å¹•
 inst:ReturnToScene()
 
-²»±»±£´æ
+ä¸è¢«ä¿å­˜
 inst.persists = false
 
-ÉèÖÃ¶¯»­²ã¼¶£¨¸ßµÄ±ÈµÍµÄÏÈÏÔÊ¾£©
-inst.AnimState:SetLayer()  -- prefabÄ¬ÈÏµÄlayerÎª3
+è®¾ç½®åŠ¨ç”»å±‚çº§ï¼ˆé«˜çš„æ¯”ä½çš„å…ˆæ˜¾ç¤ºï¼‰
+inst.AnimState:SetLayer()  -- prefabé»˜è®¤çš„layerä¸º3
 
-ÉèÖÃ¶¯»­ÅÅĞòË³Ğò£¨Í¬²ã¼¶Ê±£¬¸ßµÄ±ÈµÍµÄÏÈÏÔÊ¾£©
+è®¾ç½®åŠ¨ç”»æ’åºé¡ºåºï¼ˆåŒå±‚çº§æ—¶ï¼Œé«˜çš„æ¯”ä½çš„å…ˆæ˜¾ç¤ºï¼‰
 inst.AnimState:SetSortOrder()
 
-ÊÇ·ñ×¨Êô·şÎñÆ÷
+æ˜¯å¦ä¸“å±æœåŠ¡å™¨
 TheNet:IsDedicated()
 
-ÉèÖÃ×°±¸Ö®ºó¼ÓËÙ
-inst.components.equippable.walkspeedmult = rate  -- rateÊÇ¼ÓËÙ°Ù·ÖÖ®¼¸£¬0¾ÍÊÇ²»¼ÓËÙ
+è®¾ç½®è£…å¤‡ä¹‹ååŠ é€Ÿ
+inst.components.equippable.walkspeedmult = rate  -- rateæ˜¯åŠ é€Ÿç™¾åˆ†ä¹‹å‡ ï¼Œ0å°±æ˜¯ä¸åŠ é€Ÿ
 
-ÉèÖÃ×°±¸·À¶¾Æø
+è®¾ç½®è£…å¤‡é˜²æ¯’æ°”
 inst.components.equippable.poisongasblocker = true
 
-ÉèÖÃ¶ÑµşÉÏÏŞ
+è®¾ç½®å †å ä¸Šé™
 inst.components.stackable.maxsize = TUNING.STACK_SIZE_SMALLITEM
 
-ÉèÖÃÎïÆ·ÖÎÓúÑªÁ¿
+è®¾ç½®ç‰©å“æ²»æ„ˆè¡€é‡
 inst.components.healer:SetHealthAmount(TUNING.HEALING_MEDLARGE)
 
-ÉèÖÃ¼¢¶öËÙÂÊ
-inst.components.hunger.burnrate = rate  -- Õı³£ÊÇ1
-inst.components.hunger:AddBurnRateModifier(playername, rate)  -- Ìí¼ÓplayernameµÄrate
-inst.components.hunger:RemoveBurnRateModifier(playername)  -- ÒÆ³ıplayernameµÄrate
+è®¾ç½®é¥¥é¥¿é€Ÿç‡
+inst.components.hunger.burnrate = rate  -- æ­£å¸¸æ˜¯1
+inst.components.hunger:AddBurnRateModifier(playername, rate)  -- æ·»åŠ playernameçš„rate
+inst.components.hunger:RemoveBurnRateModifier(playername)  -- ç§»é™¤playernameçš„rate
 inst.components.hunger:SetOverrideStarveFn(fn)
-  fn(inst, dt) Ä¬ÈÏÊÇ¿ÛÑª
+  fn(inst, dt) é»˜è®¤æ˜¯æ‰£è¡€
 
-ÉèÖÃ»ØÑªËÙ¶È
+è®¾ç½®å›è¡€é€Ÿåº¦
 inst.components.health:StartRegen(delta, time)
 
-Ìí¼ÓÎïÆ·µÄ¸÷ÖÖÊôĞÔ
+æ·»åŠ ç‰©å“çš„å„ç§å±æ€§
 inst:AddComponent(char attribute)
 
-ÉèÖÃÎïÆ·ÊôĞÔ
+è®¾ç½®ç‰©å“å±æ€§
 inst.components.XXX.XXX
 
-ÉèÖÃ·À¾ßÑªÁ¿ºÍÎüÊÕÉËº¦µÄÂÊ
+è®¾ç½®é˜²å…·è¡€é‡å’Œå¸æ”¶ä¼¤å®³çš„ç‡
 inst.components.armor:InitCondition(health, rate)
 
-ÉèÖÃ×°ÉÏºó»Ø¸´ÀíÖÇ
+è®¾ç½®è£…ä¸Šåå›å¤ç†æ™º
 inst.components.equippable.dapperness = TUNING.DAPPERNESS_SMALL
 
-data/script/tuning.luaÀïÃæ¿ÉÒÔ²é¿´¸÷ÖÖtuningµÄÄ¬ÈÏÖµ
+data/script/tuning.luaé‡Œé¢å¯ä»¥æŸ¥çœ‹å„ç§tuningçš„é»˜è®¤å€¼
 
-ĞŞ¸Ä±ùÏäÄÚµÄ¸¯ÀÃ¼õ»º³Ì¶È
-script/tuning ÀïÃæĞŞ¸Ä PERISH_FRIDGE_MULT = .5
+ä¿®æ”¹å†°ç®±å†…çš„è…çƒ‚å‡ç¼“ç¨‹åº¦
+script/tuning é‡Œé¢ä¿®æ”¹ PERISH_FRIDGE_MULT = .5
 
-½¨ÔìÀ¸Åä·½ËùÔÚÎÄ¼ş
+å»ºé€ æ é…æ–¹æ‰€åœ¨æ–‡ä»¶
 scripts/recipes
 
-´´½¨¶ÔÏó£¬Ê¹Ö®ÔÚ½¨ÔìÀ¸Àï¿ÉÓÃ
+åˆ›å»ºå¯¹è±¡ï¼Œä½¿ä¹‹åœ¨å»ºé€ æ é‡Œå¯ç”¨
 Recipe(name, 
   ingredients,
   recipetab,
   tech,
-  gametype, placer,  -- Õâ²¿·ÖÊÇ¿ÉÒÔ·ÅÖÃµÄ½¨ÖşĞèÒªµÄ
-  nil, nil, nil, true, 4 -- Õâ²¿·ÖÊÇ½¨ÔÚº£ÉÏµÄ½¨ÖşĞèÒªµÄ
+  gametype, placer,  -- è¿™éƒ¨åˆ†æ˜¯å¯ä»¥æ”¾ç½®çš„å»ºç­‘éœ€è¦çš„
+  nil, nil, nil, true, 4 -- è¿™éƒ¨åˆ†æ˜¯å»ºåœ¨æµ·ä¸Šçš„å»ºç­‘éœ€è¦çš„
 )
-Í¨¹ıĞŞ¸ÃatlasÊôĞÔ¿ÉÒÔÉèÖÃ½¨ÔìÀ¸ÀïµÄÍ¼Æ¬
-ÉúÃüÖµ/sanÖµ×÷Îª²ÄÁÏ
+é€šè¿‡ä¿®è¯¥atlaså±æ€§å¯ä»¥è®¾ç½®å»ºé€ æ é‡Œçš„å›¾ç‰‡
+ç”Ÿå‘½å€¼/sanå€¼ä½œä¸ºææ–™
 decrease_health
 decrease_sanity
 
-TECH.NONE ±íÊ¾²»ĞèÒª¿Æ¼¼Ò²¿ÉÒÔ½¨Ôì
-SCIENCE_ONE Ò»±¾
-SCIENCE_TWO ¶ş±¾
-MAGIC_TWO Ã±×ÓÍÃ×ÓÄ¾°å
-MAGIC_THREE ÈıÏà
-LOST ĞèÒªÀ¶Í¼½âËø
+TECH.NONE è¡¨ç¤ºä¸éœ€è¦ç§‘æŠ€ä¹Ÿå¯ä»¥å»ºé€ 
+SCIENCE_ONE ä¸€æœ¬
+SCIENCE_TWO äºŒæœ¬
+MAGIC_TWO å¸½å­å…”å­æœ¨æ¿
+MAGIC_THREE ä¸‰ç›¸
+LOST éœ€è¦è“å›¾è§£é”
 
-½¨ÔÚÀ¸¸÷Àà£ºWARÎäÆ÷£¬DRESSÒÂ·ş£¬LIGHTÕÕÃ÷£¬STRUCTURES½¨Öş£¬
-FARMÅ©³¡£¬SURVIVALÉú´æ£¬TOOLS¹¤¾ß£¬SCIENCE¿Æ¼¼£¬MAGICÄ§·¨£¬
-REFINE¾«Á¶£¬NAUTICALº½º££¬
+å»ºåœ¨æ å„ç±»ï¼šWARæ­¦å™¨ï¼ŒDRESSè¡£æœï¼ŒLIGHTç…§æ˜ï¼ŒSTRUCTURESå»ºç­‘ï¼Œ
+FARMå†œåœºï¼ŒSURVIVALç”Ÿå­˜ï¼ŒTOOLSå·¥å…·ï¼ŒSCIENCEç§‘æŠ€ï¼ŒMAGICé­”æ³•ï¼Œ
+REFINEç²¾ç‚¼ï¼ŒNAUTICALèˆªæµ·ï¼Œ
 
-Ã±×Ó·¢¹â
-1. ÔÚÃ±×ÓÀï¼ÓÉÏÕâ¸ö
+å¸½å­å‘å…‰
+1. åœ¨å¸½å­é‡ŒåŠ ä¸Šè¿™ä¸ª
 {
         local light = inst.entity:AddLight()
-        light:SetFalloff(0.4)  -- ÏòÍâ·øÉäÊ±µÄË¥¼õËÙ¶È£¬Ë¥¼õÔ½Ğ¡·øÉäÔ½¹ã
-        light:SetIntensity(.7)  -- ÁÁ¶È
-        light:SetRadius(2.5)  -- ·¶Î§
-        light:SetColour(180/255, 195/255, 150/255)  -- É«Ôó
-        light:Enable(false)  -- ·¢¹â¿ÉÓÃ
+        light:SetFalloff(0.4)  -- å‘å¤–è¾å°„æ—¶çš„è¡°å‡é€Ÿåº¦ï¼Œè¡°å‡è¶Šå°è¾å°„è¶Šå¹¿
+        light:SetIntensity(.7)  -- äº®åº¦
+        light:SetRadius(2.5)  -- èŒƒå›´
+        light:SetColour(180/255, 195/255, 150/255)  -- è‰²æ³½
+        light:Enable(false)  -- å‘å…‰å¯ç”¨
 }
-2. ÔÚÍâÃæĞ´ÉÏ×°±¸ºÍĞ¶ÏÂµÄº¯Êı
+2. åœ¨å¤–é¢å†™ä¸Šè£…å¤‡å’Œå¸ä¸‹çš„å‡½æ•°
 {
 local function hat_equip(inst, owner)
-      onequip(inst, owner)  -- Õâ¸öÒ»¶¨ÒªĞ´ÉÏ£¬ÕâÊÇ´÷Ã±×ÓµÄÆäËûĞ§¹û
+      onequip(inst, owner)  -- è¿™ä¸ªä¸€å®šè¦å†™ä¸Šï¼Œè¿™æ˜¯æˆ´å¸½å­çš„å…¶ä»–æ•ˆæœ
       inst.Light:Enable(true)
 end
 
@@ -148,150 +148,150 @@ local function hat_unequip(inst, owner)
       inst.Light:Enable(false)
 end
 }
-3.×îºóÔÚÃ±×ÓÀï°ó¶¨×°±¸ºÍĞ¶ÔØÊ±µ÷ÓÃµÄº¯Êı       
+3.æœ€ååœ¨å¸½å­é‡Œç»‘å®šè£…å¤‡å’Œå¸è½½æ—¶è°ƒç”¨çš„å‡½æ•°       
 inst.components.equippable:SetOnEquip( hat_equip )
 inst.components.equippable:SetOnUnequip( hat_unequip )
 
-Ìí¼Ó·À¾ßĞ§¹û
+æ·»åŠ é˜²å…·æ•ˆæœ
 inst:AddComponent("armor")
-ÉèÖÃ·À¾ßÊôĞÔ
-inst.components.armor:InitCondition(·À¾ßÑªÁ¿, ·À¾ßÉËº¦ÎüÊÕÂÊ)
+è®¾ç½®é˜²å…·å±æ€§
+inst.components.armor:InitCondition(é˜²å…·è¡€é‡, é˜²å…·ä¼¤å®³å¸æ”¶ç‡)
 
-Ìí¼ÓÕÙ»½ÕßÊôĞÔ
+æ·»åŠ å¬å”¤è€…å±æ€§
 inst:AddComponent("spawner")
-ÉèÖÃÕÙ»½ÕßÊôĞÔ
-inst.components.spawner:Configure(ÕÙ»½Îï, ÖØÉúÊ±¼ä)
-ÉèÖÃÕÙ»½Õß±»Õ¼ÓÃÊ±µÄº¯Êı
+è®¾ç½®å¬å”¤è€…å±æ€§
+inst.components.spawner:Configure(å¬å”¤ç‰©, é‡ç”Ÿæ—¶é—´)
+è®¾ç½®å¬å”¤è€…è¢«å ç”¨æ—¶çš„å‡½æ•°
 inst.components.spawner.onoccupied = function
-	²ÎÊıinst, child
-ÉèÖÃÕÙ»½Õß¿Õ³öÊ±µÄº¯Êı
+	å‚æ•°inst, child
+è®¾ç½®å¬å”¤è€…ç©ºå‡ºæ—¶çš„å‡½æ•°
 inst.components.spawner.onvacate = function
-	²ÎÊıinst, child
+	å‚æ•°inst, child
 
-Ìí¼ÓÍæ¼Ò½Ó½üÊôĞÔ
+æ·»åŠ ç©å®¶æ¥è¿‘å±æ€§
 inst:AddComponent("playerprox")
-ÉèÖÃÍæ¼Ò½Ó½üÊ±µÄº¯Êı
+è®¾ç½®ç©å®¶æ¥è¿‘æ—¶çš„å‡½æ•°
 inst.components.playerprox:SetOnPlayerNear(function)
-	²ÎÊıinst
-ÉèÖÃÍæ¼ÒÔ¶ÀëÊ±µÄº¯Êı
+	å‚æ•°inst
+è®¾ç½®ç©å®¶è¿œç¦»æ—¶çš„å‡½æ•°
 inst.components.playerprox:SetOnPlayerFar(function)
-	²ÎÊıinst
+	å‚æ•°inst
 
-Ìí¼ÓÈİÆ÷ÊôĞÔ
+æ·»åŠ å®¹å™¨å±æ€§
 inst:AddComponent("container")
-ÉèÖÃÈİÆ÷ÄÚÒ»¸ñÖ»ÄÜ·ÅÒ»¸öÎïÆ·
+è®¾ç½®å®¹å™¨å†…ä¸€æ ¼åªèƒ½æ”¾ä¸€ä¸ªç‰©å“
 inst.components.container.acceptsstacks = false
-ÈİÆ÷ÉèÖÃ1¸ö¸ñ×Ó¿ÉÒÔÉèÎª1.1
+å®¹å™¨è®¾ç½®1ä¸ªæ ¼å­å¯ä»¥è®¾ä¸º1.1
 
-×°±¸À¸Î»ÖÃ
+è£…å¤‡æ ä½ç½®
 EQUIPSLOTS.BODY
 EQUIPSLOTS.HEAD
 EQUIPSLOTS.HANDS
 
-GetWorld()µÈº¯ÊıÔÚsimutilÎÄ¼şÀï
+GetWorld()ç­‰å‡½æ•°åœ¨simutilæ–‡ä»¶é‡Œ
 
-GetWorld()»ñÈ¡worldÕâ¸öprefab
+GetWorld()è·å–worldè¿™ä¸ªprefab
 
-¼ì²éÊÇ·ñ°×Ìì
+æ£€æŸ¥æ˜¯å¦ç™½å¤©
 GetClock():IsDay()
 
-¼ì²éÊÇ·ñÔÚµØ¶´
+æ£€æŸ¥æ˜¯å¦åœ¨åœ°æ´
 GetWorld():IsCave()
 
-»ñÈ¡¼¾½Ú×Ö·û
+è·å–å­£èŠ‚å­—ç¬¦
 GetSeasonManager():GetSeasonString()
- spring, ´º¼¾
- summer, ÏÄ¼¾
- autumn, Çï¼¾
- winter, ¶¬¼¾ 
- mild, ÎÂºÍ¼¾
- wet, ·ç¼¾
- green, Óê¼¾
- dry, ¸É¼¾
- temperate, ÎÂºÍ¼¾
- lush, ·±Ã¯¼¾
- humid, ³±Êª¼¾
- aporkalypse, »ÙÃğ¼¾
+ spring, æ˜¥å­£
+ summer, å¤å­£
+ autumn, ç§‹å­£
+ winter, å†¬å­£ 
+ mild, æ¸©å’Œå­£
+ wet, é£å­£
+ green, é›¨å­£
+ dry, å¹²å­£
+ temperate, æ¸©å’Œå­£
+ lush, ç¹èŒ‚å­£
+ humid, æ½®æ¹¿å­£
+ aporkalypse, æ¯ç­å­£
 
 owner.AnimState:OverrideSymbol("", build, bank)
-buildÊÇbuildÃû£¬bankÊÇbankÃû
+buildæ˜¯buildåï¼Œbankæ˜¯bankå
 
-Ìæ»»·¨¼ÓÔØÎïÆ·Æ¤·ômodµÄÍ¼Æ¬¶¯»­
-assetsÀïÃæÒª½øĞĞÏàÓ¦µÄÌæ»»
-setBuild("Æ¤·ôÃû")
-owner.AnimState:OverrideSymbol("xx","Æ¤·ôÃû","xx")£¬
-inventoryitem.imagename = "Æ¤·ôÃû.tex"
-inventoryitem.atlasname = "images/inventoryimages/Æ¤·ôÃû.xml"
-¸ü¶àÏêÇé¿´Æ¤·ômodµÄdsskins.luaÀïÃæ
+æ›¿æ¢æ³•åŠ è½½ç‰©å“çš®è‚¤modçš„å›¾ç‰‡åŠ¨ç”»
+assetsé‡Œé¢è¦è¿›è¡Œç›¸åº”çš„æ›¿æ¢
+setBuild("çš®è‚¤å")
+owner.AnimState:OverrideSymbol("xx","çš®è‚¤å","xx")ï¼Œ
+inventoryitem.imagename = "çš®è‚¤å.tex"
+inventoryitem.atlasname = "images/inventoryimages/çš®è‚¤å.xml"
+æ›´å¤šè¯¦æƒ…çœ‹çš®è‚¤modçš„dsskins.luaé‡Œé¢
 
-Ìí¼ÓµØÍ¼ÉÏµÄÌùÍ¼
-Ê×ÏÈÔÚmodmainµÄassetsÀï¼ÓÔØÄãµÄÍ¼Æ¬(xmlºÍtex)£¬
-È»ºóÔÙĞ´AddMinimapAtlas("Í¼Æ¬Î»ÖÃ.xml")
-½Ó×ÅÔÚÄãµÄÊµÎïÀïĞ´ÉÏ
+æ·»åŠ åœ°å›¾ä¸Šçš„è´´å›¾
+é¦–å…ˆåœ¨modmainçš„assetsé‡ŒåŠ è½½ä½ çš„å›¾ç‰‡(xmlå’Œtex)ï¼Œ
+ç„¶åå†å†™AddMinimapAtlas("å›¾ç‰‡ä½ç½®.xml")
+æ¥ç€åœ¨ä½ çš„å®ç‰©é‡Œå†™ä¸Š
 inst.entity:AddMiniMapEntity()
-inst.MiniMapEntity:SetIcon( "Í¼Æ¬Î»ÖÃ.tex" )
-¾Í¿ÉÒÔÁË
+inst.MiniMapEntity:SetIcon( "å›¾ç‰‡ä½ç½®.tex" )
+å°±å¯ä»¥äº†
 
-ÎïÆ·À¸Ìí¼ÓÎïÆ·
+ç‰©å“æ æ·»åŠ ç‰©å“
 GetPlayer().components.inventory:GiveItem( prefab )
-»ñÈ¡×°±¸À¸ÀïµÄÎïÆ·
+è·å–è£…å¤‡æ é‡Œçš„ç‰©å“
 inst.components.inventory:GetEquippedItem(eslot)
 
-¼ì²éÎïÆ·À¸ÀïÄ³ÎïÆ·ÊÇ·ñÓĞ×ã¹»ÊıÁ¿
+æ£€æŸ¥ç‰©å“æ é‡ŒæŸç‰©å“æ˜¯å¦æœ‰è¶³å¤Ÿæ•°é‡
 GetPlayer().components.inventory:Has(prefab, number)
 
-Ìí¼Ó¿É¶ÑµşÊôĞÔ
+æ·»åŠ å¯å †å å±æ€§
 inst:AddComponent("stackable")
 inst.components.stackable.maxsize = number
 
-Ìí¼ÓÓĞÏŞ´ÎÊ¹ÓÃÊôĞÔ
+æ·»åŠ æœ‰é™æ¬¡ä½¿ç”¨å±æ€§
 inst:AddComponent("finiteuses")
-ÉèÖÃ×î´óÊ¹ÓÃ´ÎÊı
+è®¾ç½®æœ€å¤§ä½¿ç”¨æ¬¡æ•°
 inst.components.finiteuses:SetMaxUses(TUNING.TENT_USES)
-ÉèÖÃÉú³ÉÊ±ÓµÓĞµÄÊ¹ÓÃ´ÎÊı
+è®¾ç½®ç”Ÿæˆæ—¶æ‹¥æœ‰çš„ä½¿ç”¨æ¬¡æ•°
 inst.components.finiteuses:SetUses(TUNING.TENT_USES)
-ÉèÖÃÊ¹ÓÃÍêºó´¥·¢µÄº¯Êı
+è®¾ç½®ä½¿ç”¨å®Œåè§¦å‘çš„å‡½æ•°
 inst.components.finiteuses:SetOnFinished( onfinished )
-ÏûºÄÊ¹ÓÃ´ÎÊı
+æ¶ˆè€—ä½¿ç”¨æ¬¡æ•°
 inst.components.finiteuses:Use()
 
-ÉèÖÃ½ÇÉ«×¨Êô
+è®¾ç½®è§’è‰²ä¸“å±
 inst:AddComponent("characterspecific")
 inst.components.characterspecific:SetOwner(charater)
 
-±£´æºÍ¼ÓÔØ
-inst.OnSave =  function  -- ²ÎÊıinst, data
-inst.OnLoad = function  -- ²ÎÊıinst, data
-inst.OnPreLoad = function  -- ²ÎÊıinst, data
+ä¿å­˜å’ŒåŠ è½½
+inst.OnSave =  function  -- å‚æ•°inst, data
+inst.OnLoad = function  -- å‚æ•°inst, data
+inst.OnPreLoad = function  -- å‚æ•°inst, data
 
-¶àÉÙÊ±¼äºóÖ´ĞĞ
+å¤šå°‘æ—¶é—´åæ‰§è¡Œ
 inst:DoTaskInTime(time, function)
 
-Ö´ĞĞÖÜÆÚÈÎÎñ
+æ‰§è¡Œå‘¨æœŸä»»åŠ¡
 inst:DoPeriodicTask(time, function, delay)
 
-Ö´ĞĞbank¶¯»­
+æ‰§è¡ŒbankåŠ¨ç”»
 inst.AnimState:PlayAnimation(animation, bool)
-  bool±íÊ¾ÊÇ·ñÑ­»·£¬Ä¬ÈÏfalse
+  boolè¡¨ç¤ºæ˜¯å¦å¾ªç¯ï¼Œé»˜è®¤false
 
-ÔÚÇ°Ò»¸ö¶¯»­Ö´ĞĞÍêÖ®ºóÔÙÖ´ĞĞbank¶¯»­
+åœ¨å‰ä¸€ä¸ªåŠ¨ç”»æ‰§è¡Œå®Œä¹‹åå†æ‰§è¡ŒbankåŠ¨ç”»
 inst.AnimState:PushAnimation(animation, bool)
-  bool±íÊ¾ÊÇ·ñÑ­»·£¬Ä¬ÈÏtrue
+  boolè¡¨ç¤ºæ˜¯å¦å¾ªç¯ï¼Œé»˜è®¤true
 
-ÌØĞ§fx¶¼ÔÚscripts/fx.luaÀïÓĞ¼ÇÂ¼
+ç‰¹æ•ˆfxéƒ½åœ¨scripts/fx.luaé‡Œæœ‰è®°å½•
 
-²¥·ÅÒôĞ§
+æ’­æ”¾éŸ³æ•ˆ
 inst.SoundEmitter:PlaySound(sound)
 
-ÕÙ»½ÉúÎï
+å¬å”¤ç”Ÿç‰©
 local pb = SpawnPrefab(prefab)
-local pt = Vector(inst.Transform:GetWorldPosition())  -- »ñÈ¡µ±Ç°ÎïÌåÎ»ÖÃ
-pb.Transform:SetPosition(pt:Get())  -- ÉèÖÃÍêÎ»ÖÃ²ÅÄÜÕæÕıÕÙ»½³öÀ´
+local pt = Vector(inst.Transform:GetWorldPosition())  -- è·å–å½“å‰ç‰©ä½“ä½ç½®
+pb.Transform:SetPosition(pt:Get())  -- è®¾ç½®å®Œä½ç½®æ‰èƒ½çœŸæ­£å¬å”¤å‡ºæ¥
 
-»ñÈ¡Íæ¼Ò¶ÔÏó
+è·å–ç©å®¶å¯¹è±¡
 GetPlayer()
 
-ÉèÖÃ³å»÷²¨ÊôĞÔ
+è®¾ç½®å†²å‡»æ³¢å±æ€§
 inst:AddComponent("groundpounder")
 inst.components.groundpounder.destroyer = true
 inst.components.groundpounder.damageRings = 2
@@ -301,176 +301,176 @@ inst.components.groundpounder.numRings = 3
 inst:AddComponent("combat")
 inst.components.combat.defaultdamage = 100
 inst.components.combat.notags = {'player'}
-µ÷ÓÃ
+è°ƒç”¨
 
-ÉèÖÃ½ÇÉ«ÉËº¦±¶ÂÊ
+è®¾ç½®è§’è‰²ä¼¤å®³å€ç‡
 inst.components.combat:AddDamageModifier(player_name, rate)
-inst.components.combat:RemoveDamageModifier(player_name, rate)  -- ÒÆ³ı±¶ÂÊ
+inst.components.combat:RemoveDamageModifier(player_name, rate)  -- ç§»é™¤å€ç‡
 
-»ñÈ¡modµÄÉèÖÃÊôĞÔ
+è·å–modçš„è®¾ç½®å±æ€§
 GetModConfigData(name)
-Ö»ÄÜÔÙmodmainÀïµ÷ÓÃ
+åªèƒ½å†modmainé‡Œè°ƒç”¨
 
-Ìí¼Ó±êÇ©
+æ·»åŠ æ ‡ç­¾
 inst:AddTag(tag)
 
-¼ì²éÓµÓĞ±êÇ©
+æ£€æŸ¥æ‹¥æœ‰æ ‡ç­¾
 inst:HasTag(tag)
 
-Ìí¼Óº¯Êı½øÎïÌå
+æ·»åŠ å‡½æ•°è¿›ç‰©ä½“
 AddPrefabPostInit(prefab, function)
-prefab, ÒªÉú³ÉµÄ¶ÔÏó
-function£¬Ïà¹Øº¯Êı£¬Õâ¸öº¯Êı¿ÉÒÔ´«Èëinst²ÎÊı
+prefab, è¦ç”Ÿæˆçš„å¯¹è±¡
+functionï¼Œç›¸å…³å‡½æ•°ï¼Œè¿™ä¸ªå‡½æ•°å¯ä»¥ä¼ å…¥instå‚æ•°
 
-ÉèÖÃÎïÆ·ÌÉÔÚµØÉÏÏÔÊ¾
+è®¾ç½®ç‰©å“èººåœ¨åœ°ä¸Šæ˜¾ç¤º
 inst.AnimState:SetOrientation( ANIM_ORIENTATION.OnGround )
 
-ÉèÖÃanim¶¯Í¼µÄ±ÈÀı
+è®¾ç½®animåŠ¨å›¾çš„æ¯”ä¾‹
 inst.Transform:SetScale(scale, scale, scale)
 
-ÉèÖÃÎïÆ·¿ÉÓÃÓÚ½»Ò×
+è®¾ç½®ç‰©å“å¯ç”¨äºäº¤æ˜“
 inst:AddComponent("tradable")
 
-ÉèÖÃÎïÆ·½»Ò×ÊôĞÔµÄ½ğ×Ó¼ÛÖµ
+è®¾ç½®ç‰©å“äº¤æ˜“å±æ€§çš„é‡‘å­ä»·å€¼
 inst.components.tradable.goldvalue = value
 
-ÉèÖÃÎïÌå³ÉÎª½»Ò×Õß£¨¿É±»¸øÓè¾ßÓĞ½»Ò×ÊôĞÔµÄÎïÆ·£©
+è®¾ç½®ç‰©ä½“æˆä¸ºäº¤æ˜“è€…ï¼ˆå¯è¢«ç»™äºˆå…·æœ‰äº¤æ˜“å±æ€§çš„ç‰©å“ï¼‰
 inst:AddComponent("trader")
-ÉèÖÃ½»Ò×Õß½ÓÊÜÄÇĞ©ÎïÆ·
+è®¾ç½®äº¤æ˜“è€…æ¥å—é‚£äº›ç‰©å“
 inst.components.trader:SetAcceptTest(function(inst, item) [code] end)
-  -- itemÊÇ±»¸øÓèµÄÎïÆ·£¬º¯Êı·µ»Øtrue¾Í±íÊ¾¿É½»Ò×
-ÉèÖÃ½»Ò×Õß½ÓÊÜ»ò¾Ü¾øÊ±´¥·¢µÄº¯Êı
+  -- itemæ˜¯è¢«ç»™äºˆçš„ç‰©å“ï¼Œå‡½æ•°è¿”å›trueå°±è¡¨ç¤ºå¯äº¤æ˜“
+è®¾ç½®äº¤æ˜“è€…æ¥å—æˆ–æ‹’ç»æ—¶è§¦å‘çš„å‡½æ•°
 inst.components.trader.onaccept = function
 inst.components.trader.onrefuse = function
-  -- ÕâÁ½¸öº¯ÊıÔÚ¶¨ÒåÊ±ÓĞÈı¸ö²ÎÊıinst, giver(¸øÓèÕß), item(¸øÓèÆ·)
+  -- è¿™ä¸¤ä¸ªå‡½æ•°åœ¨å®šä¹‰æ—¶æœ‰ä¸‰ä¸ªå‚æ•°inst, giver(ç»™äºˆè€…), item(ç»™äºˆå“)
 
-ÉèÖÃ»ğÉ½¼ÀÏ×ÎïÆ·
+è®¾ç½®ç«å±±ç¥­çŒ®ç‰©å“
 inst:AddComponent("appeasement")
 inst.components.appeasement.appeasementvalue = value
 
-Ìí¼ÓµôÂäÎï£¨Õ½ÀûÆ·£©ÊôĞÔ
+æ·»åŠ æ‰è½ç‰©ï¼ˆæˆ˜åˆ©å“ï¼‰å±æ€§
 inst:AddComponent("lootdropper")
-ÉèÖÃÕ½ÀûÆ·µôÂäËæ»úÁĞ±í
+è®¾ç½®æˆ˜åˆ©å“æ‰è½éšæœºåˆ—è¡¨
 inst.components.lootdropper:SetRandomLoot({})
-Ìí¼ÓÎïÆ·µ½Õ½ÀûÆ·µôÂäËæ»úÁĞ±í
+æ·»åŠ ç‰©å“åˆ°æˆ˜åˆ©å“æ‰è½éšæœºåˆ—è¡¨
 inst.components.lootdropper:AddRandomLoot("xxx", 1)
-ÉèÖÃ¼¸¸öµôÂäËæ»úÕ½ÀûÆ·
+è®¾ç½®å‡ ä¸ªæ‰è½éšæœºæˆ˜åˆ©å“
 inst.components.lootdropper.numrandomloot = 1
 
-Ìí¼ÓÀäÈ´ÊôĞÔ
+æ·»åŠ å†·å´å±æ€§
 inst:AddComponent("cooldown")
-ÉèÖÃÀäÈ´Ê±¼ä
+è®¾ç½®å†·å´æ—¶é—´
 inst.components.cooldown.cooldown_duration = time
 
-ÒÔÏÂ·½·¨¿ÉÒÔÖ±½ÓÈÃÈËÎïÓµÓĞ¿³Ê÷ÄÜÁ¦£¬µ«»¹ĞèÒª¸Ä±äÊó±êºÍ¼üÅÌ´¥·¢µÄÊôĞÔ
+ä»¥ä¸‹æ–¹æ³•å¯ä»¥ç›´æ¥è®©äººç‰©æ‹¥æœ‰ç æ ‘èƒ½åŠ›ï¼Œä½†è¿˜éœ€è¦æ”¹å˜é¼ æ ‡å’Œé”®ç›˜è§¦å‘çš„å±æ€§
 inst:AddComponent("worker")
 inst.components.worker:SetAction(ACTIONS.CHOP, 1)
 
-SeasonManagerÊÇ¸ö×é¼ş
+SeasonManageræ˜¯ä¸ªç»„ä»¶
 
-µ÷ÓÃÔ¤´æµÄ¶¯×÷
+è°ƒç”¨é¢„å­˜çš„åŠ¨ä½œ
 inst:PerformBufferedAction()
 
-Çå³ıÔ¤´æµÄ¶¯×÷
+æ¸…é™¤é¢„å­˜çš„åŠ¨ä½œ
 inst:ClearBufferedAction()
 
-»ñÈ¡Ô¤´æµÄ¶¯×÷
+è·å–é¢„å­˜çš„åŠ¨ä½œ
 inst:GetBufferedAction()
 
-¼ì²éÊÇ·ñ±£´æÔÚÄÄÀï
-SaveGameIndex:IsModeSurvival() -- ÔÚrog
-SaveGameIndex:IsModeShipwrecked()  -- ÔÚSW
-SaveGameIndex:IsModePorkland()  -- ÔÚHAM
+æ£€æŸ¥æ˜¯å¦ä¿å­˜åœ¨å“ªé‡Œ
+SaveGameIndex:IsModeSurvival() -- åœ¨rog
+SaveGameIndex:IsModeShipwrecked()  -- åœ¨SW
+SaveGameIndex:IsModePorkland()  -- åœ¨HAM
 
-¼ì²éÊÇ·ñ¼æÈİDLC
-GLOBAL.IsDLCEnabled(num)  -- numÎª1£¬2£¬3
+æ£€æŸ¥æ˜¯å¦å…¼å®¹DLC
+GLOBAL.IsDLCEnabled(num)  -- numä¸º1ï¼Œ2ï¼Œ3
 
-ÈËÎïËµ»°
+äººç‰©è¯´è¯
 GetPlayer().components.talker:Say(string)
 
-ÉèÖÃÈËÎï±»À×»÷ºóµÄº¯Êı
+è®¾ç½®äººç‰©è¢«é›·å‡»åçš„å‡½æ•°
 inst.components.playerlightningtarget:SetOnStrikeFn(function)
 
-MakeSmallBurnableµÈº¯ÊıÔÚstandardcomponentsÎÄ¼şÀï
+MakeSmallBurnableç­‰å‡½æ•°åœ¨standardcomponentsæ–‡ä»¶é‡Œ
 
-ÏÔÊ¾Ğ§¹û
+æ˜¾ç¤ºæ•ˆæœ
 inst.AnimState:OverrideSymbol(symboltooverride, build, symbol)
-symboltooverride Óëscml´ò°üÖ®Ç°Í¼Æ¬ÎÄ¼ş¼ĞÓĞ¹Ø
-build ÓëÎïÆ·¶¯»­ÓĞ¹Ø
-symbol ÓëÎïÆ·ÀàĞÍÓĞ¹Ø
+symboltooverride ä¸scmlæ‰“åŒ…ä¹‹å‰å›¾ç‰‡æ–‡ä»¶å¤¹æœ‰å…³
+build ä¸ç‰©å“åŠ¨ç”»æœ‰å…³
+symbol ä¸ç‰©å“ç±»å‹æœ‰å…³
 
-´÷Ã±×ÓÏÔÊ¾Ğ§¹û
+æˆ´å¸½å­æ˜¾ç¤ºæ•ˆæœ
 owner.AnimState:OverrideSymbol("swap_hat", build, "swap_hat")
-ÏÔÊ¾£ºHAT, HAIR_HAT; HEAD_HAIR (player)  [Ğ¶ÏÂÃ±×ÓÓëÖ®Ïà·´]
-Òş²Ø£ºHAIR_NOHAT, HAIR; HEAD, HAIRFRONT (player) [Ğ¶ÏÂÃ±×ÓÓëÖ®Ïà·´]
-¿ª·ÅÍ·²¿ÏÔÊ¾: HAT, HAIR_NOHAT, HAIR, HAIRFRONT, HEAD
-¿ª·ÅÍ·²¿Òş²Ø: HAIR_HAT, HEAD_HAIR
+æ˜¾ç¤ºï¼šHAT, HAIR_HAT; HEAD_HAIR (player)  [å¸ä¸‹å¸½å­ä¸ä¹‹ç›¸å]
+éšè—ï¼šHAIR_NOHAT, HAIR; HEAD, HAIRFRONT (player) [å¸ä¸‹å¸½å­ä¸ä¹‹ç›¸å]
+å¼€æ”¾å¤´éƒ¨æ˜¾ç¤º: HAT, HAIR_NOHAT, HAIR, HAIRFRONT, HEAD
+å¼€æ”¾å¤´éƒ¨éšè—: HAIR_HAT, HEAD_HAIR
 
-ÊÖ³Ö×°±¸ÏÔÊ¾Ğ§¹û
-owner.AnimState:OverrideSymbol("swap_object", build, "swap_object") [·ÇÌáµÆ]
-£¨ÌáµÆÀà½ÏÎª¸´ÔÓ£¬×ÔĞĞ²é¿´£©
-ÏÔÊ¾: ARM_carry [Ğ¶ÏÂ×°±¸ÓëÖ®Ïà·´]
-Òş²Ø: ARM_normal [Ğ¶ÏÂ×°±¸ÓëÖ®Ïà·´]
+æ‰‹æŒè£…å¤‡æ˜¾ç¤ºæ•ˆæœ
+owner.AnimState:OverrideSymbol("swap_object", build, "swap_object") [éæç¯]
+ï¼ˆæç¯ç±»è¾ƒä¸ºå¤æ‚ï¼Œè‡ªè¡ŒæŸ¥çœ‹ï¼‰
+æ˜¾ç¤º: ARM_carry [å¸ä¸‹è£…å¤‡ä¸ä¹‹ç›¸å]
+éšè—: ARM_normal [å¸ä¸‹è£…å¤‡ä¸ä¹‹ç›¸å]
 
-ÒÂ·şÏÔÊ¾Ğ§¹û
-owner.AnimState:OverrideSymbol("swap_body", build, "swap_body") [ÉíÌå²¿·Ö]
-owner.AnimState:OverrideSymbol("swap_body", build, "backpack") [±³°ü²¿·Ö]
-owner.AnimState:ClearOverrideSymbol("swap_body") [Ğ¶ÏÂÉíÌå²¿·Ö]
-owner.AnimState:ClearOverrideSymbol("backpack") [Ğ¶ÏÂ±³°ü²¿·Ö]
+è¡£æœæ˜¾ç¤ºæ•ˆæœ
+owner.AnimState:OverrideSymbol("swap_body", build, "swap_body") [èº«ä½“éƒ¨åˆ†]
+owner.AnimState:OverrideSymbol("swap_body", build, "backpack") [èƒŒåŒ…éƒ¨åˆ†]
+owner.AnimState:ClearOverrideSymbol("swap_body") [å¸ä¸‹èº«ä½“éƒ¨åˆ†]
+owner.AnimState:ClearOverrideSymbol("backpack") [å¸ä¸‹èƒŒåŒ…éƒ¨åˆ†]
 
-´¬·«ÏÔÊ¾Ğ§¹û
+èˆ¹å¸†æ˜¾ç¤ºæ•ˆæœ
 ship.AnimState:OverrideSymbol("swap_sail", build, "swap_sail")
-ship.AnimState:OverrideSymbol("swap_propeller", build, "swap_propeller") [ÂİĞı½°Àà]
-ship.AnimState:ClearOverrideSymbol("swap_sail") [Ğ¶ÏÂ]
-ship.AnimState:ClearOverrideSymbol("swap_propeller") [Ğ¶ÏÂ]
+ship.AnimState:OverrideSymbol("swap_propeller", build, "swap_propeller") [èºæ—‹æ¡¨ç±»]
+ship.AnimState:ClearOverrideSymbol("swap_sail") [å¸ä¸‹]
+ship.AnimState:ClearOverrideSymbol("swap_propeller") [å¸ä¸‹]
 
-´¬µÆÏÔÊ¾Ğ§¹û
-ship.AnimState:OverrideSymbol("swap_lantern", build, "swap_lantern") [ÓĞ¹âÈ¦]
-ship.AnimState:OverrideSymbol("swap_lantern", build, "swap_lantern_off") [ÎŞ¹âÈ¦]
-ÓĞÎŞ¹âÈ¦Á½ÖÖÔÚscmlÀïÒª×ö³öÀ´
-ship.AnimState:OverrideSymbol("swap_lantern", build, "swap_cannon") [´¬ÅÚ]
-ship.AnimState:ClearOverrideSymbol("swap_lantern") [Ğ¶ÏÂ]
+èˆ¹ç¯æ˜¾ç¤ºæ•ˆæœ
+ship.AnimState:OverrideSymbol("swap_lantern", build, "swap_lantern") [æœ‰å…‰åœˆ]
+ship.AnimState:OverrideSymbol("swap_lantern", build, "swap_lantern_off") [æ— å…‰åœˆ]
+æœ‰æ— å…‰åœˆä¸¤ç§åœ¨scmlé‡Œè¦åšå‡ºæ¥
+ship.AnimState:OverrideSymbol("swap_lantern", build, "swap_cannon") [èˆ¹ç‚®]
+ship.AnimState:ClearOverrideSymbol("swap_lantern") [å¸ä¸‹]
 
-ROGÀïÊÀ½çÍâµÄµØÆ¤
+ROGé‡Œä¸–ç•Œå¤–çš„åœ°çš®
 GROUND.IMPASSABLE
 
-Ñ°ÕÒÊµÌå
+å¯»æ‰¾å®ä½“
 TheSim:FindEntities(x, y, z, range, tags, no_tags)
 ex: tags={"wall"}
 ex: no_tags = {"fx"}
-Ñ°ÕÒµ¥¸öÊµÌå
+å¯»æ‰¾å•ä¸ªå®ä½“
 FindEntity(inst, range, fn, tags, no_tags)
-    fn(item, inst) ¼ì²âÊÇ·ñ·ûºÏ£¬·µ»Øtrue±íÊ¾·ûºÏ£¬inst¼´ÎªÉÏÃæµÄinst
+    fn(item, inst) æ£€æµ‹æ˜¯å¦ç¬¦åˆï¼Œè¿”å›trueè¡¨ç¤ºç¬¦åˆï¼Œinstå³ä¸ºä¸Šé¢çš„inst
 
-Ç½Ìå¶¯»­ºÍÑªÁ¿°Ù·Ö±È
+å¢™ä½“åŠ¨ç”»å’Œè¡€é‡ç™¾åˆ†æ¯”
 0 broken
 0.4 onequarter
 0.5 half
 0.99 threequarter
 1 fullA, fullB, fullC
 
-¼ì²éÊÇ·ñ¼æÈİDLC£¬modmainÀïÒ²¿ÉÓÃ
-GLOBAL.IsDLCEnabled(GLOBAL.REGIN_OF_GIANTS)  -- ¼æÈİROG
-GLOBAL.IsDLCEnabled(GLOBAL.CAPY_DLC)  -- ¼æÈİSW
-GLOBAL.IsDLCEnabled(GLOBAL.PORKLAND_DLC)  -- ¼æÈİHAM
+æ£€æŸ¥æ˜¯å¦å…¼å®¹DLCï¼Œmodmainé‡Œä¹Ÿå¯ç”¨
+GLOBAL.IsDLCEnabled(GLOBAL.REGIN_OF_GIANTS)  -- å…¼å®¹ROG
+GLOBAL.IsDLCEnabled(GLOBAL.CAPY_DLC)  -- å…¼å®¹SW
+GLOBAL.IsDLCEnabled(GLOBAL.PORKLAND_DLC)  -- å…¼å®¹HAM
 
-¿É½øÈëÎïÆ·À¸µÄÎïÆ·Ë®ÖĞ¶¯»­Ìí¼Ó£¨µÚÈı¸ö²ÎÊıÊÇÔ­±¾µÄ¶¯»­£©
+å¯è¿›å…¥ç‰©å“æ çš„ç‰©å“æ°´ä¸­åŠ¨ç”»æ·»åŠ ï¼ˆç¬¬ä¸‰ä¸ªå‚æ•°æ˜¯åŸæœ¬çš„åŠ¨ç”»ï¼‰
 MakeInventoryFloatable(inst, "idle_water", "idle")
 
-Ìí¼Ó×ÓÊµÌå
+æ·»åŠ å­å®ä½“
 inst:AddChild(child)
 
-ÒÆ³ı×ÓÊµÌå
+ç§»é™¤å­å®ä½“
 inst:RemoveChild(child)
 
-¼¢»ÄÖĞËùÓĞµÄÊµÌå¶¼±»¼ÇÂ¼ÔÚEnts±íÀï
+é¥¥è’ä¸­æ‰€æœ‰çš„å®ä½“éƒ½è¢«è®°å½•åœ¨Entsè¡¨é‡Œ
 
-Å©³¡Àï³¤³öÀ´µÄÊÇplant_normalÊµÎï£¬ÓÉcrop×é¼şÊôĞÔ
+å†œåœºé‡Œé•¿å‡ºæ¥çš„æ˜¯plant_normalå®ç‰©ï¼Œç”±cropç»„ä»¶å±æ€§
 
-»ñÈ¡¼ÆÊ±
-GetTime() Ã¿´Î½øÈëÓÎÏ·ºó¶¼»áÖØĞÂ¼ÆÊ±
+è·å–è®¡æ—¶
+GetTime() æ¯æ¬¡è¿›å…¥æ¸¸æˆåéƒ½ä¼šé‡æ–°è®¡æ—¶
 
-³¬ºÃÓÃµÄÒ»¼üGOLBAL
+è¶…å¥½ç”¨çš„ä¸€é”®GOLBAL
 local function GlobalUsingMetatable()
 	GLOBAL.setmetatable(env, {__index = function(t, k)
 		return GLOBAL.rawget(GLOBAL, k)
@@ -478,7 +478,7 @@ local function GlobalUsingMetatable()
 end
 GlobalUsingMetatable()
 
-»ñÈ¡º¯ÊıÌåÄÚµÄÁÙÊ±º¯Êı£¬Ç¿
+è·å–å‡½æ•°ä½“å†…çš„ä¸´æ—¶å‡½æ•°ï¼Œå¼º
 local function flc_Get(fn,name,maxlevel,max,level,file)
 	if type(fn) ~= "function" then
 		return
@@ -507,18 +507,18 @@ local function flc_Get(fn,name,maxlevel,max,level,file)
 	end
 end
 
-»ñÈ¡ÆäËûmodÊÇ·ñ¼ÓÔØ
+è·å–å…¶ä»–modæ˜¯å¦åŠ è½½
 GLOBAL.KnownModIndex:IsModEnabled("workshop-xxx")
 
-»ñÈ¡ÊÀ½çÖĞµÄÊµÎï£¬¿ØÖÆÌ¨´úÂëµÄÊ¹ÓÃ
-c_find("prefab_name")  £¨ÔÚmodmainÀïÒª¼ÓGLOBAL£©
+è·å–ä¸–ç•Œä¸­çš„å®ç‰©ï¼Œæ§åˆ¶å°ä»£ç çš„ä½¿ç”¨
+c_find("prefab_name")  ï¼ˆåœ¨modmainé‡Œè¦åŠ GLOBALï¼‰
 
-¼ò»¯STRINGS²¿·Ö
+ç®€åŒ–STRINGSéƒ¨åˆ†
 local names = STRINGS.NAMES
 local desc = STRINGS.RECIPE_DESC
 local generic = STRINGS.CHARACTERS.GENERIC.DESCRIBE
 
-×Ô¶¨Òå×é¼ş
+è‡ªå®šä¹‰ç»„ä»¶
 local NewComponent = Class(function(self, inst)
     self.inst = inst
 
@@ -529,166 +529,166 @@ function NewComponent:Func()
 end
 return NewComponent
 
-×Ô¶¨Òå½çÃæ
-ÏÈµ¼ÈëÒ»²¨ËùĞèµÄ×é¼ş
+è‡ªå®šä¹‰ç•Œé¢
+å…ˆå¯¼å…¥ä¸€æ³¢æ‰€éœ€çš„ç»„ä»¶
 local my_screen = Class(Screen, function(self)
   Screen._ctor(self, "name")
   TheFrontEnd:PopScreen(self)
 end)
-ÆäËûµØ·½
+å…¶ä»–åœ°æ–¹
 local my_sc = require "screen/my_screen"
 TheFrontEnd:PushScreen(my_sc())
 
-Èç¹ûÓÃÒ»¸ö°´¼ü°´ÏÂ¿ØÖÆÍ¼ĞÎ½çÃæ³öÏÖ£¬
-ÔÙÓÃÕâ¸ö°¸¼şµ¯Æğ¿ØÖÆÍ¼ĞÎ½çÃæĞ¡Ê±£¬
-¾ÍÄÜ¹»ÈÃ½çÃæ°´ÏÂÊ±²Å³öÏÖ¡£
+å¦‚æœç”¨ä¸€ä¸ªæŒ‰é”®æŒ‰ä¸‹æ§åˆ¶å›¾å½¢ç•Œé¢å‡ºç°ï¼Œ
+å†ç”¨è¿™ä¸ªæ¡ˆä»¶å¼¹èµ·æ§åˆ¶å›¾å½¢ç•Œé¢å°æ—¶ï¼Œ
+å°±èƒ½å¤Ÿè®©ç•Œé¢æŒ‰ä¸‹æ—¶æ‰å‡ºç°ã€‚
 
-Ìí¼Ó°´¼ü¿ØÖÆ
-TheInput:AddKeyUpHandler(key, fn)  keyµ¯Æğ´¥·¢º¯Êıfn£¨fnÎŞ²ÎÊı£©
-TheInput:IsKeyDown(key)  keyÊÇ·ñ±»°´ÏÂ
+æ·»åŠ æŒ‰é”®æ§åˆ¶
+TheInput:AddKeyUpHandler(key, fn)  keyå¼¹èµ·è§¦å‘å‡½æ•°fnï¼ˆfnæ— å‚æ•°ï¼‰
+TheInput:IsKeyDown(key)  keyæ˜¯å¦è¢«æŒ‰ä¸‹
 
-Ïàµ±ÓÚ½«fileÎÄ¼şÖĞµÄ´úÂëÒÆµ½modmainÖĞ
+ç›¸å½“äºå°†fileæ–‡ä»¶ä¸­çš„ä»£ç ç§»åˆ°modmainä¸­
 modimport("file")
 
-ÔÚ³õÊ¼»¯Ç°½«fnÌí¼Ó½øÒ»¸öXXÖĞ
+åœ¨åˆå§‹åŒ–å‰å°†fnæ·»åŠ è¿›ä¸€ä¸ªXXä¸­
 AddSimPostInit(fn)
 AddPrefabPostInit("prefab", fn)
 AddTaskPreInit("task", fn)
 
-ÊÀ½çÉÏÒ»Ğ©¹Ì¶¨»òËæ»úÊµÎïµÄÉú³ÉÊÇÓëtaskÈÎÎñÏà¹ØµÄ
-ÒªÏëÔÚÊÀ½çÉÏ¹Ì¶¨»òËæ»úÉú³ÉÒ»Ğ©ÊµÎï£¬ĞèÒªÏÈ´´½¨room£¬
-È»ºóÔÙÔÚÏòtaskµÄroom_choices±íÌí¼ÓÕâ¸öroomÊôĞÔ£¬
-²¢½«ÖµÉèÎª1
+ä¸–ç•Œä¸Šä¸€äº›å›ºå®šæˆ–éšæœºå®ç‰©çš„ç”Ÿæˆæ˜¯ä¸taskä»»åŠ¡ç›¸å…³çš„
+è¦æƒ³åœ¨ä¸–ç•Œä¸Šå›ºå®šæˆ–éšæœºç”Ÿæˆä¸€äº›å®ç‰©ï¼Œéœ€è¦å…ˆåˆ›å»ºroomï¼Œ
+ç„¶åå†åœ¨å‘taskçš„room_choicesè¡¨æ·»åŠ è¿™ä¸ªroomå±æ€§ï¼Œ
+å¹¶å°†å€¼è®¾ä¸º1
 
-¹ØÓÚRPC
+å…³äºRPC
 local function GrowGiant(player)    
     player.Transform:SetScale(2,2,2)
 end
-AddModRPCHandler(modname, RPCname, GrowGiant)--Ìí¼ÓRPC´¦ÀíÆ÷£¬
-Õâ¸öÓï¾ä¿ÉÒÔĞ´ÔÚÈÎºÎ»á±»Ö÷»úÖ´ĞĞµ½µÄµØ·½¡£Èı¸ö²ÎÊı£¬µÚÒ»¸öÎªÃüÃû¿Õ¼ä
-µÄÃû×Ö£¬½¨ÒéĞ´modµÄÃû×Ö£»µÚ¶ş¸ö²ÎÊıÎªRPCµÄÃû×Ö£¬±ØĞëÊÇÎ¨Ò»µÄ£¬Èç¹û
-ÓĞÍ¬ÃûµÄ£¬¾Í»á¸ù¾İÏÈºóË³Ğò£¬±»ºóÃæµÄ¸²¸Ç¡£ÕâÁ½¸ö²ÎÊı¶¼±ØĞëÊÇ×Ö·û´®¡£
-µÚÈı¸ö²ÎÊıÔòÊÇÒªÖ´ĞĞµÄº¯Êı£¬Õâ¸öº¯ÊıµÄµÚÒ»¸ö²ÎÊı¹Ì¶¨ÎªÍæ¼ÒµÄÒıÓÃ£¬Õâ
-ÀïµÄÍæ¼Ò£¬Ö¸µÄÊÇÖ´ĞĞÏÂÃæµÄSend
+AddModRPCHandler(modname, RPCname, GrowGiant)--æ·»åŠ RPCå¤„ç†å™¨ï¼Œ
+è¿™ä¸ªè¯­å¥å¯ä»¥å†™åœ¨ä»»ä½•ä¼šè¢«ä¸»æœºæ‰§è¡Œåˆ°çš„åœ°æ–¹ã€‚ä¸‰ä¸ªå‚æ•°ï¼Œç¬¬ä¸€ä¸ªä¸ºå‘½åç©ºé—´
+çš„åå­—ï¼Œå»ºè®®å†™modçš„åå­—ï¼›ç¬¬äºŒä¸ªå‚æ•°ä¸ºRPCçš„åå­—ï¼Œå¿…é¡»æ˜¯å”¯ä¸€çš„ï¼Œå¦‚æœ
+æœ‰åŒåçš„ï¼Œå°±ä¼šæ ¹æ®å…ˆåé¡ºåºï¼Œè¢«åé¢çš„è¦†ç›–ã€‚è¿™ä¸¤ä¸ªå‚æ•°éƒ½å¿…é¡»æ˜¯å­—ç¬¦ä¸²ã€‚
+ç¬¬ä¸‰ä¸ªå‚æ•°åˆ™æ˜¯è¦æ‰§è¡Œçš„å‡½æ•°ï¼Œè¿™ä¸ªå‡½æ•°çš„ç¬¬ä¸€ä¸ªå‚æ•°å›ºå®šä¸ºç©å®¶çš„å¼•ç”¨ï¼Œè¿™
+é‡Œçš„ç©å®¶ï¼ŒæŒ‡çš„æ˜¯æ‰§è¡Œä¸‹é¢çš„Send
 
 local function SendGrowGiantRPC()   
     SendModRPCToServer(MOD_RPC[modname]["RPCname"])
-    --[[ÏòÖ÷»ú·¢ËÍRPCÏûÏ¢£¬µÚÒ»¸ö²ÎÊıÎªMOD_RPC[modname]["RPCname"]£¬
-    MOD_RPCÊÇ²»ÄÜĞŞ¸ÄµÄ£¬ºóÃæµÄmodname,RPCname¾ÍºÍÉÏÃæµÄÒâË¼ÊÇÒ»Ñù
-    µÄ¡£ÁíÍâ£¬Õâ¸öº¯Êı¿ÉÒÔ´«Èë¸ü¶àµÄ²ÎÊı£¬Ö»ÒªĞ´ÔÚµÚÒ»¸ö²ÎÊıºóÃæ¾ÍĞĞ¡£Õâ
-    Ğ©²ÎÊı½²»á±»ÉÏÃæµÄAddModRPCHandlerÀïµÄÖ´ĞĞº¯Êı½ÓÊÕµ½¡£ÔÚÄ³Ğ©Ê±ºò
-    »á·Ç³£ÓĞÓÃ¡£
+    --[[å‘ä¸»æœºå‘é€RPCæ¶ˆæ¯ï¼Œç¬¬ä¸€ä¸ªå‚æ•°ä¸ºMOD_RPC[modname]["RPCname"]ï¼Œ
+    MOD_RPCæ˜¯ä¸èƒ½ä¿®æ”¹çš„ï¼Œåé¢çš„modname,RPCnameå°±å’Œä¸Šé¢çš„æ„æ€æ˜¯ä¸€æ ·
+    çš„ã€‚å¦å¤–ï¼Œè¿™ä¸ªå‡½æ•°å¯ä»¥ä¼ å…¥æ›´å¤šçš„å‚æ•°ï¼Œåªè¦å†™åœ¨ç¬¬ä¸€ä¸ªå‚æ•°åé¢å°±è¡Œã€‚è¿™
+    äº›å‚æ•°è®²ä¼šè¢«ä¸Šé¢çš„AddModRPCHandleré‡Œçš„æ‰§è¡Œå‡½æ•°æ¥æ”¶åˆ°ã€‚åœ¨æŸäº›æ—¶å€™
+    ä¼šéå¸¸æœ‰ç”¨ã€‚
 end
 
-¹ØÓÚnetvar
+å…³äºnetvar
 inst._level = net_smallbyte(inst.GUID,"MyLevel","leveldirty")
 inst:ListenForEvent("leveldirty", function(inst)
     if inst._level:value() == 1 then 
     end
 end)
-netvar:set(x)--Ö»ÄÜÔÚÖ÷»ú¶Ëµ÷ÓÃÕâ¸öº¯Êı£¬»á×Ô¶¯Í¬²½¿Í»úµÄÊı¾İ£¨ÔÚÒ»¸öĞÂµÄ
-Í¬²½ÖÜÆÚ¿ªÊ¼Ê±£©¡£Èç¹ûÕâ¸öº¯ÊıÈ·Êµ¸Ä±äÁËnetvarµÄÖµ£¬»áÔÚÖ÷»úºÍ¿Í»úÉÏ¶¼
-´¥·¢ÏàÓ¦µÄdirtyÊÂ¼ş¡£
-netvar:value()--¿ÉÒÔÔÚÖ÷»úºÍ¿Í»úÉÏµ÷ÓÃÕâ¸öº¯Êı£¬¶ÁÈ¡µ±Ç°ÍøÂç±äÁ¿µÄÖµ¡£
-netvar:set_local(x)--¿ÉÒÔÔÚÖ÷»ú»ò¿Í»úÉÏµ÷ÓÃ£¬¸Ä±äÏàÓ¦µÄÖµµ«²»´¥·¢Êı¾İÍ¬²½
-»òdirtyÊÂ¼ş¡£µ«µ±Ö÷»úÏÂÒ»´Îµ÷ÓÃsetº¯ÊıÊ±£¬ÎŞÂÛ±äÁ¿µÄÖµÊÇ·ñ·¢ÉúÁË¸Ä±ä£¬
-¶¼»áÍ¬²½Ò»´ÎÊı¾İ¡£
+netvar:set(x)--åªèƒ½åœ¨ä¸»æœºç«¯è°ƒç”¨è¿™ä¸ªå‡½æ•°ï¼Œä¼šè‡ªåŠ¨åŒæ­¥å®¢æœºçš„æ•°æ®ï¼ˆåœ¨ä¸€ä¸ªæ–°çš„
+åŒæ­¥å‘¨æœŸå¼€å§‹æ—¶ï¼‰ã€‚å¦‚æœè¿™ä¸ªå‡½æ•°ç¡®å®æ”¹å˜äº†netvarçš„å€¼ï¼Œä¼šåœ¨ä¸»æœºå’Œå®¢æœºä¸Šéƒ½
+è§¦å‘ç›¸åº”çš„dirtyäº‹ä»¶ã€‚
+netvar:value()--å¯ä»¥åœ¨ä¸»æœºå’Œå®¢æœºä¸Šè°ƒç”¨è¿™ä¸ªå‡½æ•°ï¼Œè¯»å–å½“å‰ç½‘ç»œå˜é‡çš„å€¼ã€‚
+netvar:set_local(x)--å¯ä»¥åœ¨ä¸»æœºæˆ–å®¢æœºä¸Šè°ƒç”¨ï¼Œæ”¹å˜ç›¸åº”çš„å€¼ä½†ä¸è§¦å‘æ•°æ®åŒæ­¥
+æˆ–dirtyäº‹ä»¶ã€‚ä½†å½“ä¸»æœºä¸‹ä¸€æ¬¡è°ƒç”¨setå‡½æ•°æ—¶ï¼Œæ— è®ºå˜é‡çš„å€¼æ˜¯å¦å‘ç”Ÿäº†æ”¹å˜ï¼Œ
+éƒ½ä¼šåŒæ­¥ä¸€æ¬¡æ•°æ®ã€‚
 
-Ìí¼Ó¶¯×÷£º¹²Èı²½
-1.Ìí¼Ó¶¯×÷
+æ·»åŠ åŠ¨ä½œï¼šå…±ä¸‰æ­¥
+1.æ·»åŠ åŠ¨ä½œ
 AddAction(action)
 local MY_EAT = Action({
-  priority=0,  ÓÅÏÈ¼¶ 
-  instant=false£¬ÊÇ·ñ²»×ßµ½targetÎ»ÖÃ£¬Ä¬ÈÏÎªfalse£¬Ò²¾ÍÊÇÒª×ß¹ıÈ¥
-})  -- ºÍÄãÒª·ÂµÄ¶¯×÷Ò»Ñù
+  priority=0,  ä¼˜å…ˆçº§ 
+  instant=falseï¼Œæ˜¯å¦ä¸èµ°åˆ°targetä½ç½®ï¼Œé»˜è®¤ä¸ºfalseï¼Œä¹Ÿå°±æ˜¯è¦èµ°è¿‡å»
+})  -- å’Œä½ è¦ä»¿çš„åŠ¨ä½œä¸€æ ·
 MY_EAT.id = "MY_EAT"
 MY_EAT.str = "MY_EAT"
 MY_EAT.fn = functin(act) end
-2.°ó¶¨×é¼ş£¨Áª»ú£©
-local type = "SCENE" -- ÉèÖÃ¶¯×÷°ó¶¨µÄÀàĞÍ
-local component = "workable" -- ÉèÖÃ¶¯×÷°ó¶¨µÄ×é¼ş
-local testfn = function(inst, doer, actions, right) -- ÉèÖÃ¶¯×÷µÄ¼ì²âº¯Êı£¬Èç¹ûÂú×ãÌõ¼ş£¬¾ÍÏòÈËÎïµÄ¶¯×÷¿ÉÖ´ĞĞ±íÖĞ¼ÓÈëÄ³¸ö¶¯×÷¡£right±íÊ¾ÊÇ·ñÊÇÓÒ¼ü¶¯×÷¡£
+2.ç»‘å®šç»„ä»¶ï¼ˆè”æœºï¼‰
+local type = "SCENE" -- è®¾ç½®åŠ¨ä½œç»‘å®šçš„ç±»å‹
+local component = "workable" -- è®¾ç½®åŠ¨ä½œç»‘å®šçš„ç»„ä»¶
+local testfn = function(inst, doer, actions, right) -- è®¾ç½®åŠ¨ä½œçš„æ£€æµ‹å‡½æ•°ï¼Œå¦‚æœæ»¡è¶³æ¡ä»¶ï¼Œå°±å‘äººç‰©çš„åŠ¨ä½œå¯æ‰§è¡Œè¡¨ä¸­åŠ å…¥æŸä¸ªåŠ¨ä½œã€‚rightè¡¨ç¤ºæ˜¯å¦æ˜¯å³é”®åŠ¨ä½œã€‚
     if inst:HasTag("CHOP_workable") and doer:HasTag("player") then
         table.insert(actions, ACTIONS.PUNCHTREE)
     end
 end
 AddComponentAction(type, component, testfn)
-µ¥»úÔÚ×é¼şÀïĞ´ÓĞ:
-ÆÁÄ»ÖĞµÄ¶¯×÷
-CollectSceneActions(doer, actions, right)  -- rightÊÇ·ñÓÒ¼ü
-ÎïÆ·À¸ÀïµÄ¶¯×÷
+å•æœºåœ¨ç»„ä»¶é‡Œå†™æœ‰:
+å±å¹•ä¸­çš„åŠ¨ä½œ
+CollectSceneActions(doer, actions, right)  -- rightæ˜¯å¦å³é”®
+ç‰©å“æ é‡Œçš„åŠ¨ä½œ
 CollectInventoryActions(doer, acitons, right)
-Êó±êÒÆµ½¶ÔÏóÉÏµÄ¶¯×÷
+é¼ æ ‡ç§»åˆ°å¯¹è±¡ä¸Šçš„åŠ¨ä½œ
 CollectUseActions(doer, target, actions, right)
-3.°ó¶¨state
-local state = "doshortaction" -- Éè¶¨Òª°ó¶¨µÄstate
+3.ç»‘å®šstate
+local state = "doshortaction" -- è®¾å®šè¦ç»‘å®šçš„state
 AddStategraphActionHandler("wilson",
   ActionHandler(ACTIONS.PUNCHTREE, state)
 )
 
-SCENE ÔÚÆÁÄ»ÖĞµã»÷×é¼şÓµÓĞÕß
-USEITEM ´ø×Å×é¼şÓµÓĞÕßÎïÆ·µÄÊó±êµã»÷Ä¿±ê
+SCENE åœ¨å±å¹•ä¸­ç‚¹å‡»ç»„ä»¶æ‹¥æœ‰è€…
+USEITEM å¸¦ç€ç»„ä»¶æ‹¥æœ‰è€…ç‰©å“çš„é¼ æ ‡ç‚¹å‡»ç›®æ ‡
 
-Áª»úµÄ×é¼ş°ó¶¨¶¯×÷ÔÚcomponentactionsÀïÃæ
+è”æœºçš„ç»„ä»¶ç»‘å®šåŠ¨ä½œåœ¨componentactionsé‡Œé¢
 
 BufferedAction(doer, target, action, invobj, pos) 
-target²ÎÊı»áÈÃdoer×ßµ½targetµÄÎ»ÖÃÈ¥
+targetå‚æ•°ä¼šè®©doerèµ°åˆ°targetçš„ä½ç½®å»
 
-Ìí¼Óstateµ½SG
+æ·»åŠ stateåˆ°SG
 AddStategraphState(sg, state)
 
-Ìí¼ÓÈÎÎñ
+æ·»åŠ ä»»åŠ¡
 AddTask(string task_name, table task_table)
 
-Ìí¼Ó²ÄÁÏÊôĞÔ
+æ·»åŠ ææ–™å±æ€§
 AddIngredientValues(names, tags, cancook, candry)
 
-±êÇ©
-½¨ÔìÊ±²»»á±»×èµ²µÄ±êÇ©£º"fx" "player" "NOBLOCK"
+æ ‡ç­¾
+å»ºé€ æ—¶ä¸ä¼šè¢«é˜»æŒ¡çš„æ ‡ç­¾ï¼š"fx" "player" "NOBLOCK"
 
-»ñÈ¡¼àÌıÊÂ¼şµÄº¯Êı
+è·å–ç›‘å¬äº‹ä»¶çš„å‡½æ•°
 inst.event_listener["onbuilt"][inst][1]
 
-¼àÌıÊÂ¼ş
+ç›‘å¬äº‹ä»¶
 inst:ListenForEvent(event, fn, listener)
-  event ¼àÌıµÄÊÂ¼ş
-  fn(inst, data) ÊÂ¼şÍÆ³öÊ±´¥·¢µÄº¯Êı
-  listener ¿ÉÑ¡£¬¸ÄÎªÓÉlistenerÀ´¼àÌı
+  event ç›‘å¬çš„äº‹ä»¶
+  fn(inst, data) äº‹ä»¶æ¨å‡ºæ—¶è§¦å‘çš„å‡½æ•°
+  listener å¯é€‰ï¼Œæ”¹ä¸ºç”±listeneræ¥ç›‘å¬
 
-ÈËÎïanimation
-build_loop ÈËÎï½¨Ôì»òÊÕ»ñÊ±µÄ¶¯×÷
-dial_loop ÈËÎïËµ»°Ê±µÄ¶¯×÷
+äººç‰©animation
+build_loop äººç‰©å»ºé€ æˆ–æ”¶è·æ—¶çš„åŠ¨ä½œ
+dial_loop äººç‰©è¯´è¯æ—¶çš„åŠ¨ä½œ
 
-ÊÂ¼ş×Ö·û
-onbuilt  ½¨Ôì
-entity_death ÉúÎïËÀÍö
-attacked ¹¥»÷
-dusktime »Æ»èÀ´ÁÙ
-daytime °×ÖçÀ´ÁÙ
-nighttime ºÚÒ¹À´ÁÙ
-animqueueover ¶¯»­¶ÓÁĞÖ´ĞĞÍê±Ï
-animover ¶¯»­Ö´ĞĞÍê±Ï
+äº‹ä»¶å­—ç¬¦
+onbuilt  å»ºé€ 
+entity_death ç”Ÿç‰©æ­»äº¡
+attacked æ”»å‡»
+dusktime é»„æ˜æ¥ä¸´
+daytime ç™½æ˜¼æ¥ä¸´
+nighttime é»‘å¤œæ¥ä¸´
+animqueueover åŠ¨ç”»é˜Ÿåˆ—æ‰§è¡Œå®Œæ¯•
+animover åŠ¨ç”»æ‰§è¡Œå®Œæ¯•
 
-room×¢ÊÍ
-PigKingdom ÖíÍõ´å
-Graveyard ·Ø³¡
-Clearing Ä¢¹½»·£¨ÑÛ¹Ç£¬´«ËÍÁã¼ş£©
+roomæ³¨é‡Š
+PigKingdom çŒªç‹æ‘
+Graveyard åŸåœº
+Clearing è˜‘è‡ç¯ï¼ˆçœ¼éª¨ï¼Œä¼ é€é›¶ä»¶ï¼‰
 
-level×¢ÊÍ
-AddLevelÀïoverrides = {  -- ÈıÏä¿ª¾ÖµÄÉèÖÃ
+levelæ³¨é‡Š
+AddLevelé‡Œoverrides = {  -- ä¸‰ç®±å¼€å±€çš„è®¾ç½®
   {"start_setpeice", "DefaultPlusStart"},	
-  -- ÉèÖÃ¿ªÊ¼²¿¼ş£¬ÊÇ¸ölayout
+  -- è®¾ç½®å¼€å§‹éƒ¨ä»¶ï¼Œæ˜¯ä¸ªlayout
   {"start_node", {"DeepForest", "Forest", "SpiderForest", "Plain", "Rocky", "Marsh"}},
-  -- ¿ªÊ¼½ÚµãÉèÖÃ£¬Õı³£Ä£Ê½ÊÇClearing£¬²»ÖªµÀÓĞÉ¶ÓÃ
+  -- å¼€å§‹èŠ‚ç‚¹è®¾ç½®ï¼Œæ­£å¸¸æ¨¡å¼æ˜¯Clearingï¼Œä¸çŸ¥é“æœ‰å•¥ç”¨
   {"boons", "often"},	
-  -- Ïàµ±ÓÚÔÚÉèÖÃÀïÃæĞŞ¸Ä¶«Î÷µÄ²ÎÊı			
+  -- ç›¸å½“äºåœ¨è®¾ç½®é‡Œé¢ä¿®æ”¹ä¸œè¥¿çš„å‚æ•°			
   {"spiders", "often"},
   {"berrybush", "rare"},
   {"carrot", "rare"},
   {"rabbits", "rare"},
 }
 
-Éî¶È±éÀú
+æ·±åº¦éå†
 local function pre_print(n, ...)
 	if n <= 0 then
 		print(...)
@@ -715,190 +715,190 @@ local function traverse(tbl, n)
 	end
 end
 
-waterproofer ·ÀË®²ÄÁÏ
-inherent ¹ÌÓĞµÄ
-insulator ¾øÔµ(ÉÁµç)
-insulation ¸ôÀë£¨¸ôÀëº®Àä£©£¬insulation£¨¸ôÀëÑ×ÈÈ£©
-temperature ÎÂ¶È
-perish ¸¯ÀÃ
-inventory ¿â´æ£¨ÎïÆ·À¸ÄÚ£©
-transform ×ª»»
-entity ÊµÌå
-stackable ¿É¶Ñµş
-inspectable ¿É¼ì²é
-inventoryitem ¿â´æÏîÄ¿
-healer ÖÎÓúÕß
-container ÈİÆ÷
-structure ½¨ÖşÎï
-slot ²Û
-loot Õ½ÀûÆ·
-lootdropper ÇÀ½ÙÕß £¨µôÂäÒ»°ë²ÄÁÏÓÃµÄ£©
-skull Í·¹Ç
-ruins ÒÅ¼£
-metal ½ğÊô
-symbol ·ûºÅ£¬±êÖ¾
-override ¸²¸Ç
-drapper ÒÂ¹Ú³ş³şµÄ
-perish ¸¯ÀÃ
-fridge µç±ùÏä
-falloff Ë¥¼õ
-intensity ÁÁ¶È
-absorption ÎüÊÕ
-depleted ºÄ¾¡µÄ
-torch »ğ°Ñ
-fader ÔöÒæµ÷½ÚÆ÷£¨¹âÁÁ£©
-flicker ÉÁË¸£¬ÉÁ¹â£¬Ò¡Ò·
-fade in µ­Èë£¬½¥ÏÔ
-envelope ĞÅ·â£¬°üÄ¤
-ison£¬ Is On
-ingredient Ô­ÁÏ£¬²ÄÁÏ
-spoil ¸¯ÀÃ£¬±ä»µ
-swap ½»»»
-sharp ·æÀûµÄ
-finite ÓĞÏŞµÄ
-uses ÓÃÍ¾£¬Ó¦ÓÃ
-tradable ¿ÉÃ³Ò×µÄ£¬¿É½»Ò×µÄ
-interact »¥¶¯
-collapse µ¹Ëú
-obstacle ÕÏ°­Îï
-extinguish Ï¨Ãğ
-combat Õ½¶·
-dist [abbr] ¾àÀë
-nearest ×î½üµÄ
-simulate Ä£·Â£¬¼Ù×°£¬Ã°³ä
-stomp ¶å½Å£¬ÖØ²È£¬¼ùÌ¤
-groundpounders Ì¤µØÑ¥
-degrees ½Ç¶È
-terraformer µØĞÎ¸ÄÔìÆ÷
-tile ´É×©£¬ÍßÆ¬
-coords ×ø±êÏÔÊ¾£¬×ø±ê
-original Ô­À´µÄ
-projectile Å×ÎïÏßµÄ
-orientation ·½Ïò£¬¶¨Î»
-crop Å©×÷Îï
-decor [n] ×°ÊÎ
-propagator ´«²¥Õß
+waterproofer é˜²æ°´ææ–™
+inherent å›ºæœ‰çš„
+insulator ç»ç¼˜(é—ªç”µ)
+insulation éš”ç¦»ï¼ˆéš”ç¦»å¯’å†·ï¼‰ï¼Œinsulationï¼ˆéš”ç¦»ç‚çƒ­ï¼‰
+temperature æ¸©åº¦
+perish è…çƒ‚
+inventory åº“å­˜ï¼ˆç‰©å“æ å†…ï¼‰
+transform è½¬æ¢
+entity å®ä½“
+stackable å¯å †å 
+inspectable å¯æ£€æŸ¥
+inventoryitem åº“å­˜é¡¹ç›®
+healer æ²»æ„ˆè€…
+container å®¹å™¨
+structure å»ºç­‘ç‰©
+slot æ§½
+loot æˆ˜åˆ©å“
+lootdropper æŠ¢åŠ«è€… ï¼ˆæ‰è½ä¸€åŠææ–™ç”¨çš„ï¼‰
+skull å¤´éª¨
+ruins é—è¿¹
+metal é‡‘å±
+symbol ç¬¦å·ï¼Œæ ‡å¿—
+override è¦†ç›–
+drapper è¡£å† æ¥šæ¥šçš„
+perish è…çƒ‚
+fridge ç”µå†°ç®±
+falloff è¡°å‡
+intensity äº®åº¦
+absorption å¸æ”¶
+depleted è€—å°½çš„
+torch ç«æŠŠ
+fader å¢ç›Šè°ƒèŠ‚å™¨ï¼ˆå…‰äº®ï¼‰
+flicker é—ªçƒï¼Œé—ªå…‰ï¼Œæ‘‡æ›³
+fade in æ·¡å…¥ï¼Œæ¸æ˜¾
+envelope ä¿¡å°ï¼ŒåŒ…è†œ
+isonï¼Œ Is On
+ingredient åŸæ–™ï¼Œææ–™
+spoil è…çƒ‚ï¼Œå˜å
+swap äº¤æ¢
+sharp é”‹åˆ©çš„
+finite æœ‰é™çš„
+uses ç”¨é€”ï¼Œåº”ç”¨
+tradable å¯è´¸æ˜“çš„ï¼Œå¯äº¤æ˜“çš„
+interact äº’åŠ¨
+collapse å€’å¡Œ
+obstacle éšœç¢ç‰©
+extinguish ç†„ç­
+combat æˆ˜æ–—
+dist [abbr] è·ç¦»
+nearest æœ€è¿‘çš„
+simulate æ¨¡ä»¿ï¼Œå‡è£…ï¼Œå†’å……
+stomp è·ºè„šï¼Œé‡è¸©ï¼Œè·µè¸
+groundpounders è¸åœ°é´
+degrees è§’åº¦
+terraformer åœ°å½¢æ”¹é€ å™¨
+tile ç“·ç –ï¼Œç“¦ç‰‡
+coords åæ ‡æ˜¾ç¤ºï¼Œåæ ‡
+original åŸæ¥çš„
+projectile æŠ›ç‰©çº¿çš„
+orientation æ–¹å‘ï¼Œå®šä½
+crop å†œä½œç‰©
+decor [n] è£…é¥°
+propagator ä¼ æ’­è€…
 animover = anim over
-moisture Ë®·Ö£¬Êª¶È
-haunt ×÷Ëî
-redirect ÖØ¶¨Ïò£¬ÔÙÖ±½ÓÑ¯ÎÊ
-invincible ÎŞµĞ
-valid ÓĞĞ§µÄ
-deploy ²¿Êğ£¬Õ¹¿ª
-impassable ²»ÄÜÍ¨ĞĞµÄ
-narrow ÏÁÕ­µÄ
-prototyper Ô­ĞÍ»ú
-proximity ½Ó½ü£¬Ç×½ü
-collapse_small Ğ¡ÑÌÎí
-persist ´æÁô£¬±£³Ö
-barren Æ¶ñ¤µÄ
-withered ¿İÎ®µÄ
-deciduous ÂäÒ¶ĞÔµÄ
-stump Ê÷×®
-shelter ±Ó»¤Ëù
-tentacle ´¥ÊÖ
-consumption ÏûºÄ
-statue_transition °µÓ°ÌØĞ§1
-statue_transition2 °µÓ°ÌØĞ§2
-periodic ÖÜÆÚĞÔµÄ 
-amphibious Á½ÆÜµÄ
-aura ¹â»·
-prey ÁÔÎï
-irreplaceable ²»¿É´úÌæµÄ
-parameter ²ÎÊı
-intensity ÁÁ¶È£¬Ç¿¶È
-immue ÃâÒß
-interior ÄÚ²¿
-limbo ´¦ÓÚÖĞ¼äµÄ»ò²»¶¨µÄ×´Ì¬
-ignite µãÈ¼
-feather_thunder À×ÄñÓğÃ«
-lotus_flower Ë¯Á«
-beewax ·äÀ¯
-hibbernate ¶¬Ãß
-held ÎÕ×¡
-alloy ºÏ½ğ
-hippo_antler ºÓÂ¹½Ç
-charged ´øµçµÄ£¬Ìî³ä
-duration ³ÖĞøÊ±¼ä
-smelter ÈÛÂ¯£¬Ò±½ğ³§
-melter Ò±Á¶Æ÷
-flood ÑÍÃ»
-stewer Öó£¬ìÀ
-fur Æ¤Ã«
-furnace »ğÂ¯
-sheat ±£»¤²ã
-decay Ë¥ÍË
-unique ¶ÀÌØµÄ
-unsaddle Ğ¶Âí°°
-paddle »®½°
-bucked ±»Å£Ë¤ÏÂ
-boomerang »ØĞıïÚ
-blowdart ´µ´µ¼ı
-abandon Àë¿ª£¬ÒÅÆú
-creepy ¹îÒìµÄ
-reject ¾Ü¾ø
-oink ºôààÉù
-oinc 1Ôªºôàà±Ò
-oinc10 10Ôª
-oinc100 100Ôª
-thumper ÖØ»÷Æ÷
-telipad ´«ËÍÆ½Ì¨
-occupied ÒÑÕ¼ÓÃµÄ
-vacate ¿Õ³ö
-configure ÅäÖÃ£¬°²×°
-record ¼ÇÂ¼
-telipad ×ªËÍÆ½Ì¨
-interior ÄÚ²¿µÄ
-panic ¿Ö»Å
-wander ÅÇ»²
-dry ºæ¸É»ú
-attempt ÆóÍ¼
-pend Ğü¶øÎ´¾ö£¬ÍÆ³Ù
-tick ±ê¼ÇºÅ
-hibernate ¶¬Ãß
-wrangle ÕùÂÛ£¬Õù³³
-regisry ×¢²á
-trace ¸ú×Ù
-instance ÊµÀı
-interval Çø¼ä
-disease ²¡±äµÄ
-aquatic Ë®ÉúµÄ
-rainforesttree ÓêÁÖÊ÷
-clawplamtree ×Øéµ×¦Ê÷
-teatree ²èÊ÷
-cork ÈíÄ¾
-fertile ¸»ÈÄµÄ
-bait ÓÕ¶ü
-herd ÊŞÈº
-mood ÇéĞ÷£¬ĞÄÇé
-domesticat Ñ±Ñø
-feral Ò°ÉúµÄ
-mount ÅÀÉÏ
-threshold ãĞÖµ
-boost ÍÆ½ø
-blunderbuss À®°ÈÇ¹
-ammo µ¯Ò©
-cached »º´æ
-combine Ê¹ÁªºÏ
-spellcaster Ê©·¨Õß
-reticule ¿Ì¶È°å
-validate ÑéÖ¤
-inedible ²»ÄÜ³Ôµã
-gel Äı½º
-populate ²¼¾Öµ½¿âÖĞ
-stall ³µÎ»
-profile ÂÖÀª
-friction Ä¦²ÁÁ¦
-appeasement »ººÍ
-fuse À×¹Ü£¬µ¼»ğÏß
-explosive ±¬Õ¨ĞÔµÄ
-particle Á£×Ó
-emitter ·¢ÉäÆ÷
-quantity ÊıÁ¿
-hostile µĞ¶ÔµÄ
-definition ÇåÎú¶È£¬½âËµ
-interior ÄÚ²¿µÄ
-perspective ÊÓÍ¼
-reverb »ìÏì
-destnation Ä¿µÄµØ
+moisture æ°´åˆ†ï¼Œæ¹¿åº¦
+haunt ä½œç¥Ÿ
+redirect é‡å®šå‘ï¼Œå†ç›´æ¥è¯¢é—®
+invincible æ— æ•Œ
+valid æœ‰æ•ˆçš„
+deploy éƒ¨ç½²ï¼Œå±•å¼€
+impassable ä¸èƒ½é€šè¡Œçš„
+narrow ç‹­çª„çš„
+prototyper åŸå‹æœº
+proximity æ¥è¿‘ï¼Œäº²è¿‘
+collapse_small å°çƒŸé›¾
+persist å­˜ç•™ï¼Œä¿æŒ
+barren è´«ç˜ çš„
+withered æ¯èçš„
+deciduous è½å¶æ€§çš„
+stump æ ‘æ¡©
+shelter åº‡æŠ¤æ‰€
+tentacle è§¦æ‰‹
+consumption æ¶ˆè€—
+statue_transition æš—å½±ç‰¹æ•ˆ1
+statue_transition2 æš—å½±ç‰¹æ•ˆ2
+periodic å‘¨æœŸæ€§çš„ 
+amphibious ä¸¤æ –çš„
+aura å…‰ç¯
+prey çŒç‰©
+irreplaceable ä¸å¯ä»£æ›¿çš„
+parameter å‚æ•°
+intensity äº®åº¦ï¼Œå¼ºåº¦
+immue å…ç–«
+interior å†…éƒ¨
+limbo å¤„äºä¸­é—´çš„æˆ–ä¸å®šçš„çŠ¶æ€
+ignite ç‚¹ç‡ƒ
+feather_thunder é›·é¸Ÿç¾½æ¯›
+lotus_flower ç¡è²
+beewax èœ‚èœ¡
+hibbernate å†¬çœ 
+held æ¡ä½
+alloy åˆé‡‘
+hippo_antler æ²³é¹¿è§’
+charged å¸¦ç”µçš„ï¼Œå¡«å……
+duration æŒç»­æ—¶é—´
+smelter ç†”ç‚‰ï¼Œå†¶é‡‘å‚
+melter å†¶ç‚¼å™¨
+flood æ·¹æ²¡
+stewer ç…®ï¼Œç‚–
+fur çš®æ¯›
+furnace ç«ç‚‰
+sheat ä¿æŠ¤å±‚
+decay è¡°é€€
+unique ç‹¬ç‰¹çš„
+unsaddle å¸é©¬é
+paddle åˆ’æ¡¨
+bucked è¢«ç‰›æ‘”ä¸‹
+boomerang å›æ—‹é•–
+blowdart å¹å¹ç®­
+abandon ç¦»å¼€ï¼Œé—å¼ƒ
+creepy è¯¡å¼‚çš„
+reject æ‹’ç»
+oink å‘¼å™œå£°
+oinc 1å…ƒå‘¼å™œå¸
+oinc10 10å…ƒ
+oinc100 100å…ƒ
+thumper é‡å‡»å™¨
+telipad ä¼ é€å¹³å°
+occupied å·²å ç”¨çš„
+vacate ç©ºå‡º
+configure é…ç½®ï¼Œå®‰è£…
+record è®°å½•
+telipad è½¬é€å¹³å°
+interior å†…éƒ¨çš„
+panic ææ…Œ
+wander å¾˜å¾Š
+dry çƒ˜å¹²æœº
+attempt ä¼å›¾
+pend æ‚¬è€Œæœªå†³ï¼Œæ¨è¿Ÿ
+tick æ ‡è®°å·
+hibernate å†¬çœ 
+wrangle äº‰è®ºï¼Œäº‰åµ
+regisry æ³¨å†Œ
+trace è·Ÿè¸ª
+instance å®ä¾‹
+interval åŒºé—´
+disease ç—…å˜çš„
+aquatic æ°´ç”Ÿçš„
+rainforesttree é›¨æ—æ ‘
+clawplamtree æ£•æ¦ˆçˆªæ ‘
+teatree èŒ¶æ ‘
+cork è½¯æœ¨
+fertile å¯Œé¥¶çš„
+bait è¯±é¥µ
+herd å…½ç¾¤
+mood æƒ…ç»ªï¼Œå¿ƒæƒ…
+domesticat é©¯å…»
+feral é‡ç”Ÿçš„
+mount çˆ¬ä¸Š
+threshold é˜ˆå€¼
+boost æ¨è¿›
+blunderbuss å–‡å­æª
+ammo å¼¹è¯
+cached ç¼“å­˜
+combine ä½¿è”åˆ
+spellcaster æ–½æ³•è€…
+reticule åˆ»åº¦æ¿
+validate éªŒè¯
+inedible ä¸èƒ½åƒç‚¹
+gel å‡èƒ¶
+populate å¸ƒå±€åˆ°åº“ä¸­
+stall è½¦ä½
+profile è½®å»“
+friction æ‘©æ“¦åŠ›
+appeasement ç¼“å’Œ
+fuse é›·ç®¡ï¼Œå¯¼ç«çº¿
+explosive çˆ†ç‚¸æ€§çš„
+particle ç²’å­
+emitter å‘å°„å™¨
+quantity æ•°é‡
+hostile æ•Œå¯¹çš„
+definition æ¸…æ™°åº¦ï¼Œè§£è¯´
+interior å†…éƒ¨çš„
+perspective è§†å›¾
+reverb æ··å“
+destnation ç›®çš„åœ°
 cc ColourCube
