@@ -1,0 +1,1 @@
+return WARGON_SG_EX.animal_sg('tp_perd')
