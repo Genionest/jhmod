@@ -74,51 +74,54 @@ local function fn(self)
                 stimuli = EntUtil:add_stimuli(stimuli, dmg_type)
             end
         end
-        -- 不同类型伤害吸收
-        if stimuli and self.tp_dmg_type_absorb then
-            for key, val in pairs(self.tp_dmg_type_absorb) do
-                if EntUtil:in_stimuli(stimuli, key) then
-                    damage = damage * val
-                    break
+        -- 真实伤害(不受伤害吸收, 防御, 闪避, 暴击影响)
+        if not EntUtil:in_stimuli(stimuli, "true") then
+            -- 不同类型伤害吸收
+            if stimuli and self.tp_dmg_type_absorb then
+                for key, val in pairs(self.tp_dmg_type_absorb) do
+                    if EntUtil:in_stimuli(stimuli, key) then
+                        damage = damage * val
+                        break
+                    end
                 end
             end
-        end
-        -- 闪避
-        if self.tp_evade
-        and not EntUtil:in_stimuli(stimuli, "not_evade")
-         then
-            local hit_rate = attacker.components.combat.tp_hit_rate or 0
-            local evade = self.tp_evade - hit_rate
-            local rate = 1-150/(150+evade)
-            if math.random() < rate then
-                self.inst:PushEvent("tp_evade", {attacker=attacker, weapon=weapon})
-                FxManager:MakeFx("evade", self.inst)
-                return true
+            -- 闪避
+            if self.tp_evade
+            and not EntUtil:in_stimuli(stimuli, "not_evade")
+            then
+                local hit_rate = attacker.components.combat.tp_hit_rate or 0
+                local evade = self.tp_evade - hit_rate
+                local rate = 1-150/(150+evade)
+                if math.random() < rate then
+                    self.inst:PushEvent("tp_evade", {attacker=attacker, weapon=weapon})
+                    FxManager:MakeFx("evade", self.inst)
+                    return true
+                end
             end
-        end
-        -- 减少攻击伤害
-        if self.tp_defense then
-            local penetrate = attacker.components.combat.tp_penetrate or 0
-            local defense = math.max(0, self.tp_defense-penetrate)
-            local rate = 1-100/(100+defense)
-            damage = damage - damage*rate
-        end
-        -- 暴击
-        if attacker and attacker.components.combat
-        and attacker.components.combat.tp_crit
-        and not EntUtil:in_stimuli(stimuli, "pure")
-        and not EntUtil:in_stimuli(stimuli, "not_crit") then
-            if math.random() < attacker.components.combat.tp_crit then
-                FxManager:MakeFx("crit", self.inst)
-                attacker:PushEvent("tp_crit", {damage = damage, target=self.inst})
-                local dmg_crit_mod = 2
-                if attacker.components.tp_player_attr then
-                    dmg_crit_mod = dmg_crit_mod + attacker.components.tp_player_attr:GetCritDmgMod()
+            -- 减少攻击伤害
+            if self.tp_defense then
+                local penetrate = attacker.components.combat.tp_penetrate or 0
+                local defense = math.max(0, self.tp_defense-penetrate)
+                local rate = 1-100/(100+defense)
+                damage = damage - damage*rate
+            end
+            -- 暴击
+            if attacker and attacker.components.combat
+            and attacker.components.combat.tp_crit
+            and not EntUtil:in_stimuli(stimuli, "pure")
+            and not EntUtil:in_stimuli(stimuli, "not_crit") then
+                if math.random() < attacker.components.combat.tp_crit then
+                    FxManager:MakeFx("crit", self.inst)
+                    attacker:PushEvent("tp_crit", {damage = damage, target=self.inst})
+                    local dmg_crit_mod = 2
+                    if attacker.components.tp_player_attr then
+                        dmg_crit_mod = dmg_crit_mod + attacker.components.tp_player_attr:GetCritDmgMod()
+                    end
+                    if attacker:HasTag("infinity_edge") then
+                        dmg_crit_mod = dmg_crit_mod + .5
+                    end
+                    damage = damage*dmg_crit_mod
                 end
-                if attacker:HasTag("infinity_edge") then
-                    dmg_crit_mod = dmg_crit_mod + .5
-                end
-                damage = damage*dmg_crit_mod
             end
         end
         -- 护盾
@@ -130,8 +133,13 @@ local function fn(self)
                 damage = damage - cur
             else
                 self.inst.components.tp_val_sheild:DoDelta(-damage)
-                -- 格挡
-                return true
+                -- 希望造成仇恨
+                if self.inst.components.combat.target == nil then
+                    damage = 1
+                else
+                    -- 格挡
+                    return true
+                end
             end
         end
         -- 计算伤害或受到伤害触发函数

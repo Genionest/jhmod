@@ -1,6 +1,7 @@
 local WgBadge = require "extension/uis/wg_badge"
 local AssetUtil = require "extension/lib/asset_util"
 local AssetMaster = Sample.AssetMaster
+local BuffManager = Sample.BuffManager
 
 local SkillButtonData = Class(function(self)
 end)
@@ -33,20 +34,34 @@ local Button = Class(WgBadge, function(self, owner)
     WgBadge._ctor(self, owner)
     -- owner.skill_button = self.anim
     self.anim:GetAnimState():SetMultColour(210/255, 105/255, 30/255, 1)
+    self.priority = -3
 end)
 
 function SkillButtonData:GetButton(owner)
     local widget = Button(owner)
     local atlas, image = AssetUtil:GetImage(self.Uimg)
     widget:SetImageButton(atlas, image, function(player)
+        local mana = self.mana
+        if player.components.tp_val_hollow
+        and player.components.tp_val_hollow:CanReduceManaCost() then
+            mana = mana * .2
+        end
         if player.components.tp_val_mana:GetCurrent()>=self.mana then
             player.components.tp_player_button:Trigger()
             self.fn(player)
-            player.components.tp_val_mana:DoDelta(-self.mana)
+            player.components.tp_val_mana:DoDelta(-mana)
+            if player.components.tp_val_hollow
+            and player.components.tp_val_hollow:CanReduceManaCost() then
+                player.components.tp_val_hollow:EffectReduceManaCost()
+            end
         end
     end)
     widget:SetString(self.name)
-    widget:SetDescription(self.desc)
+    local desc = self.desc
+    if self.mana then
+        desc = string.format("消耗%d法力,%s", self.mana, self.desc)
+    end
+    widget:SetDescription(desc)
     widget.id = self.id
     return widget
 end
@@ -56,24 +71,24 @@ function SkillButtonData:GetId()
 end
 
 local buttons = {
-SkillButton("wilson", "露营", 
+SkillButton("wilson", "发明创造", 
     -- "消耗20法力,生成一个威尔逊的工作台,可以制造威尔逊的小发明", 
-    "消耗20法力,生成一个临时帐篷", 
+    "生成一个临时工作台", 
     AssetMaster:GetUimg("tp_desk"), 
     20,
     90,
     function(inst)
-        -- local desk = SpawnPrefab("tp_table_wilson")
-        -- local desk = SpawnPrefab("tent")
-        -- desk.Transform:SetPosition(inst:GetPosition():Get())
-        local tent = SpawnPrefab("tent")
-        tent.persists = false
-        tent:DoTaskInTime(60, tent.Remove)
+        local obj = SpawnPrefab("tp_wilson_table")
+        -- local obj = SpawnPrefab("tent")
+        obj.Transform:SetPosition(inst:GetPosition():Get())
+        -- local obj = SpawnPrefab("tent")
+        obj.persists = false
+        obj:DoTaskInTime(60, obj.Remove)
         SpawnPrefab("collapse_big").Transform:SetPosition(inst:GetPosition():Get())
     end
 ),
 SkillButton("wathgrithr", "战前准备",
-    "消耗20法力,获得一个女武神的战矛,女武神的头盔",
+    "获得一个女武神的战矛,女武神的头盔",
     AssetUtil:MakeImg("wathgrithrhat"),
     20,
     60,
@@ -95,7 +110,7 @@ SkillButton("wathgrithr", "战前准备",
     end
 ),
 SkillButton("wickerbottom", "小帮手",
-    "消耗20法力,随机获得一个工具",
+    "随机获得一个工具",
     AssetUtil:MakeImg("axe"),
     20,
     180,
@@ -107,7 +122,7 @@ SkillButton("wickerbottom", "小帮手",
     end
 ),
 SkillButton("wolfgang", "营养餐", 
-    "消耗20法力,获得三个食材,食用后能增加一项三围上限(各个食物的增加的上限不同,如果吃了一个提升高的和一个提升低的,按提升高的算)",
+    "获得三个食材,食用后能增加一项三围上限(各个食物的增加的上限不同,如果吃了一个提升高的和一个提升低的,按提升高的算)",
     AssetUtil:MakeImg("jammypreserves"),
     20,
     200,
@@ -122,6 +137,22 @@ SkillButton("wolfgang", "营养餐",
             local food = SpawnPrefab("tp_wolfgang_"..veggie[n])
             table.remove(veggie, n)
             inst.components.inventory:GiveItem(food)
+        end
+    end
+),
+--
+SkillButton("hollow_evade", "无量空洞",
+    "开启/关闭无量空洞状态(必须要有六目才能使用)",
+    AssetUtil:MakeImg("tp_icons2", "badge_31"),
+    4,
+    4,
+    function(inst)
+        if inst.components.tp_val_hollow then
+            if BuffManager:HasBuff(inst, "hollow_evade") then
+                BuffManager:ClearBuff(inst, "hollow_evade")
+            else
+                BuffManager:AddBuff(inst, "hollow_evade")
+            end 
         end
     end
 ),

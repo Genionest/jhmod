@@ -100,6 +100,13 @@ local fns = {
             dmg, atk_spd*100, crit*100)
         s = s..string.format("防御:%d(%d%%),穿透:%d",
             defense, def_ab*100, penetrate)
+        if WG_TEST then
+            local evade = self.tp_evade or 0
+            local evd_ab = 1-150/(150+evade)
+            local hit_rate = self.tp_hit_rate or 0
+            s = s..string.format("\n闪避:%d(%d%%),命中:%d", 
+                evade, evd_ab*100, hit_rate)
+        end
         -- s = Util:SplitSentence(s, 17, true)
         return s
     end,

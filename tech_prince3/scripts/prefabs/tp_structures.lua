@@ -2002,4 +2002,34 @@ table.insert(prefs, PrefabUtil:MakePlacer(level_eraser.name,
     AssetMaster:GetAnimation(level_eraser.name)))
 Util:AddString(level_eraser.name, "升级中心", "可以为人物进行升级")
 
+local wilson_table = Prefab("tp_wilson_table", function()
+    local bank, build, animation = AssetMaster:GetAnimation("tp_wilson_table")
+    local map = AssetMaster:GetMap("tp_wilson_table")
+    local inst = PrefabUtil:MakeWorkbench(
+        bank, build, animation, map
+    )
+    MakeBurnable(inst)
+    MakeFloodable(inst)
+    inst.Transform:SetScale(2, 2, 2)
+    inst.recipe_book = WorkbenchRecipes:GetRecipeShelf("ak_work_bench")
+    inst.components.workable:SetOnWorkCallback(function(inst, worker)
+    end)
+
+    inst.components.wg_workbench.consume_test = function(inst)
+        return (not inst:HasTag("flooded"))
+    end
+    inst.components.wg_workbench.consume_fn = function(inst)
+    end
+    inst.components.wg_workbench.test = function(inst)
+        return (not inst:HasTag("flooded"))
+    end
+
+    return inst
+end, AssetMaster:GetDSAssets("tp_wilson_table"))
+table.insert(prefs, wilson_table)
+table.insert(prefs, PrefabUtil:MakePlacer(wilson_table.name,
+    { scale = 2 },
+    AssetMaster:GetAnimation(wilson_table.name)))
+Util:AddString(wilson_table.name, "工作台", "制作物品")
+
 return unpack(prefs)

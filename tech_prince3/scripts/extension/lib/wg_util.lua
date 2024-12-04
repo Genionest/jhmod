@@ -66,8 +66,8 @@ str 需要切分的字符串
 words_width 限定长度  
 ]]
 function Util:SplitString(str, words_width)
-    assert(type(str)=="string", "arguments must be string.")
-    assert(type(words_width)=="number", "arguments must be number.")
+    assert(type(str)=="string", string.format("arguments must be string not a %s.", type(str)))
+    assert(type(words_width)=="number", string.format("arguments must be number not a %s.", type(str)))
 
     str = self:StringStrip(str)
     local len = #str

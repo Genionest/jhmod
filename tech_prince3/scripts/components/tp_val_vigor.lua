@@ -55,12 +55,13 @@ end)
 local ValBadge = Class(WgBadge, function(self, owner)
     WgBadge._ctor(self, owner)
     owner.skill_button = self.anim
-    self.anim:GetAnimState():SetMultColour(.35, 1, .35, 1)
+    self.anim:GetAnimState():SetMultColour(33/255, 122/255, 52/255, 1)
+    self.priority = -1
 end)
 
 function TpValVigor:MakeBadge()
     local widget = ValBadge(self.inst)
-    local Uimg = AssetUtil:MakeImg("bedroll_straw")
+    local Uimg = AssetUtil:MakeImg("tp_icons2", "badge_30")
     local atlas, image = AssetUtil:GetImage(Uimg)
     widget:SetImage(atlas, image)
     widget:SetString("精力值")
@@ -74,8 +75,9 @@ function TpValVigor:InitBadge()
     if inst.HUD then
 		if not self.badge then
             local widget = self:MakeBadge()
-            self.badge = inst.HUD.controls.status:AddChild(widget)
-            widget:SetPosition(-150-70*2, 0, 0)
+            self.badge = inst.HUD.controls.status:AddBadge(widget)
+            -- self.badge = inst.HUD.controls.status:AddChild(widget)
+            -- widget:SetPosition(-150-70*2, 0, 0)
             widget.max = self:GetMax()
             widget:SetPercent(self:GetPercent())
             widget.inst:ListenForEvent(self.event, function(inst, data)

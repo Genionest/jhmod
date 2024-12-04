@@ -3,6 +3,7 @@ local Util = require "extension.lib.wg_util"
 local Kit = require "extension.lib.wargon"
 local AssetMaster = Sample.AssetMaster
 local BuffManager = Sample.BuffManager
+local FxManager = Sample.FxManager
 
 local prefs = {}
 
@@ -93,11 +94,13 @@ local function MakeScroll(name, read_fn, read_test, fn)
         inst:AddComponent("stackable")
         inst.components.stackable.maxsize = 40
 
-        inst:AddComponent("book")
-        inst.components.book.onread = read_fn
-        inst.components.book.onreadtest = read_test
-        inst.components.book:SetAction(ACTIONS.READMAP)
-
+        if read_fn == nil and read_test == nil then
+            inst:AddComponent("book")
+            inst.components.book.onread = read_fn
+            inst.components.book.onreadtest = read_test
+            inst.components.book:SetAction(ACTIONS.READMAP)
+        end
+        
         if fn then
             fn(inst)
         end
@@ -332,5 +335,51 @@ function(inst)
 end)
 table.insert(prefs, scroll_shadow_atk)
 Util:AddString(scroll_shadow_atk.name, "《黑暗武器》", "武器攻击附带暗属性伤害")
+
+local scroll_hollow = MakeScroll("tp_scroll_hollow", nil, nil, function(inst)
+    inst:AddComponent("equippable")
+    inst.components.equippable.equipslot = EQUIPSLOTS.HANDS
+    -- inst.components.equippable:SetOnEquip(function(inst, owner)
+    -- end)
+    -- inst.components.equippable:SetOnUnequip(function(inst, owner)
+    -- end)
+    inst.components.equippable.equipstack = true
+    inst:AddComponent("wg_reticule")
+    inst:AddComponent("wg_action_tool")
+    inst:AddTag("wg_equip_skill")
+    inst.components.wg_action_tool:SetDescription()
+    inst.components.wg_action_tool:SetSkillType()
+    inst.components.wg_action_tool:RegisterSkillInfo({
+        mana = 100,
+        vigor = 2,
+    })
+    -- inst.components.wg_action_tool.test = function(inst, doer)
+    --     --检测
+    -- end
+    inst.components.wg_action_tool.get_action_fn = function(inst, data)
+        -- 装备后可以收集到的动作 data={doer=doer, pos=pos, target=target}
+        if data.pos or data.target then
+            return ACTIONS.TP_ATK
+        end
+    end
+    inst.components.wg_action_tool.click_no_action = true
+    inst.components.wg_action_tool.click_fn = function(inst, doer)
+        -- 技能栏里释放技能会触发的效果，默认会出发get_action_fn的动作
+        inst.components.wg_reticule:Toggle()
+    end
+    inst.components.wg_action_tool.effect_fn = function(inst, doer, target, pos)
+        -- 动作触发时会到达的效果
+        if target then
+            pos = target:GetPosition()
+        end
+        local fx = FxManager:MakeFx("hollow_bean", doer, {pos = pos, owner=doer})
+        -- if math.random() < .5 then
+        -- else
+        --     local fx = FxManager:MakeFx("hollow_bean2", doer, {pos = pos, owner=doer})
+        -- end
+    end
+end)
+table.insert(prefs, scroll_hollow)
+Util:AddString(scroll_hollow.name, "《顺时针法术·苍》", "发射一个能量球,飞行一段距离后会停止,能量球会造成伤害,停止后造成的伤害更高")
 
 return unpack(prefs)

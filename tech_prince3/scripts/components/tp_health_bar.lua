@@ -27,6 +27,8 @@ local TpHealthBar = Class(function(self, inst)
     self.sleep = nil
     self.state = nil
     self.task = nil
+    self.hp_cur = nil
+    self.shd_cur = nil
     self.inst:ListenForEvent("death", function(inst, data)
         -- 死亡血条消失
         self:Hide()
@@ -84,18 +86,21 @@ function TpHealthBar:SetHealthBar()
         self:InitHealthBar()
     end
     self:Execute(function(widget)
-        local cmp = self.inst.components.health
-        local p = 1-cmp:GetPercent()
-        local cmp2 = self.inst.components.tp_val_sheild
-        local sheild = cmp2:GetCurrent()
-        local p2 = 1 - cmp2:GetPercent()
+        local hp_cmp = self.inst.components.health
+        self.hp_cur = hp_cmp.currenthealth
+        local p = 1 - hp_cmp:GetPercent()
+
+        local shd_cmp = self.inst.components.tp_val_sheild
+        self.shd_cur = shd_cmp:GetCurrent()
+        local p2 = 1 - shd_cmp:GetPercent()
+        
         local txt
-        if sheild > 0 then
+        if self.shd_cur > 0 then
             txt = string.format("(%d)%d/%d", 
-                sheild, cmp.currenthealth, cmp:GetMaxHealth())
+                self.shd_cur, self.hp_cur, hp_cmp:GetMaxHealth())
         else
             txt = string.format("%d/%d", 
-                cmp.currenthealth, cmp:GetMaxHealth())
+                self.hp_cur, hp_cmp:GetMaxHealth())
         end
         if self.inst:HasTag("player") then
             self.state = 2
@@ -123,9 +128,9 @@ function TpHealthBar:OnEntityWake()
     self.sleep = true
     if self.event_fn == nil then
         self.event_fn = EntUtil:listen_for_event(self.inst, "healthdelta", function(inst, data)
-            local max = self.inst.components.health:GetMaxHealth()
-            local dt = (data.newpercent - data.oldpercent) * max
-            if math.abs(dt) < 1 then
+            local cur = self.inst.components.health.currenthealth
+            -- 和显示的差距为1时改变血条
+            if self.hp_cur and math.floor(math.abs(self.hp_cur - cur)) < 1 then
                 return
             end
             self:SetHealthBar()
@@ -137,7 +142,9 @@ function TpHealthBar:OnEntityWake()
     end
     if self.event_fn2 == nil then
         self.event_fn2 = EntUtil:listen_for_event(self.inst, "val_sheild_delta", function(inst, data)
-            if math.abs(data.delta) < 1 then
+            local cur = self.inst.components.tp_val_sheild:GetCurrent()
+            -- 和显示的差距为1时改变血条
+            if self.shd_cur and math.floor(math.abs(self.shd_cur - cur)) < 1 then
                 return
             end
             self:SetHealthBar()
@@ -154,5 +161,9 @@ function TpHealthBar:OnEntitySleep()
         self.event_fn2 = nil
     end
 end
+
+-- function TpHealthBar:GetWargonString()
+--     return string.format("%d,%d", self.hp_cur or -1, self.shd_cur or -1)
+-- end
 
 return TpHealthBar

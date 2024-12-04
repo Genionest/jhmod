@@ -49,7 +49,8 @@ AddPrefabPostInitAny(function(inst)
     -- 附魔
     if inst.components.equippable 
     and inst.components.inventoryitem
-    and inst.components.inventoryitem.cangoincontainer then
+    and inst.components.inventoryitem.cangoincontainer
+    and not inst.components.stackable then
         if inst.components.tp_enchantmentable == nil then
             inst:AddComponent("tp_enchantmentable")
         end

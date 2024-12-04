@@ -188,30 +188,30 @@ local workbench_books = {}
 
 table.insert(workbench_books, RecipeBook("ak_work_bench", {
     RecipePage("物品", {
-        Recipe("tp_advance_chip", {
-            Ingd("tp_epic", 2),
-            Ingd("ak_ssd", 4),
-            Ingd("deerclops_eyeball", 1),
-        }),
-        Recipe("tp_advance_chip2", {
-            Ingd("tp_advance_chip", 2),
-            Ingd("tp_alloy_great", 1),
-            Ingd("minotaurhorn", 1),
-            Ingd("yellowgem", 1),
-            Ingd("orangegem", 1),
-            Ingd("greengem", 1),
-        }),
-        Recipe("tp_mult_tool", {
-            Ingd("rope", 1),
-            Ingd("silk", 2),
-            Ingd("goldnugget", 2),
-            Ingd("twigs", 4+1+1+2+2+4),
-            Ingd("flint", 1+3+2+2),
-        }),
-        Recipe("ak_fix_powder", {
-            Ingd("goldnugget", 4),
-            Ingd("flint", 4),
-        }, nil, 4),
+        -- Recipe("tp_advance_chip", {
+        --     Ingd("tp_epic", 2),
+        --     Ingd("ak_ssd", 4),
+        --     Ingd("deerclops_eyeball", 1),
+        -- }),
+        -- Recipe("tp_advance_chip2", {
+        --     Ingd("tp_advance_chip", 2),
+        --     Ingd("tp_alloy_great", 1),
+        --     Ingd("minotaurhorn", 1),
+        --     Ingd("yellowgem", 1),
+        --     Ingd("orangegem", 1),
+        --     Ingd("greengem", 1),
+        -- }),
+        -- Recipe("tp_mult_tool", {
+        --     Ingd("rope", 1),
+        --     Ingd("silk", 2),
+        --     Ingd("goldnugget", 2),
+        --     Ingd("twigs", 4+1+1+2+2+4),
+        --     Ingd("flint", 1+3+2+2),
+        -- }),
+        -- Recipe("ak_fix_powder", {
+        --     Ingd("goldnugget", 4),
+        --     Ingd("flint", 4),
+        -- }, nil, 4),
         Recipe("ak_dimensional", {
             Ingd("waxpaper", 1),
             Ingd("transistor", 1),

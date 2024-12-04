@@ -109,11 +109,11 @@ function FxGroup:MakeFx(data)
     fx.wg_fx_wait_id = nil  
     fx.wg_activate = true
     fx:ReturnToScene()
-    -- 激活
-    local wake = self.fx_handler.wake
-    if wake then
-        wake(fx, data)
-    end
+    -- 不在这里激活
+    -- local wake = self.fx_handler.wake
+    -- if wake then
+    --     wake(fx, data)
+    -- end
     return fx
 end
 
@@ -159,6 +159,11 @@ function FxManager:MakeFx(name, pt, data)
     -- fn(fx, data)
     local pos = Util:GetPos(pt, true)
     fx.Transform:SetPosition(pos:Get())
+    -- 激活
+    local wake = fx_group.fx_handler.wake
+    if wake then
+        wake(fx, data)
+    end
 
     return fx
 end

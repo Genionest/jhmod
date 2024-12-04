@@ -83,7 +83,7 @@ function BuffData:IsFadeOut()
 end
 
 function BuffData:IsHidden()
-    return self.is_hidden
+    return self.is_hidden or self.img == nil
 end
 
 function BuffData:__tostring()
@@ -138,7 +138,7 @@ local buffs = {
     Buff("defense", 3, {
             on_add = function(self, inst, cmp, id)
                 if cmp[id .. "_fx"] == nil then
-                    cmp[id .. "_fx"] = FxManager:MakeFx("force_field2", Vector3(0, 0, 0))
+                    cmp[id .. "_fx"] = FxManager:MakeFx("defense_fx2", Vector3(0, 0, 0))
                     inst:AddChild(cmp[id .. "_fx"])
                 end
                 if inst.components.combat then
@@ -426,6 +426,10 @@ local buffs = {
     ),
     Buff("malmortius_maw_buff", 10, {
             on_add = function(self, inst, cmp, id)
+                if cmp[id.."_fx"] == nil then
+                    cmp[id.."_fx"] = FxManager:MakeFx("elem_defense_fx2", Vector3(0,0,0))
+                    inst:AddChild(cmp[id.."_fx"])
+                end
                 inst.components.combat:AddDmgTypeAbsorb("fire", self.data[1])
                 inst.components.combat:AddDmgTypeAbsorb("ice", self.data[1])
                 inst.components.combat:AddDmgTypeAbsorb("poison", self.data[1])
@@ -433,6 +437,10 @@ local buffs = {
                 inst.components.combat:AddLifeStealRateMod(id, self.data[1])
             end,
             on_rm = function(self, inst, cmp, id)
+                if cmp[id.."_fx"] then
+                    cmp[id.."_fx"]:WgRecycle()
+                    cmp[id.."_fx"] = nil
+                end
                 inst.components.combat:AddDmgTypeAbsorb("fire", -self.data[1])
                 inst.components.combat:AddDmgTypeAbsorb("ice", -self.data[1])
                 inst.components.combat:AddDmgTypeAbsorb("poison", -self.data[1])
@@ -519,12 +527,20 @@ local buffs = {
     ),
     Buff("hexdrinker_buff", 10, {
         on_add = function(self, inst, cmp, id)
+            if cmp[id.."_fx"] == nil then
+                cmp[id.."_fx"] = FxManager:MakeFx("elem_defense_fx", Vector3(0,0,0))
+                inst:AddChild(cmp[id.."_fx"])
+            end
             inst.components.combat:AddDmgTypeAbsorb("fire", self.data[1])
             inst.components.combat:AddDmgTypeAbsorb("ice", self.data[1])
             inst.components.combat:AddDmgTypeAbsorb("poison", self.data[1])
             inst.components.combat:AddDmgTypeAbsorb("electric", self.data[1])
         end, 
         on_rm = function(self, inst, cmp, id)
+            if cmp[id.."_fx"] then
+                cmp[id.."_fx"]:WgRecycle()
+                cmp[id.."_fx"] = nil
+            end
             inst.components.combat:AddDmgTypeAbsorb("fire", -self.data[1])
             inst.components.combat:AddDmgTypeAbsorb("ice", -self.data[1])
             inst.components.combat:AddDmgTypeAbsorb("poison", -self.data[1])
@@ -1582,6 +1598,39 @@ local buffs = {
     --     end, nil),
     -- food effect
     -- origin item
+    Buff("hollow_evade", 100, {
+        on_add = function(self, inst, cmp, id)
+            if cmp[id .. "_fx"] == nil then
+                cmp[id .. "_fx"] = FxManager:MakeFx("hollow_evade", Vector3(0, 0, 0))
+                inst:AddChild(cmp[id .. "_fx"])
+            end
+            inst.components.combat:AddEvadeRateMod(id, self.data[1])
+            inst.components.tp_val_hollow:SetRate(1)
+            if cmp[id.."_fn"] == nil then
+                cmp[id.."_fn"] = EntUtil:listen_for_event(inst, "val_hollow_delta", function(inst, data)
+                    if data.new_p <= 0 then
+                        BuffManager:ClearBuff(inst, id)
+                    end 
+                end) 
+            end
+        end, 
+        on_rm = function(self, inst, cmp, id)
+            if cmp[id .. "_fx"] then
+                cmp[id .. "_fx"]:WgRecycle()
+                cmp[id .. "_fx"] = nil
+            end
+            inst.components.combat:RmEvadeRateMod(id)
+            inst.components.tp_val_hollow:SetRate(-1)
+            if cmp[id.."_fn"] then
+                inst:RemoveEventCallback("val_hollow_delta", cmp[id.."_fn"])
+                cmp[id.."_fn"] = nil
+            end
+        end,
+    }, AssetUtil:MakeImg("tp_icons2", "badge_31"),
+        function(self, inst, cmp, id)
+            return string.format("无量空洞:获得%d闪避,但会不断消耗六目值", self.data[1])
+        end, {800}, nil, true
+    ),
 }
 
 local debuffs = {
@@ -1600,7 +1649,7 @@ local debuffs = {
                 end
                 EntUtil:remove_tag(inst, "wg_slience")
             end,
-        }, AssetUtil:MakeImg("cost-nil"),
+        }, AssetUtil:MakeImg("tp_icons2", "badge_50"),
         function(self, inst, cmp, id)
             return string.format("沉默")
         end, {}, true
@@ -1649,7 +1698,7 @@ local debuffs = {
                 --     cmp[id.."_fn"] = nil
                 -- end
             end,
-        }, AssetUtil:MakeImg("venomgland"),
+        }, AssetUtil:MakeImg("tp_icons2", "badge_47"),
         function(self, inst, cmp, id)
             return string.format("毒害:每秒受到%d点毒属性伤害,你的食物收益%d%%", self.data[1], self.data[2] * 100)
         end, { 1, -.4 }, true
@@ -1663,7 +1712,7 @@ local debuffs = {
                 EntUtil:rm_speed_mod(inst, id)
                 EntUtil:rm_attack_speed_mod(inst, id)
             end,
-        }, AssetUtil:MakeImg("icestaff"),
+        }, AssetUtil:MakeImg("tp_icons2", "badge_23"),
         function(self, inst, cmp, id)
             return string.format("寒冷:移动速度%d%%,攻击速度%d%%", self.data[1] * 100, self.data[2] * 100)
         end, { -.15, -.15 }, true
@@ -1703,7 +1752,7 @@ local debuffs = {
                     cmp[id .. "_fn"] = nil
                 end
             end,
-        }, AssetUtil:MakeImg("firestaff"),
+        }, AssetUtil:MakeImg("tp_icons2", "badge_24"),
         function(self, inst, cmp, id)
             return string.format("灼烧:每秒受到%d点烧伤,受到的火属性伤害+%d,受到火属性伤害时刷新持续时间", self.data[1], self.data[2])
         end, { 1, 4 }, true
@@ -1724,7 +1773,7 @@ local debuffs = {
             on_rm = function(self, inst, cmp, id)
                 cmp.stacks[id] = nil
             end,
-        }, AssetUtil:MakeImg("greenstaff"),
+        }, AssetUtil:MakeImg("tp_icons2", "badge_45"),
         function(self, inst, cmp, id)
             return string.format("风扰:叠到%d层时,buff来源对你造成%d风属性伤害,增加%d%%移速%ds,然后令你掉落所有物品",
                 self.data[1], self.data[2], self.data[3] * 100, self.data[4])
@@ -1768,7 +1817,7 @@ local debuffs = {
     Buff("electric", 20, {
         on_add = function(self, inst, cmp, id)
             inst:AddTag("electric")
-            if cmp[id .. "_fn"] == nil then
+            if not inst:HasTag("player") and cmp[id .. "_fn"] == nil then
                 cmp[id .. "_fn"] = inst.components.combat:AddAttackedCalcFn(function(damage, attacker, inst, weapon,
                                                                                         stimuli)
                     if EntUtil:in_stimuli(stimuli, "electric") then
@@ -1827,7 +1876,7 @@ local debuffs = {
         on_rm = function(self, inst, cmp, id)
             cmp.stacks[id] = nil
         end,
-    }, AssetUtil:MakeImg("blood_sack"),
+    }, AssetUtil:MakeImg("tp_icons2", "badge_48"),
         function(self, inst, cmp, id)
             return string.format("出血:叠加至%d层时,进入流血状态", self.data[1])
         end, { 5 }, true
@@ -1854,7 +1903,7 @@ local debuffs = {
                 cmp[id .. "_task"] = nil
             end
         end,
-    }, AssetUtil:MakeImg("mosquitosack"),
+    }, nil,
         function(self, inst, cmp, id)
             return string.format("流血:每秒降低%d%%最大生命值的生命,受血属性抗性影响", 
                 self.data[1]*100)
@@ -1885,7 +1934,7 @@ local debuffs = {
                     inst.components.health:RmRecoverRateMod(id)
                 end
             end,
-        }, AssetUtil:MakeImg("ak_icons", "ak_recover_debuff"),
+        }, AssetUtil:MakeImg("tp_icons2", "badge_72"),
         function(self, inst, cmp, id)
             return string.format("生命回复效果降低%d%%", -self.data[1] * 100)
         end, { -.9 }, true
@@ -1953,7 +2002,7 @@ local debuffs = {
                     inst.components.health:RmRecoverRateMod(id)
                 end
             end,
-        }, AssetUtil:MakeImg("ak_icons", "ak_recover_debuff"),
+        }, AssetUtil:MakeImg("tp_icons2", "badge_72"),
         function(self, inst, cmp, id)
             return string.format("生命回复效果降低%d%%", -self.data[1] * 100)
         end, { -.5 }, true
@@ -2019,7 +2068,7 @@ local debuffs = {
             on_rm = function(self, inst, cmp, id)
                 EntUtil:rm_speed_mod(inst, id)
             end,
-        }, AssetUtil:MakeImg("ak_icons", "ak_speed_debuff"),
+        }, AssetUtil:MakeImg("tp_icons2", "badge_70"),
         function(self, inst, cmp, id)
             return string.format("降低%d%%的移速", -self.data[1] * 100)
         end, { -.3 }, true
@@ -2082,7 +2131,7 @@ local debuffs = {
             on_rm = function(self, inst, cmp, id)
                 EntUtil:rm_speed_mod(inst, id)
             end,
-        }, AssetUtil:MakeImg("ak_icons", "ak_speed_debuff"),
+        }, AssetUtil:MakeImg("tp_icons2", "badge_70"),
         function(self, inst, cmp, id)
             return string.format("降低%d%%移速", -self.data[1] * 100)
         end, { -.4 }, true
@@ -2094,7 +2143,7 @@ local debuffs = {
             on_rm = function(self, inst, cmp, id)
                 EntUtil:rm_speed_mod(inst, id)
             end,
-        }, AssetUtil:MakeImg("ak_icons", "ak_speed_debuff"),
+        }, AssetUtil:MakeImg("tp_icons2", "badge_70"),
         function(self, inst, cmp, id)
             return string.format("降低%d%%的移速",
                 -self.data[1] * 100)
@@ -2107,7 +2156,7 @@ local debuffs = {
             on_rm = function(self, inst, cmp, id)
                 EntUtil:rm_speed_mod(inst, id)
             end,
-        }, AssetUtil:MakeImg("ak_icons", "ak_speed_debuff"),
+        }, AssetUtil:MakeImg("tp_icons2", "badge_70"),
         function(self, inst, cmp, id)
             return string.format("降低%d%%的移速",
                 -self.data[1] * 100)
@@ -2133,7 +2182,7 @@ local debuffs = {
             on_rm = function(self, inst, cmp, id)
                 inst.components.health:RmRecoverRateMod(id)
             end,
-        }, AssetUtil:MakeImg("ak_icons", "ak_recover_debuff"),
+        }, AssetUtil:MakeImg("tp_icons2", "badge_72"),
         function(self, inst, cmp, id)
             return string.format("生命回复效果降低%d%%",
                 -self.data[1] * 100)
@@ -2146,7 +2195,7 @@ local debuffs = {
             on_rm = function(self, inst, cmp, id)
                 EntUtil:rm_damage_mod(inst, id)
             end,
-        }, AssetUtil:MakeImg("ak_icons", "ak_damage_debuff"),
+        }, AssetUtil:MakeImg("tp_icons2", "badge_68"),
         function(self, inst, cmp, id)
             return string.format("降低%d%%攻击",
                 -self.data[1] * 100)
@@ -2159,7 +2208,7 @@ local debuffs = {
             on_rm = function(self, inst, cmp, id)
                 EntUtil:rm_speed_mod(inst, id)
             end,
-        }, AssetUtil:MakeImg("ak_icons", "ak_speed_debuff"),
+        }, AssetUtil:MakeImg("tp_icons2", "badge_70"),
         function(self, inst, cmp, id)
             return string.format("降低%d%%移速",
                 -self.data[1] * 100)
@@ -2172,7 +2221,7 @@ local debuffs = {
             on_rm = function(self, inst, cmp, id)
                 EntUtil:rm_speed_mod(inst, id)
             end,
-        }, AssetUtil:MakeImg("ak_icons", "ak_speed_debuff"),
+        }, AssetUtil:MakeImg("tp_icons2", "badge_70"),
         function(self, inst, cmp, id)
             return string.format("降低%d%%移速",
                 -self.data[1] * 100)
@@ -2201,7 +2250,7 @@ local debuffs = {
             on_rm = function(self, inst, cmp, id)
                 EntUtil:rm_speed_mod(inst, id)
             end,
-        }, AssetUtil:MakeImg("ak_icons", "ak_speed_debuff"),
+        }, AssetUtil:MakeImg("tp_icons2", "badge_70"),
         function(self, inst, cmp, id)
             return string.format("降低%d%%移速",
                 -self.data[1] * 100)
@@ -2214,7 +2263,7 @@ local debuffs = {
             on_rm = function(self, inst, cmp, id)
                 EntUtil:rm_speed_mod(inst, id)
             end,
-        }, AssetUtil:MakeImg("ak_icons", "ak_speed_debuff"),
+        }, AssetUtil:MakeImg("tp_icons2", "badge_70"),
         function(self, inst, cmp, id)
             return string.format("降低%d%%移速",
                 -self.data[1] * 100)
@@ -2227,7 +2276,7 @@ local debuffs = {
             on_rm = function(self, inst, cmp, id)
                 EntUtil:rm_speed_mod(inst, id)
             end,
-        }, AssetUtil:MakeImg("ak_icons", "ak_speed_debuff"),
+        }, AssetUtil:MakeImg("tp_icons2", "badge_70"),
         function(self, inst, cmp, id)
             return string.format("降低%d%%移速", -self.data[1] * 100)
         end, { -.4 }, true
@@ -2284,9 +2333,9 @@ end
 
 function BuffManager:HasBuff(inst, buff)
     if inst.components.wg_buff then
-        inst.components.wg_buff:HasBuff(buff)
+        return inst.components.wg_buff:HasBuff(buff)
     elseif inst.components.wg_simple_buff then
-        inst.components.wg_simple_buff:HasBuff(buff)
+        return inst.components.wg_simple_buff:HasBuff(buff)
     end
 end
 

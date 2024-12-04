@@ -50,6 +50,7 @@ local monster_dmg_type = {
     worm = "slash",
     -- boss
     leif = "strike",
+    leif_sparse = "strike",
     warg = "slash",
     spiderqueen = "poison",
     deerclops = "ice",

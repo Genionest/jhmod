@@ -762,6 +762,7 @@ scroll = {
 	AssetPack("tp_scroll_ice_atk", nil, nil, nil, nil, nil, "tp_scroll_templar"),
 	AssetPack("tp_scroll_electric_atk", nil, nil, nil, nil, nil, "tp_scroll_templar"),
 	AssetPack("tp_scroll_shadow_atk", nil, nil, nil, nil, nil, "tp_scroll_templar"),
+	AssetPack("tp_scroll_hollow", nil, nil, nil, nil, nil, "tp_scroll_templar"),
 },
 potion = {
 	AssetPack("tp_potion_vigor",
@@ -1834,6 +1835,7 @@ structure = {
 		Img("tp_items3", "items_1"),
 		nil, nil, nil
 	),
+	AssetPack("tp_wilson_table", nil, nil, nil, nil, nil, "ak_work_bench"),
 },
 creature = {
 },

@@ -5,7 +5,7 @@ local TpPlayerButton = Class(WgValue, function(self, inst)
     WgValue._ctor(self, inst)
     self:SetRate(-1)
     self.event = "tp_player_btn_delta"
-    self.button = nil
+    self.badge = nil
     self.fn = nil
     self.id = nil
     self:Start()
@@ -33,21 +33,24 @@ function TpPlayerButton:SetSkillButton(id, force)
     local widget = data:GetButton(self.inst)
     local inst = self.inst
     if inst.HUD then
-		if not self.button then
-            self.button = inst.HUD.controls.status:AddChild(widget)
-            widget:SetPosition(-150, 0, 0)
-            widget.max = self:GetMax()
-            widget:SetPercent(self:GetPercent())
-            widget.inst:ListenForEvent(self.event, function(inst, data)
-                local p = self:GetPercent()
-                widget:SetPercent(p, self:GetMax())
-                if p < 1 and data.old_p >= 1 then
-                    widget.wg_btn:Disable()
-                elseif p>=1 and data.old_p < 1 then
-                    widget.wg_btn:Enable()
-                end
-            end, self.inst)
+		if self.badge then
+            inst.HUD.controls.status:RemoveBadge(self.badge)
+            self.badge = nil
         end
+        self.badge = inst.HUD.controls.status:AddBadge(widget)
+        -- self.badge = inst.HUD.controls.status:AddChild(widget)
+        -- widget:SetPosition(-150, 0, 0)
+        widget.max = self:GetMax()
+        widget:SetPercent(self:GetPercent())
+        widget.inst:ListenForEvent(self.event, function(inst, data)
+            local p = self:GetPercent()
+            widget:SetPercent(p, self:GetMax())
+            if p < 1 and data.old_p >= 1 then
+                widget.wg_btn:Disable()
+            elseif p>=1 and data.old_p < 1 then
+                widget.wg_btn:Enable()
+            end
+        end, self.inst)
     end
 end
 

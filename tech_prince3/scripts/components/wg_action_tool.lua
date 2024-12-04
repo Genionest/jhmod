@@ -35,14 +35,13 @@ function WgActionTool:GetSkillDesc(doer)
     end
     if self.desc == nil then
         str = Util:GetDescription(self.inst.prefab)
-    end
-    if type(self.desc) == "function" then
+    elseif type(self.desc) == "function" then
         str = self.desc(self.inst, doer)
     else
         str = self.desc
     end
     if self.mana then
-        str = str .. string.format("\n需求%d点法力", self.mana)
+        str = str .. string.format("\n需求%d点法力", self:GetRequire("mana", doer))
     end
     if self.vigor then
         str = str .. string.format("\n消耗%d精力", self.vigor)
@@ -110,6 +109,26 @@ function WgActionTool:RegisterSkillInfo(data)
     -- self.desc = data.desc
 end
 
+function WgActionTool:GetRequire(attr, doer)
+    if attr == "mana" then
+        if doer and doer.components.tp_val_hollow
+        and doer.components.tp_val_hollow:CanReduceManaCost() then
+            return self.mana * .2
+        end
+        return self.mana
+    end
+end
+
+function WgActionTool:CostRequire(attr, doer)
+    if attr == "mana" then
+        doer.components.tp_val_mana:DoDelta(-self:GetRequire("mana", doer))
+        if doer and doer.components.tp_val_hollow
+        and doer.components.tp_val_hollow:CanReduceManaCost() then
+            doer.components.tp_val_hollow:EffectReduceManaCost()
+        end
+    end
+end
+
 function WgActionTool:Test(doer)
     -- 正在工作
     if doer.sg:HasStateTag("doing")
@@ -161,7 +180,7 @@ function WgActionTool:Test(doer)
     end
     -- 魔法
     if self.mana and doer.components.tp_val_mana
-    and doer.components.tp_val_mana:GetCurrent() < self.mana then
+    and doer.components.tp_val_mana:GetCurrent() < self:GetRequire("mana", doer) then
         return
     end
     -- 精力
@@ -205,7 +224,7 @@ function WgActionTool:DoSkillEffect(act)
     end
     -- 魔法
     if self.mana and act.doer.components.tp_val_mana then
-        act.doer.components.tp_val_mana:DoDelta(-self.mana)
+        self:CostRequire("mana", act.doer)
     end
     -- 精力
     if self.vigor and act.doer.components.tp_val_vigor then

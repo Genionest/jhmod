@@ -1881,6 +1881,136 @@ fxs.time_bomb = {
     end,
 }
 
+fxs.hollow_bean = {
+    init = function(inst)
+        inst.AnimState:SetBank("the_fx29")
+        inst.AnimState:SetBuild("the_fx29")
+        inst.AnimState:PlayAnimation("idle", true)
+        MakeInventoryPhysics(inst)
+        RemovePhysicsColliders(inst)
+        inst:AddTag("hollow_bean")
+        inst:AddTag("cyclone_bean")
+    end,
+    wake = function(inst, data)
+        if data.pos then
+            inst:ForceFacePoint(data.pos:Get())
+        end
+        inst.Physics:SetMotorVel(20, 0, 0)
+        inst.dmg = 30
+        inst.stop_dmg = 50
+        inst:DoTaskInTime(1, function()
+            inst.dmg = inst.stop_dmg
+            inst.Physics:Stop()
+        end)
+        inst:DoTaskInTime(5, inst.WgRecycle)
+        inst.enemies = {}
+        inst.cnt = 0
+        inst.task = inst:DoPeriodicTask(.1, function()
+            if data.owner and EntUtil:is_alive(data.owner) then
+                inst.cnt = inst.cnt + 1
+                if inst.cnt >= 10 then
+                    inst.cnt = 0
+                    inst.enemies = {}
+                end
+                EntUtil:make_area_dmg(inst, 2, data.owner, inst.dmg, nil, 
+                    EntUtil:add_stimuli(nil, "pure", "electric"),
+                    {
+                        fn = function(v, attacker, weapon)
+                            inst.enemies[v] = true
+                        end,
+                        test = function(v, attacker, weapon)
+                            return not inst.enemies[v]
+                        end,
+                    }
+                )
+            end
+        end)
+    end,
+    recycle = function(inst, data)
+        inst.Physics:Stop()
+        if inst.task then
+            inst.task:Cancel()
+            inst.task = nil
+        end
+    end,
+}
+
+fxs.hollow_bean2 = {
+    init = function (inst)
+        fxs.hollow_bean.init(inst)
+        inst.AnimState:SetMultColour(1,.1,.1,1)
+        inst:RemoveTag("cyclone_bean")
+        inst:AddTag("recyclone_bean")
+    end,
+    wake = function(inst, data)
+        fxs.hollow_bean.wake(inst, data)
+        inst.dmg = 50
+        inst.stop_dmg = 30
+        inst.task2 = inst:DoPeriodicTask(.1, function()
+            local ent = FindEntity(inst, 2, function(target, inst)
+                return target:HasTag("cyclone_bean")
+            end)
+            if ent then
+                local pos = inst:GetPosition()
+                if data.owner and EntUtil:is_alive(data.owner) then
+                    FxManager:MakeFx("hollow_blast", pos)
+                    FxManager:MakeFx("groundpoundring_fx", pos)
+                    EntUtil:make_area_dmg(pos, 10, data.owner, 1000, nil, EntUtil:add_stimuli(nil, "pure", "holly"))
+                end
+                inst:WgRecycle()
+                ent:WgRecycle()
+            end
+        end)
+    end,
+    recycle = function(inst)
+        if inst.task2 then
+            inst.task2:Cancel()
+            inst.task2 = nil
+        end
+        fxs.hollow_bean.recycle(inst)
+    end,
+}
+
+fxs.hollow_blast = {
+    init = function(inst)
+        inst.AnimState:SetBank("the_fx19")
+        inst.AnimState:SetBuild("the_fx19")
+        inst.Transform:SetScale(2,2,2)
+    end,
+    wake = function(inst, data)
+        inst.AnimState:PlayAnimation("idle")
+        inst:ListenForEvent("animover", inst.WgRecycle)
+        local x, y, z = inst:GetPosition():Get()
+        local ents = TheSim:FindEntities(x, y, z, 10, {"hollow_bean"})
+        for _, v in pairs(ents) do
+            v:WgRecycle()
+        end
+    end,
+    recycle = function(inst, data)
+        inst:RemoveEventCallback("animover", inst.WgRecycle)
+        if inst.parent then
+            inst.parent:RemoveChild(inst)
+        end
+    end,
+}
+
+fxs.hollow_evade = {
+    init = function(inst)
+        inst.AnimState:SetBank("the_fx04")
+        inst.AnimState:SetBuild("the_fx04")
+        inst.AnimState:PlayAnimation("idle", true)
+        inst.Transform:SetScale(1, 2, 1)
+    end,
+    wake = function(inst, data)
+    end,
+    recycle = function(inst, data)
+        -- inst.AnimState:SetPercent("idle", 1)
+        if inst.parent then
+            inst.parent:RemoveChild(inst)
+        end
+    end,
+}
+
 fxs.stride_breaker_fx = {
     init = function(inst)
         inst.AnimState:SetBank("the_fx05")
@@ -1933,6 +2063,12 @@ local continuous_fxs = {
     ball = "the_fx28",
     ball2 = "the_fx29",
     weak_fx = "the_fx48",
+    defense_fx = "the_fxc20",
+    defense_fx2 = "the_fxc22",
+    defense_fx3 = "the_fxc24",
+    elem_defense_fx = "the_fxc21",
+    elem_defense_fx2 = "the_fxc23",
+    elem_defense_fx3 = "the_fxc25",
 }
 for k, v in pairs(continuous_fxs) do
     fxs[k] = {

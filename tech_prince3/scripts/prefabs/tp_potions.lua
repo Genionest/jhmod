@@ -63,10 +63,10 @@ MakePotion("tp_potion_health", function(inst, eater)
     end
 end),
 MakePotion("tp_potion_mana", function(inst, eater)
-    if eater.components.tp_mana then
+    if eater.components.tp_val_mana then
         -- local max = eater.components.tp_mana:GetMax()
         local dt = PotionRecoverConst[2]
-        eater.components.tp_mana:DoDelta(dt)
+        eater.components.tp_val_mana:DoDelta(dt)
     end
 end),
 MakePotion("tp_potion_brave", function(inst, eater)

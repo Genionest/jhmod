@@ -153,6 +153,19 @@ local player_tree = {
         inst.components.tp_player_attr:UpdateAttr()
     end, -- once
     nil),
+    Skill("hollow", "六目",
+        "你获得六目值",
+    AssetUtil:MakeImg("tp_icons2", "badge_31"),
+    nil,
+    function(inst, self)
+        inst:AddComponent("tp_val_hollow")
+        inst:DoTaskInTime(0, function()
+            inst.components.tp_val_hollow:InitBadge()
+        end)
+    end, -- always
+    function(inst, self)
+    end, -- once
+    {}),
 }
 
 -- local wilson_tree = {

@@ -508,11 +508,36 @@ function TpPlayerAttr:GetScreenData()
         string.format("理智值:%d", self.inst.components.sanity:GetMaxSanity()),
         string.format("理智抗性:%d%%", -self.inst.components.sanity:WgGetNegativeModifier()*100),
     })
+    local combat = self.inst.components.combat
+    local defense = combat.tp_defense or 0
+    local def_ab = 1-100/(100+defense)
+    local dmg_mult = combat:GetDamageModifier()
+    local penetrate = combat.tp_penetrate or 0
+    -- local atk_spd = combat:GetPeriodModifier()
+    local crit = combat.tp_crit or 0
+    local evade = combat.tp_evade or 0
+    local evd_ab = 1-150/(150+evade)
+    local hit_rate = combat.tp_hit_rate or 0
+    local life_steal = combat.tp_life_steal or 0
+    local weapon = combat:GetWeapon()
+    local dmg
+    if weapon then
+        dmg = weapon.components.weapon:GetDamage() * dmg_mult
+    else
+        dmg = combat.defaultdamage * dmg_mult
+    end
     table.insert(strs, {
         "攻击相关",
-        string.format("额外攻击力:%d", self.power),
-        string.format("攻击速度:%d%%", (1-self.inst.components.combat:GetPeriodModifier())*100),
+        string.format("强壮增加攻击:%d", self.power),
+        string.format("攻击速度:%d%%", (-self.inst.components.combat:GetPeriodModifier())*100),
         string.format("暴击伤害:%d%%", self.crit_dmg_mod*100+200),
+        string.format("攻击力:%d", dmg),
+        string.format("暴击率:%d%%", crit*100),
+        string.format("防御值:%d(%d%%)", defense, def_ab*100),
+        string.format("闪避值:%d(%d%%)", evade, evd_ab*100),
+        string.format("穿透值:%d", penetrate),
+        string.format("命中值:%d", hit_rate),
+        string.format("吸血率:%d%%", life_steal*100),
         -- string.format("暗属性抗性:%d%%", self.inst.components.combat:GetDmgTypeAbsorb("shadow")*100),
     })
     local dmg_type_absorb_strs = {"伤害吸收"}

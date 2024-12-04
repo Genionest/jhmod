@@ -426,9 +426,9 @@ Equip("kraken_slayer", {
 
                 local base_dmg = inst.components.combat.defaultdamage
                 local ex_dmg = self.db[1]+base_dmg*self.db[2]
-                EntUtil:get_attacked(target, inst, ex_dmg, nil, EntUtil:add_stimuli(nil, "electric", "pure"))
+                EntUtil:get_attacked(target, inst, ex_dmg, nil, EntUtil:add_stimuli(nil, "electric", "true", "pure"))
                 
-                BuffManager:AddBuff(inst, id.."_buff")
+                -- BuffManager:AddBuff(inst, id.."_buff")
                 FxManager:MakeFx("splash_water_drop", target)
             end
         end)
@@ -448,14 +448,14 @@ Equip("kraken_slayer", {
 }, function(self, inst, cmp, id)
     local s = "【※※海妖】:"
     s = s..get_attr_desc(self, inst)
-    s = s..string.format("每3次攻击,额外造成基于基础攻击的雷属性伤害,并大幅提升穿透和命中")
+    s = s..string.format("每3次攻击,额外造成基于基础攻击的雷属性真伤")
     return s
 end, function(self, inst, cmp, id)
     local s = "【※※海妖】:"
     s = s..get_attr_desc(self, inst)
     -- s = s..string.format("你每有1件装备,获得%d%%攻速;", -self.db[3]*100)
     local buff = BuffManager:GetDataById(id.."_buff")
-    s = s..string.format("你每第3次攻击,额外造成基础攻击力%d%%+%d的雷属性伤害,并获得buff(%s)",
+    s = s..string.format("你每第3次攻击,额外造成基础攻击力%d%%+%d的雷属性真伤",
         self.db[2]*100, self.db[1], buff:desc())
     return s
 end),
@@ -552,7 +552,7 @@ Equip("stride_breaker", {
                         EntUtil:get_attacked(target, inst, dmg, nil, EntUtil:add_stimuli(nil, "wind", "pure"))
                         
                         -- FxManager:MakeFx("statue_transition_2", target)
-                        FxManager:MakeFx("stride_breaker_fx", target)
+                        FxManager:MakeFx("stride_breaker_fx", inst)
                         BuffManager:AddBuff(target, id.."_debuff")
                     end
                 end)
@@ -1315,7 +1315,7 @@ Equip("stormrazor",
                 EntUtil:get_attacked(target, inst, ex_dmg, nil, EntUtil:add_stimuli(nil, "wind", "pure"))
 
                 BuffManager:AddBuff(target, id.."_debuff")
-                FxManager:MakeFx("slash_fx", target, {target=target})
+                FxManager:MakeFx("slash_fx", inst, {target=target})
             end
         end)
     end,
@@ -2298,7 +2298,7 @@ Equip("kircheis_shard",
                     inst:RemoveTag(id.."_tag")
                 end)
 
-                FxManager:MakeFx("slash_fx", target, {target=target})
+                FxManager:MakeFx("slash_fx", inst, {target=target})
                 local ex_dmg = self.db[1]
                 EntUtil:get_attacked(target, inst, ex_dmg, nil, EntUtil:add_stimuli(nil, "electric", "pure"))
             end
@@ -2816,22 +2816,40 @@ local animal_equips = {
         s = s.."攻击有30%概率攻击无cd(不能连续触发)"
         return s
     end),
+    -- Equip("firm", {
+    --     hp = 50,
+    --     hit = function(self, inst, cmp, id, data)
+    --         cmp[id.."_stack"] = cmp[id.."_stack"] or 0
+    --         if cmp[id.."_stack"] >= 5 then
+    --             cmp[id.."_stack"] = 0
+    --             if EntUtil:is_alive(inst) then
+    --                 inst.components.health:DoDelta(30)
+    --             end
+    --         end
+    --         cmp[id.."_stack"] = cmp[id.."_stack"] + 1
+    --     end
+    -- }, function(self, inst, cmp, id)
+    --     local s = "【坚韧】:"
+    --     s = s..get_attr_desc(self, inst)
+    --     s = s.."每被攻击5次,回复30点生命值"
+    --     return s
+    -- end),
     Equip("firm", {
         hp = 50,
-        hit = function(self, inst, cmp, id, data)
-            cmp[id.."_stack"] = cmp[id.."_stack"] or 0
-            if cmp[id.."_stack"] >= 5 then
-                cmp[id.."_stack"] = 0
-                if EntUtil:is_alive(inst) then
-                    inst.components.health:DoDelta(30)
+        init = function(self, inst, cmp, id)
+            inst:ListenForEvent("val_sheild_delta", function(inst, data)
+                local cur = inst.components.tp_val_sheild:GetCurrent()
+                if cur > 0 then
+                    inst.components.combat:AddDefenseMod(id, 50)
+                else
+                    inst.components.combat:RmDefenseMod(id)
                 end
-            end
-            cmp[id.."_stack"] = cmp[id.."_stack"] + 1
+            end)
         end
     }, function(self, inst, cmp, id)
         local s = "【坚韧】:"
         s = s..get_attr_desc(self, inst)
-        s = s.."每被攻击5次,回复30点生命值"
+        s = s.."你拥有护盾时,获得50点防御"
         return s
     end),
     Equip("gear_core", {
