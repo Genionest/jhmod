@@ -134,17 +134,21 @@ local fns2 = {
 {
     "pickable",
     function(self)
-        local s = string.format("可采摘(%s)",
-            Util:GetScreenName(self.product))
-        return s
+        if self.product then
+            local s = string.format("可采摘(%s)",
+                Util:GetScreenName(self.product))
+            return s
+        end
     end,
 },
 {
     "harvestable",
     function(self)
-        local s = string.format("可收获(%s):%d/%d",
-            Util:GetScreenName(self.product), self.produce, self.maxproduce)
-        return s
+        if self.product then
+            local s = string.format("可收获(%s):%d/%d",
+                Util:GetScreenName(self.product), self.produce, self.maxproduce)
+            return s
+        end
     end,
 },
 {

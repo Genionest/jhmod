@@ -1605,6 +1605,8 @@ local buffs = {
                 inst:AddChild(cmp[id .. "_fx"])
             end
             inst.components.combat:AddEvadeRateMod(id, self.data[1])
+            inst.components.locomotor:AddSpeedModifier_Additive(id, self.data[2])
+            -- EntUtil:add_speed_mod(inst, id, self.data[2])
             inst.components.tp_val_hollow:SetRate(1)
             if cmp[id.."_fn"] == nil then
                 cmp[id.."_fn"] = EntUtil:listen_for_event(inst, "val_hollow_delta", function(inst, data)
@@ -1620,6 +1622,8 @@ local buffs = {
                 cmp[id .. "_fx"] = nil
             end
             inst.components.combat:RmEvadeRateMod(id)
+            inst.components.locomotor:RemoveSpeedModifier_Additive(id)
+            -- EntUtil:rm_speed_mod(inst, id)
             inst.components.tp_val_hollow:SetRate(-1)
             if cmp[id.."_fn"] then
                 inst:RemoveEventCallback("val_hollow_delta", cmp[id.."_fn"])
@@ -1628,8 +1632,9 @@ local buffs = {
         end,
     }, AssetUtil:MakeImg("tp_icons2", "badge_31"),
         function(self, inst, cmp, id)
-            return string.format("无量空洞:获得%d闪避,但会不断消耗六目值", self.data[1])
-        end, {800}, nil, true
+            return string.format("无量空洞:获得%d闪避,增加%d点移速,但会不断消耗六目值", 
+                self.data[1], self.data[2])
+        end, {800, 5}, nil, true
     ),
 }
 

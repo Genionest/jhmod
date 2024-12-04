@@ -1086,6 +1086,9 @@ local tmp_state = State{
             inst:PerformBufferedAction() 
         end),
     },
+    onexit= function(inst)
+        inst.SoundEmitter:KillSound("eating")    
+    end,
     events={
         EventHandler("animover", function(inst) 
             inst.sg:GoToState("idle") 
