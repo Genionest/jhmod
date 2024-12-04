@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Atlas>
+	<Texture filename="ak_menus.tex" />
+	<Elements>
+		<Element name="ak_menu_base.tex" u1="0.001" u2="0.20603125" v2="0.999" v1="0.7588125" variant="" />
+		<Element name="ak_menu_food.tex" u1="0.20803125" u2="0.37009375" v2="0.999" v1="0.79396875" variant="" />
+		<Element name="ak_menu_house.tex" u1="0.001" u2="0.233375" v2="0.7568125" v1="0.51271875" variant="" />
+		<Element name="ak_menu_medicine.tex" u1="0.235375" u2="0.45603125" v2="0.79196875" v1="0.6025625" variant="" />
+		<Element name="ak_menu_oxygen.tex" u1="0.45803125" u2="0.68259375" v2="0.999" v1="0.751" variant="" />
+		<Element name="ak_menu_power.tex" u1="0.68459375" u2="0.83884375" v2="0.999" v1="0.76271875" variant="" />
+		<Element name="ak_menu_refine.tex" u1="0.45803125" u2="0.6786875" v2="0.749" v1="0.501" variant="" />
+		<Element name="ak_menu_rocketry.tex" u1="0.68459375" u2="0.87790625" v2="0.76071875" v1="0.52053125" variant="" />
+		<Element name="ak_menu_shipping.tex" u1="0.001" u2="0.2411875" v2="0.51071875" v1="0.3213125" variant="" />
+		<Element name="ak_menu_station.tex" u1="0.001" u2="0.1630625" v2="0.3193125" v1="0.08303125" variant="" />
+		<Element name="ak_menu_tube.tex" u1="0.2431875" u2="0.4365" v2="0.6005625" v1="0.3525625" variant="" />
+		<Element name="ak_menu_util.tex" u1="0.1650625" u2="0.3661875" v2="0.3193125" v1="0.0713125" variant="" />
+		<Element name="ak_menu_ventilate.tex" u1="0.4385" u2="0.68259375" v2="0.499" v1="0.251" variant="" />
+	</Elements>
+</Atlas>

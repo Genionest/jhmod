@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Atlas>
+	<Texture filename="sam_items.tex" />
+	<Elements>
+		<Element name="tp_advance_chip.tex" u1="0.001" u2="0.249" v2="0.999" v1="0.8369375" variant="" />
+		<Element name="tp_advance_chip2.tex" u1="0.251" u2="0.499" v2="0.999" v1="0.84084375" variant="" />
+		<Element name="tp_engine.tex" u1="0.001" u2="0.249" v2="0.8349375" v1="0.62990625" variant="" />
+		<Element name="tp_epic.tex" u1="0.251" u2="0.49509375" v2="0.83884375" v1="0.59084375" variant="" />
+		<Element name="tp_epic_red.tex" u1="0.501" u2="0.74509375" v2="0.999" v1="0.751" variant="" />
+		<Element name="tp_gift.tex" u1="0.74709375" u2="0.99509375" v2="0.999" v1="0.751" variant="" />
+		<Element name="tp_grass_pigking.tex" u1="0.49709375" u2="0.74509375" v2="0.749" v1="0.5713125" variant="" />
+		<Element name="tp_scroll_harvest.tex" u1="0.74709375" u2="0.9911875" v2="0.749" v1="0.5244375" variant="" />
+		<Element name="tp_scroll_rider.tex" u1="0.001" u2="0.24509375" v2="0.62790625" v1="0.40334375" variant="" />
+		<Element name="tp_scroll_templar.tex" u1="0.001" u2="0.24509375" v2="0.40134375" v1="0.17678125" variant="" />
+	</Elements>
+</Atlas>

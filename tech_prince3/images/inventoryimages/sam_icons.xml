@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Atlas>
+	<Texture filename="sam_icons.tex" />
+	<Elements>
+		<Element name="tp_bearger.tex" u1="0.001" u2="0.249" v2="0.999" v1="0.5400625" variant="" />
+		<Element name="tp_coal_beast.tex" u1="0.251" u2="0.499" v2="0.999" v1="0.501" variant="" />
+		<Element name="tp_deerclops.tex" u1="0.001" u2="0.249" v2="0.5380625" v1="0.0869375" variant="" />
+		<Element name="tp_dragonfly.tex" u1="0.251" u2="0.483375" v2="0.499" v1="0.0244375" variant="" />
+		<Element name="tp_fant.tex" u1="0.501" u2="0.749" v2="0.999" v1="0.501" variant="" />
+		<Element name="tp_moose.tex" u1="0.485375" u2="0.733375" v2="0.499" v1="0.1025625" variant="" />
+		<Element name="tp_rook.tex" u1="0.751" u2="0.999" v2="0.999" v1="0.501" variant="" />
+		<Element name="tp_spat.tex" u1="0.735375" u2="0.983375" v2="0.499" v1="0.0400625" variant="" />
+	</Elements>
+</Atlas>

@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Atlas>
+	<Texture filename="ak_scrolls.tex" />
+	<Elements>
+		<Element name="ak_scroll.tex" u1="0.001" u2="0.122046875" v2="0.999" v1="0.7744375" variant="" />
+		<Element name="ak_scroll_bird.tex" u1="0.124046875" u2="0.243140625" v2="0.999" v1="0.7744375" variant="" />
+		<Element name="ak_scroll_bunnyman.tex" u1="0.001" u2="0.122046875" v2="0.7724375" v1="0.547875" variant="" />
+		<Element name="ak_scroll_flower.tex" u1="0.124046875" u2="0.24509375" v2="0.7724375" v1="0.547875" variant="" />
+		<Element name="ak_scroll_grow.tex" u1="0.245140625" u2="0.364234375" v2="0.999" v1="0.7744375" variant="" />
+		<Element name="ak_scroll_harvest.tex" u1="0.24709375" u2="0.368140625" v2="0.7724375" v1="0.547875" variant="" />
+		<Element name="ak_scroll_lightning.tex" u1="0.366234375" u2="0.48728125" v2="0.999" v1="0.7744375" variant="" />
+		<Element name="ak_scroll_pig_armor.tex" u1="0.370140625" u2="0.4911875" v2="0.7724375" v1="0.547875" variant="" />
+		<Element name="ak_scroll_pig_armorex.tex" u1="0.001" u2="0.122046875" v2="0.545875" v1="0.3213125" variant="" />
+		<Element name="ak_scroll_pig_damage.tex" u1="0.001" u2="0.122046875" v2="0.3193125" v1="0.09475" variant="" />
+		<Element name="ak_scroll_pig_damage_b.tex" u1="0.124046875" u2="0.24509375" v2="0.545875" v1="0.3213125" variant="" />
+		<Element name="ak_scroll_pig_heal.tex" u1="0.124046875" u2="0.24509375" v2="0.3193125" v1="0.09475" variant="" />
+		<Element name="ak_scroll_pig_health.tex" u1="0.24709375" u2="0.368140625" v2="0.545875" v1="0.3213125" variant="" />
+		<Element name="ak_scroll_pig_leader.tex" u1="0.24709375" u2="0.368140625" v2="0.3193125" v1="0.09475" variant="" />
+		<Element name="ak_scroll_pig_speed.tex" u1="0.370140625" u2="0.4911875" v2="0.545875" v1="0.3213125" variant="" />
+		<Element name="ak_scroll_pig_speed_b.tex" u1="0.370140625" u2="0.4911875" v2="0.3193125" v1="0.09475" variant="" />
+		<Element name="ak_scroll_pig_teleport.tex" u1="0.48928125" u2="0.61228125" v2="0.999" v1="0.77834375" variant="" />
+		<Element name="ak_scroll_pigman.tex" u1="0.4931875" u2="0.614234375" v2="0.77634375" v1="0.55178125" variant="" />
+		<Element name="ak_scroll_shadow.tex" u1="0.4931875" u2="0.614234375" v2="0.54978125" v1="0.32521875" variant="" />
+		<Element name="ak_scroll_sleep.tex" u1="0.616234375" u2="0.735328125" v2="0.999" v1="0.7744375" variant="" />
+		<Element name="ak_scroll_tentacle.tex" u1="0.616234375" u2="0.73728125" v2="0.7724375" v1="0.547875" variant="" />
+		<Element name="ak_scroll_volcano.tex" u1="0.737328125" u2="0.858375" v2="0.999" v1="0.7744375" variant="" />
+		<Element name="ak_scroll_wind.tex" u1="0.4931875" u2="0.614234375" v2="0.32321875" v1="0.09865625" variant="" />
+	</Elements>
+</Atlas>

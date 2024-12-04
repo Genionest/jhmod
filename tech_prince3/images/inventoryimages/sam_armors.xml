@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Atlas>
+	<Texture filename="sam_armors.tex" />
+	<Elements>
+		<Element name="armor_arcane_blue.tex" u1="0.001" u2="0.22165625" v2="0.999" v1="0.77053125" variant="" />
+		<Element name="armor_arcane_green.tex" u1="0.22365625" u2="0.4443125" v2="0.999" v1="0.77053125" variant="" />
+		<Element name="armor_arcane_grey.tex" u1="0.001" u2="0.22165625" v2="0.76853125" v1="0.5400625" variant="" />
+		<Element name="armor_arcane_pink.tex" u1="0.22365625" u2="0.4443125" v2="0.76853125" v1="0.5400625" variant="" />
+		<Element name="armor_arcane_purple.tex" u1="0.4463125" u2="0.66696875" v2="0.999" v1="0.77053125" variant="" />
+		<Element name="armor_arcane_red.tex" u1="0.66896875" u2="0.889625" v2="0.999" v1="0.77053125" variant="" />
+		<Element name="armor_arcane_skyblue.tex" u1="0.4463125" u2="0.66696875" v2="0.76853125" v1="0.5400625" variant="" />
+		<Element name="armor_arcane_yellow.tex" u1="0.66896875" u2="0.889625" v2="0.76853125" v1="0.5400625" variant="" />
+		<Element name="armor_cloak_blue.tex" u1="0.001" u2="0.233375" v2="0.5380625" v1="0.34475" variant="" />
+		<Element name="armor_cloak_green.tex" u1="0.001" u2="0.233375" v2="0.34275" v1="0.1494375" variant="" />
+		<Element name="armor_cloak_grey.tex" u1="0.235375" u2="0.46775" v2="0.5380625" v1="0.34475" variant="" />
+		<Element name="armor_cloak_orange.tex" u1="0.235375" u2="0.46775" v2="0.34275" v1="0.1494375" variant="" />
+		<Element name="armor_cloak_pink.tex" u1="0.46975" u2="0.702125" v2="0.5380625" v1="0.34475" variant="" />
+		<Element name="armor_cloak_purple.tex" u1="0.46975" u2="0.702125" v2="0.34275" v1="0.1494375" variant="" />
+		<Element name="armor_cloak_red.tex" u1="0.704125" u2="0.9365" v2="0.5380625" v1="0.34475" variant="" />
+		<Element name="armor_cloak_skyblue.tex" u1="0.704125" u2="0.9365" v2="0.34275" v1="0.1494375" variant="" />
+	</Elements>
+</Atlas>

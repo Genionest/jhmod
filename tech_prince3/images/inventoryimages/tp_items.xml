@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Atlas>
+	<Texture filename="tp_items.tex" />
+	<Elements>
+		<Element name="flavour.tex" u1="0.001" u2="0.122046875" v2="0.999" v1="0.75490625" variant="" />
+		<Element name="grass_pigking.tex" u1="0.124046875" u2="0.247046875" v2="0.999" v1="0.8213125" variant="" />
+		<Element name="tp_alloy.tex" u1="0.001" u2="0.124" v2="0.75290625" v1="0.5869375" variant="" />
+		<Element name="tp_alloy_red.tex" u1="0.126" u2="0.247046875" v2="0.8193125" v1="0.6494375" variant="" />
+		<Element name="tp_cook_pot.tex" u1="0.249046875" u2="0.356421875" v2="0.999" v1="0.78615625" variant="" />
+		<Element name="tp_desk.tex" u1="0.249046875" u2="0.38571875" v2="0.78415625" v1="0.5556875" variant="" />
+		<Element name="tp_dimensional.tex" u1="0.38771875" u2="0.47946875" v2="0.999" v1="0.751" variant="" />
+		<Element name="tp_egg_tool.tex" u1="0.001" u2="0.124" v2="0.5849375" v1="0.3369375" variant="" />
+		<Element name="tp_engine.tex" u1="0.001" u2="0.124" v2="0.3349375" v1="0.12990625" variant="" />
+		<Element name="tp_epic.tex" u1="0.126" u2="0.247046875" v2="0.6474375" v1="0.3994375" variant="" />
+		<Element name="tp_epic_red.tex" u1="0.126" u2="0.247046875" v2="0.3974375" v1="0.1494375" variant="" />
+		<Element name="tp_fix_powder.tex" u1="0.249046875" u2="0.37009375" v2="0.5536875" v1="0.34865625" variant="" />
+		<Element name="tp_flare.tex" u1="0.38771875" u2="0.465796875" v2="0.749" v1="0.501" variant="" />
+		<Element name="tp_forest_gun.tex" u1="0.249046875" u2="0.372046875" v2="0.34665625" v1="0.12990625" variant="" />
+		<Element name="tp_furnace.tex" u1="0.374046875" u2="0.477515625" v2="0.499" v1="0.251" variant="" />
+		<Element name="tp_gift.tex" u1="0.374046875" u2="0.497046875" v2="0.249" v1="0.001" variant="" />
+		<Element name="tp_lab.tex" u1="0.48146875" u2="0.602515625" v2="0.999" v1="0.75490625" variant="" />
+		<Element name="tp_palmcone_seed.tex" u1="0.467796875" u2="0.58884375" v2="0.749" v1="0.50490625" variant="" />
+		<Element name="tp_pig_book.tex" u1="0.604515625" u2="0.727515625" v2="0.999" v1="0.8213125" variant="" />
+		<Element name="tp_pig_lamp.tex" u1="0.604515625" u2="0.727515625" v2="0.8193125" v1="0.63771875" variant="" />
+		<Element name="tp_sleeping_pill.tex" u1="0.001" u2="0.110328125" v2="0.12790625" v1="0.0088125" variant="" />
+	</Elements>
+</Atlas>

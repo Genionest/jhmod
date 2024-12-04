@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Atlas>
+	<Texture filename="ak_structures_2.tex" />
+	<Elements>
+		<Element name="ak_office_table.tex" u1="0.001" u2="0.4911875" v2="0.999" v1="0.6806875" variant="" />
+		<Element name="ak_rocket_circle.tex" u1="0.4931875" u2="0.9911875" v2="0.999" v1="0.5635" variant="" />
+		<Element name="ak_shop.tex" u1="0.001" u2="0.452125" v2="0.6786875" v1="0.1963125" variant="" />
+	</Elements>
+</Atlas>

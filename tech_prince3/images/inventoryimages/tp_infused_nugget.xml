@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Atlas>
+	<Texture filename="tp_infused_nugget.tex" />
+	<Elements>
+		<Element name="black.tex" u1="0.001" u2="0.249" v2="0.999" v1="0.81740625" variant="" />
+		<Element name="blue.tex" u1="0.251" u2="0.499" v2="0.999" v1="0.81740625" variant="" />
+		<Element name="cyan.tex" u1="0.001" u2="0.249" v2="0.81540625" v1="0.6338125" variant="" />
+		<Element name="green.tex" u1="0.251" u2="0.499" v2="0.81540625" v1="0.6338125" variant="" />
+		<Element name="grey.tex" u1="0.501" u2="0.749" v2="0.999" v1="0.81740625" variant="" />
+		<Element name="orange.tex" u1="0.501" u2="0.749" v2="0.81540625" v1="0.6338125" variant="" />
+		<Element name="pink.tex" u1="0.751" u2="0.999" v2="0.999" v1="0.81740625" variant="" />
+		<Element name="purple.tex" u1="0.751" u2="0.999" v2="0.81540625" v1="0.6338125" variant="" />
+		<Element name="red.tex" u1="0.001" u2="0.249" v2="0.6318125" v1="0.45021875" variant="" />
+		<Element name="white.tex" u1="0.001" u2="0.249" v2="0.44821875" v1="0.266625" variant="" />
+		<Element name="yellow.tex" u1="0.251" u2="0.499" v2="0.6318125" v1="0.45021875" variant="" />
+	</Elements>
+</Atlas>

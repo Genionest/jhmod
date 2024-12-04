@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Atlas>
+	<Texture filename="winter_ornaments.tex" />
+	<Elements>
+		<Element name="winter_ornament_boss_antlion.tex" u1="0.001" u2="0.122046875" v2="0.999" v1="0.877953125" variant="" />
+		<Element name="winter_ornament_boss_bearger.tex" u1="0.124046875" u2="0.24509375" v2="0.999" v1="0.877953125" variant="" />
+		<Element name="winter_ornament_boss_beequeen.tex" u1="0.001" u2="0.122046875" v2="0.875953125" v1="0.75490625" variant="" />
+		<Element name="winter_ornament_boss_celestialchampion1.tex" u1="0.124046875" u2="0.24509375" v2="0.875953125" v1="0.75490625" variant="" />
+		<Element name="winter_ornament_boss_celestialchampion2.tex" u1="0.24709375" u2="0.368140625" v2="0.999" v1="0.877953125" variant="" />
+		<Element name="winter_ornament_boss_celestialchampion3.tex" u1="0.24709375" u2="0.368140625" v2="0.875953125" v1="0.75490625" variant="" />
+		<Element name="winter_ornament_boss_celestialchampion4.tex" u1="0.370140625" u2="0.4911875" v2="0.999" v1="0.877953125" variant="" />
+		<Element name="winter_ornament_boss_crabking.tex" u1="0.370140625" u2="0.4911875" v2="0.875953125" v1="0.75490625" variant="" />
+		<Element name="winter_ornament_boss_crabkingpearl.tex" u1="0.001" u2="0.122046875" v2="0.75290625" v1="0.631859375" variant="" />
+		<Element name="winter_ornament_boss_deerclops.tex" u1="0.001" u2="0.122046875" v2="0.629859375" v1="0.5088125" variant="" />
+		<Element name="winter_ornament_boss_dragonfly.tex" u1="0.124046875" u2="0.24509375" v2="0.75290625" v1="0.631859375" variant="" />
+		<Element name="winter_ornament_boss_eyeofterror1.tex" u1="0.24709375" u2="0.368140625" v2="0.75290625" v1="0.631859375" variant="" />
+		<Element name="winter_ornament_boss_eyeofterror2.tex" u1="0.124046875" u2="0.24509375" v2="0.629859375" v1="0.5088125" variant="" />
+		<Element name="winter_ornament_boss_fuelweaver.tex" u1="0.24709375" u2="0.368140625" v2="0.629859375" v1="0.5088125" variant="" />
+		<Element name="winter_ornament_boss_hermithouse.tex" u1="0.370140625" u2="0.4911875" v2="0.75290625" v1="0.631859375" variant="" />
+		<Element name="winter_ornament_boss_klaus.tex" u1="0.370140625" u2="0.4911875" v2="0.629859375" v1="0.5088125" variant="" />
+		<Element name="winter_ornament_boss_krampus.tex" u1="0.4931875" u2="0.614234375" v2="0.999" v1="0.877953125" variant="" />
+		<Element name="winter_ornament_boss_malbatross.tex" u1="0.616234375" u2="0.73728125" v2="0.999" v1="0.877953125" variant="" />
+		<Element name="winter_ornament_boss_minotaur.tex" u1="0.4931875" u2="0.614234375" v2="0.875953125" v1="0.75490625" variant="" />
+		<Element name="winter_ornament_boss_moose.tex" u1="0.73928125" u2="0.860328125" v2="0.999" v1="0.877953125" variant="" />
+		<Element name="winter_ornament_boss_noeyeblue.tex" u1="0.616234375" u2="0.73728125" v2="0.875953125" v1="0.75490625" variant="" />
+		<Element name="winter_ornament_boss_noeyered.tex" u1="0.4931875" u2="0.614234375" v2="0.75290625" v1="0.631859375" variant="" />
+		<Element name="winter_ornament_boss_pearl.tex" u1="0.616234375" u2="0.73728125" v2="0.75290625" v1="0.631859375" variant="" />
+		<Element name="winter_ornament_boss_toadstool.tex" u1="0.4931875" u2="0.614234375" v2="0.629859375" v1="0.5088125" variant="" />
+		<Element name="winter_ornament_boss_toadstool_misery.tex" u1="0.73928125" u2="0.860328125" v2="0.875953125" v1="0.75490625" variant="" />
+		<Element name="winter_ornament_boss_wagstaff.tex" u1="0.862328125" u2="0.983375" v2="0.999" v1="0.877953125" variant="" />
+		<Element name="winter_ornament_fancy1.tex" u1="0.862328125" u2="0.983375" v2="0.875953125" v1="0.75490625" variant="" />
+		<Element name="winter_ornament_fancy2.tex" u1="0.73928125" u2="0.860328125" v2="0.75290625" v1="0.631859375" variant="" />
+		<Element name="winter_ornament_fancy3.tex" u1="0.616234375" u2="0.73728125" v2="0.629859375" v1="0.5088125" variant="" />
+		<Element name="winter_ornament_fancy4.tex" u1="0.73928125" u2="0.860328125" v2="0.629859375" v1="0.5088125" variant="" />
+		<Element name="winter_ornament_fancy5.tex" u1="0.862328125" u2="0.983375" v2="0.75290625" v1="0.631859375" variant="" />
+		<Element name="winter_ornament_fancy6.tex" u1="0.862328125" u2="0.983375" v2="0.629859375" v1="0.5088125" variant="" />
+		<Element name="winter_ornament_fancy7.tex" u1="0.001" u2="0.122046875" v2="0.5068125" v1="0.385765625" variant="" />
+		<Element name="winter_ornament_fancy8.tex" u1="0.124046875" u2="0.24509375" v2="0.5068125" v1="0.385765625" variant="" />
+		<Element name="winter_ornament_festivalevents1.tex" u1="0.001" u2="0.122046875" v2="0.383765625" v1="0.26271875" variant="" />
+		<Element name="winter_ornament_festivalevents2.tex" u1="0.124046875" u2="0.24509375" v2="0.383765625" v1="0.26271875" variant="" />
+		<Element name="winter_ornament_festivalevents3.tex" u1="0.001" u2="0.122046875" v2="0.26071875" v1="0.139671875" variant="" />
+		<Element name="winter_ornament_festivalevents4.tex" u1="0.24709375" u2="0.368140625" v2="0.5068125" v1="0.385765625" variant="" />
+		<Element name="winter_ornament_festivalevents5.tex" u1="0.124046875" u2="0.24509375" v2="0.26071875" v1="0.139671875" variant="" />
+		<Element name="winter_ornament_light1.tex" u1="0.001" u2="0.122046875" v2="0.137671875" v1="0.016625" variant="" />
+		<Element name="winter_ornament_light2.tex" u1="0.24709375" u2="0.368140625" v2="0.383765625" v1="0.26271875" variant="" />
+		<Element name="winter_ornament_light3.tex" u1="0.370140625" u2="0.4911875" v2="0.5068125" v1="0.385765625" variant="" />
+		<Element name="winter_ornament_light4.tex" u1="0.4931875" u2="0.614234375" v2="0.5068125" v1="0.385765625" variant="" />
+		<Element name="winter_ornament_light5.tex" u1="0.24709375" u2="0.368140625" v2="0.26071875" v1="0.139671875" variant="" />
+		<Element name="winter_ornament_light6.tex" u1="0.124046875" u2="0.24509375" v2="0.137671875" v1="0.016625" variant="" />
+		<Element name="winter_ornament_light7.tex" u1="0.370140625" u2="0.4911875" v2="0.383765625" v1="0.26271875" variant="" />
+		<Element name="winter_ornament_light8.tex" u1="0.24709375" u2="0.368140625" v2="0.137671875" v1="0.016625" variant="" />
+		<Element name="winter_ornament_plain1.tex" u1="0.4931875" u2="0.614234375" v2="0.383765625" v1="0.26271875" variant="" />
+		<Element name="winter_ornament_plain10.tex" u1="0.4931875" u2="0.614234375" v2="0.137671875" v1="0.016625" variant="" />
+		<Element name="winter_ornament_plain11.tex" u1="0.862328125" u2="0.983375" v2="0.5068125" v1="0.385765625" variant="" />
+		<Element name="winter_ornament_plain12.tex" u1="0.616234375" u2="0.73728125" v2="0.137671875" v1="0.016625" variant="" />
+		<Element name="winter_ornament_plain2.tex" u1="0.370140625" u2="0.4911875" v2="0.26071875" v1="0.139671875" variant="" />
+		<Element name="winter_ornament_plain3.tex" u1="0.616234375" u2="0.73728125" v2="0.5068125" v1="0.385765625" variant="" />
+		<Element name="winter_ornament_plain4.tex" u1="0.4931875" u2="0.614234375" v2="0.26071875" v1="0.139671875" variant="" />
+		<Element name="winter_ornament_plain5.tex" u1="0.370140625" u2="0.4911875" v2="0.137671875" v1="0.016625" variant="" />
+		<Element name="winter_ornament_plain6.tex" u1="0.73928125" u2="0.860328125" v2="0.5068125" v1="0.385765625" variant="" />
+		<Element name="winter_ornament_plain7.tex" u1="0.616234375" u2="0.73728125" v2="0.383765625" v1="0.26271875" variant="" />
+		<Element name="winter_ornament_plain8.tex" u1="0.73928125" u2="0.860328125" v2="0.383765625" v1="0.26271875" variant="" />
+		<Element name="winter_ornament_plain9.tex" u1="0.616234375" u2="0.73728125" v2="0.26071875" v1="0.139671875" variant="" />
+	</Elements>
+</Atlas>

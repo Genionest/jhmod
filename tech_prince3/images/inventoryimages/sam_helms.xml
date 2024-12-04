@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Atlas>
+	<Texture filename="sam_helms.tex" />
+	<Elements>
+		<Element name="helm_arcane_blue.tex" u1="0.001" u2="0.22946875" v2="0.999" v1="0.84084375" variant="" />
+		<Element name="helm_arcane_green.tex" u1="0.23146875" u2="0.4599375" v2="0.999" v1="0.84084375" variant="" />
+		<Element name="helm_arcane_grey.tex" u1="0.001" u2="0.22946875" v2="0.83884375" v1="0.6806875" variant="" />
+		<Element name="helm_arcane_pink.tex" u1="0.001" u2="0.22946875" v2="0.6786875" v1="0.52053125" variant="" />
+		<Element name="helm_arcane_purple.tex" u1="0.23146875" u2="0.4599375" v2="0.83884375" v1="0.6806875" variant="" />
+		<Element name="helm_arcane_red.tex" u1="0.23146875" u2="0.4599375" v2="0.6786875" v1="0.52053125" variant="" />
+		<Element name="helm_arcane_skyblue.tex" u1="0.4619375" u2="0.69040625" v2="0.999" v1="0.84084375" variant="" />
+		<Element name="helm_arcane_yellow.tex" u1="0.4619375" u2="0.69040625" v2="0.83884375" v1="0.6806875" variant="" />
+		<Element name="helm_dog_blue.tex" u1="0.69240625" u2="0.92478125" v2="0.999" v1="0.7744375" variant="" />
+		<Element name="helm_dog_green.tex" u1="0.69240625" u2="0.92478125" v2="0.7724375" v1="0.547875" variant="" />
+		<Element name="helm_dog_grey.tex" u1="0.001" u2="0.233375" v2="0.51853125" v1="0.29396875" variant="" />
+		<Element name="helm_dog_orange.tex" u1="0.001" u2="0.233375" v2="0.29196875" v1="0.06740625" variant="" />
+		<Element name="helm_dog_pink.tex" u1="0.235375" u2="0.46775" v2="0.51853125" v1="0.29396875" variant="" />
+		<Element name="helm_dog_purple.tex" u1="0.235375" u2="0.46775" v2="0.29196875" v1="0.06740625" variant="" />
+		<Element name="helm_dog_red.tex" u1="0.46975" u2="0.702125" v2="0.545875" v1="0.3213125" variant="" />
+		<Element name="helm_dog_skyblue.tex" u1="0.46975" u2="0.702125" v2="0.3193125" v1="0.09475" variant="" />
+		<Element name="helm_dog_yellow.tex" u1="0.704125" u2="0.9365" v2="0.545875" v1="0.3213125" variant="" />
+	</Elements>
+</Atlas>

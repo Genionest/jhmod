@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Atlas>
+	<Texture filename="tp_hats.tex" />
+	<Elements>
+		<Element name="tp_hat_antitoxin.tex" u1="0.001" u2="0.2411875" v2="0.999" v1="0.79396875" variant="" />
+		<Element name="tp_hat_bag.tex" u1="0.2431875" u2="0.483375" v2="0.999" v1="0.79396875" variant="" />
+		<Element name="tp_hat_burn.tex" u1="0.001" u2="0.24509375" v2="0.79196875" v1="0.626" variant="" />
+		<Element name="tp_hat_cool.tex" u1="0.24709375" u2="0.48728125" v2="0.79196875" v1="0.5869375" variant="" />
+		<Element name="tp_hat_fog.tex" u1="0.485375" u2="0.7255625" v2="0.999" v1="0.79396875" variant="" />
+		<Element name="tp_hat_frozen.tex" u1="0.48928125" u2="0.733375" v2="0.79196875" v1="0.626" variant="" />
+		<Element name="tp_hat_health.tex" u1="0.7275625" u2="0.96775" v2="0.999" v1="0.79396875" variant="" />
+		<Element name="tp_hat_helm.tex" u1="0.735375" u2="0.9755625" v2="0.79196875" v1="0.5869375" variant="" />
+		<Element name="tp_hat_rain.tex" u1="0.001" u2="0.2411875" v2="0.624" v1="0.41896875" variant="" />
+		<Element name="tp_hat_warm.tex" u1="0.001" u2="0.2411875" v2="0.41696875" v1="0.2119375" variant="" />
+		<Element name="tp_hat_wrestle.tex" u1="0.2431875" u2="0.483375" v2="0.5849375" v1="0.37209375" variant="" />
+	</Elements>
+</Atlas>

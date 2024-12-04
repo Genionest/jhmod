@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Atlas>
+	<Texture filename="tp_items3.tex" />
+	<Elements>
+		<Element name="items_0.tex" u1="0.001" u2="0.124" v2="0.999" v1="0.751" variant="" />
+		<Element name="items_1.tex" u1="0.126" u2="0.249" v2="0.999" v1="0.75490625" variant="" />
+		<Element name="items_10.tex" u1="0.124046875" u2="0.247046875" v2="0.5068125" v1="0.2588125" variant="" />
+		<Element name="items_11.tex" u1="0.124046875" u2="0.247046875" v2="0.2568125" v1="0.0088125" variant="" />
+		<Element name="items_12.tex" u1="0.249046875" u2="0.372046875" v2="0.50290625" v1="0.25490625" variant="" />
+		<Element name="items_13.tex" u1="0.376" u2="0.497046875" v2="0.52634375" v1="0.27834375" variant="" />
+		<Element name="items_14.tex" u1="0.249046875" u2="0.36228125" v2="0.25290625" v1="0.00490625" variant="" />
+		<Element name="items_15.tex" u1="0.36428125" u2="0.477515625" v2="0.25290625" v1="0.00490625" variant="" />
+		<Element name="items_16.tex" u1="0.4931875" u2="0.606421875" v2="0.999" v1="0.751" variant="" />
+		<Element name="items_17.tex" u1="0.608421875" u2="0.72946875" v2="0.999" v1="0.7588125" variant="" />
+		<Element name="items_18.tex" u1="0.4931875" u2="0.6161875" v2="0.749" v1="0.53225" variant="" />
+		<Element name="items_19.tex" u1="0.73146875" u2="0.85446875" v2="0.999" v1="0.84475" variant="" />
+		<Element name="items_2.tex" u1="0.001" u2="0.124" v2="0.749" v1="0.516625" variant="" />
+		<Element name="items_20.tex" u1="0.499046875" u2="0.614234375" v2="0.53025" v1="0.3135" variant="" />
+		<Element name="items_21.tex" u1="0.6181875" u2="0.739234375" v2="0.7568125" v1="0.56740625" variant="" />
+		<Element name="items_22.tex" u1="0.6181875" u2="0.739234375" v2="0.56540625" v1="0.376" variant="" />
+		<Element name="items_23.tex" u1="0.499046875" u2="0.62009375" v2="0.3115" v1="0.12209375" variant="" />
+		<Element name="items_24.tex" u1="0.85646875" u2="0.977515625" v2="0.999" v1="0.79396875" variant="" />
+		<Element name="items_25.tex" u1="0.741234375" u2="0.86228125" v2="0.79196875" v1="0.610375" variant="" />
+		<Element name="items_26.tex" u1="0.741234375" u2="0.86228125" v2="0.608375" v1="0.40725" variant="" />
+		<Element name="items_27.tex" u1="0.62209375" u2="0.727515625" v2="0.374" v1="0.172875" variant="" />
+		<Element name="items_3.tex" u1="0.126" u2="0.249" v2="0.75290625" v1="0.5088125" variant="" />
+		<Element name="items_4.tex" u1="0.251" u2="0.340796875" v2="0.999" v1="0.75490625" variant="" />
+		<Element name="items_5.tex" u1="0.342796875" u2="0.46384375" v2="0.999" v1="0.77834375" variant="" />
+		<Element name="items_6.tex" u1="0.251" u2="0.374" v2="0.75290625" v1="0.50490625" variant="" />
+		<Element name="items_7.tex" u1="0.376" u2="0.4911875" v2="0.77634375" v1="0.52834375" variant="" />
+		<Element name="items_8.tex" u1="0.001" u2="0.122046875" v2="0.514625" v1="0.266625" variant="" />
+		<Element name="items_9.tex" u1="0.001" u2="0.122046875" v2="0.264625" v1="0.016625" variant="" />
+	</Elements>
+</Atlas>

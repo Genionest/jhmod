@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Atlas>
+	<Texture filename="ak_items.tex" />
+	<Elements>
+		<Element name="ak_alloy.tex" u1="0.001" u2="0.124" v2="0.999" v1="0.901390625" variant="" />
+		<Element name="ak_alloy_blue.tex" u1="0.126" u2="0.249" v2="0.999" v1="0.917015625" variant="" />
+		<Element name="ak_alloy_purple.tex" u1="0.001" u2="0.124" v2="0.899390625" v1="0.81740625" variant="" />
+		<Element name="ak_alloy_red.tex" u1="0.126" u2="0.247046875" v2="0.915015625" v1="0.831078125" variant="" />
+		<Element name="ak_candy_bag.tex" u1="0.251" u2="0.372046875" v2="0.999" v1="0.877953125" variant="" />
+		<Element name="ak_cook_pot.tex" u1="0.249046875" u2="0.34665625" v2="0.875953125" v1="0.792015625" variant="" />
+		<Element name="ak_copper.tex" u1="0.374046875" u2="0.497046875" v2="0.999" v1="0.897484375" variant="" />
+		<Element name="ak_copper_ore.tex" u1="0.34865625" u2="0.47165625" v2="0.875953125" v1="0.756859375" variant="" />
+		<Element name="ak_dimensional.tex" u1="0.001" u2="0.09275" v2="0.81540625" v1="0.69240625" variant="" />
+		<Element name="ak_essence.tex" u1="0.09475" u2="0.215796875" v2="0.81540625" v1="0.69240625" variant="" />
+		<Element name="ak_fix_powder.tex" u1="0.001" u2="0.122046875" v2="0.69040625" v1="0.588890625" variant="" />
+		<Element name="ak_gas_carbon_dioxide_tank.tex" u1="0.124046875" u2="0.211890625" v2="0.69040625" v1="0.579125" variant="" />
+		<Element name="ak_gas_chlorine_tank.tex" u1="0.217796875" u2="0.305640625" v2="0.790015625" v1="0.678734375" variant="" />
+		<Element name="ak_gas_hydrogen_tank.tex" u1="0.213890625" u2="0.301734375" v2="0.676734375" v1="0.565453125" variant="" />
+		<Element name="ak_gas_natural_tank.tex" u1="0.307640625" u2="0.395484375" v2="0.754859375" v1="0.643578125" variant="" />
+		<Element name="ak_gas_oxygen_polluted_tank.tex" u1="0.397484375" u2="0.485328125" v2="0.754859375" v1="0.643578125" variant="" />
+		<Element name="ak_gas_oxygen_tank.tex" u1="0.303734375" u2="0.391578125" v2="0.641578125" v1="0.530296875" variant="" />
+		<Element name="ak_gas_steam_tank.tex" u1="0.393578125" u2="0.481421875" v2="0.641578125" v1="0.530296875" variant="" />
+		<Element name="ak_glass.tex" u1="0.499046875" u2="0.62009375" v2="0.999" v1="0.877953125" variant="" />
+		<Element name="ak_gold.tex" u1="0.47365625" u2="0.59665625" v2="0.875953125" v1="0.77834375" variant="" />
+		<Element name="ak_hat_oxygen.tex" u1="0.62209375" u2="0.735328125" v2="0.999" v1="0.881859375" variant="" />
+		<Element name="ak_heat_rock.tex" u1="0.59865625" u2="0.719703125" v2="0.875953125" v1="0.75490625" variant="" />
+		<Element name="ak_heat_rock1.tex" u1="0.737328125" u2="0.858375" v2="0.999" v1="0.877953125" variant="" />
+		<Element name="ak_heat_rock2.tex" u1="0.483421875" u2="0.60446875" v2="0.641578125" v1="0.52053125" variant="" />
+		<Element name="ak_heat_rock3.tex" u1="0.721703125" u2="0.84275" v2="0.875953125" v1="0.75490625" variant="" />
+		<Element name="ak_heat_rock4.tex" u1="0.860375" u2="0.981421875" v2="0.999" v1="0.877953125" variant="" />
+		<Element name="ak_heat_rock5.tex" u1="0.60646875" u2="0.727515625" v2="0.75290625" v1="0.631859375" variant="" />
+		<Element name="ak_mini_battery.tex" u1="0.84475" u2="0.96775" v2="0.875953125" v1="0.752953125" variant="" />
+		<Element name="ak_oxy_rock.tex" u1="0.487328125" u2="0.582984375" v2="0.77634375" v1="0.66896875" variant="" />
+		<Element name="ak_petroleum.tex" u1="0.60646875" u2="0.70603125" v2="0.629859375" v1="0.5088125" variant="" />
+		<Element name="ak_phoenix_cane.tex" u1="0.70803125" u2="0.83103125" v2="0.629859375" v1="0.506859375" variant="" />
+		<Element name="ak_plant_army_seed.tex" u1="0.83303125" u2="0.954078125" v2="0.750953125" v1="0.62990625" variant="" />
+		<Element name="ak_plant_gem.tex" u1="0.83303125" u2="0.954078125" v2="0.62790625" v1="0.506859375" variant="" />
+		<Element name="ak_plastic.tex" u1="0.001" u2="0.124" v2="0.528296875" v1="0.41115625" variant="" />
+		<Element name="ak_platinum.tex" u1="0.001" u2="0.122046875" v2="0.40915625" v1="0.32521875" variant="" />
+		<Element name="ak_plumbum.tex" u1="0.126" u2="0.243140625" v2="0.563453125" v1="0.46975" variant="" />
+		<Element name="ak_rock_ash.tex" u1="0.126" u2="0.24509375" v2="0.46775" v1="0.38771875" variant="" />
+		<Element name="ak_salt_rock.tex" u1="0.001" u2="0.122046875" v2="0.32321875" v1="0.202171875" variant="" />
+		<Element name="ak_sleeping_pill.tex" u1="0.124046875" u2="0.233375" v2="0.38571875" v1="0.327171875" variant="" />
+		<Element name="ak_spice_salt.tex" u1="0.24709375" u2="0.368140625" v2="0.528296875" v1="0.40725" variant="" />
+		<Element name="ak_ssd.tex" u1="0.124046875" u2="0.22946875" v2="0.325171875" v1="0.225609375" variant="" />
+		<Element name="ak_tungsten.tex" u1="0.001" u2="0.124" v2="0.200171875" v1="0.1025625" variant="" />
+		<Element name="ak_tungsten_ore.tex" u1="0.24709375" u2="0.37009375" v2="0.40525" v1="0.288109375" variant="" />
+		<Element name="ak_water_bottle.tex" u1="0.370140625" u2="0.452125" v2="0.528296875" v1="0.409203125" variant="" />
+		<Element name="ak_water_polluted_bottle.tex" u1="0.126" u2="0.207984375" v2="0.223609375" v1="0.104515625" variant="" />
+		<Element name="ak_water_salt_bottle.tex" u1="0.23146875" u2="0.313453125" v2="0.286109375" v1="0.167015625" variant="" />
+	</Elements>
+</Atlas>

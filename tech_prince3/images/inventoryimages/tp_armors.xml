@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Atlas>
+	<Texture filename="tp_armors.tex" />
+	<Elements>
+		<Element name="tp_armor_airi.tex" u1="0.001" u2="0.249" v2="0.999" v1="0.501" variant="" />
+		<Element name="tp_armor_bag.tex" u1="0.251" u2="0.49509375" v2="0.999" v1="0.501" variant="" />
+		<Element name="tp_armor_cool.tex" u1="0.001" u2="0.24509375" v2="0.499" v1="0.001" variant="" />
+		<Element name="tp_armor_firm.tex" u1="0.24709375" u2="0.4911875" v2="0.499" v1="0.001" variant="" />
+		<Element name="tp_armor_health.tex" u1="0.49709375" u2="0.7411875" v2="0.999" v1="0.501" variant="" />
+		<Element name="tp_armor_shadow.tex" u1="0.7431875" u2="0.9911875" v2="0.999" v1="0.501" variant="" />
+		<Element name="tp_armor_thunder.tex" u1="0.4931875" u2="0.73728125" v2="0.499" v1="0.001" variant="" />
+		<Element name="tp_armor_warm.tex" u1="0.73928125" u2="0.983375" v2="0.499" v1="0.001" variant="" />
+	</Elements>
+</Atlas>

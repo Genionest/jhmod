@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Atlas>
+	<Texture filename="tp_potions.tex" />
+	<Elements>
+		<Element name="tp_livingtree_root.tex" u1="0.001" u2="0.122046875" v2="0.999" v1="0.75490625" variant="" />
+		<Element name="tp_plantable_flower_cave.tex" u1="0.124046875" u2="0.23728125" v2="0.999" v1="0.75490625" variant="" />
+		<Element name="tp_plantable_grass_water.tex" u1="0.001" u2="0.114234375" v2="0.75290625" v1="0.5088125" variant="" />
+		<Element name="tp_plantable_mangrove.tex" u1="0.116234375" u2="0.22946875" v2="0.75290625" v1="0.5088125" variant="" />
+		<Element name="tp_plantable_reeds.tex" u1="0.23928125" u2="0.352515625" v2="0.999" v1="0.75490625" variant="" />
+		<Element name="tp_potion_brave_large.tex" u1="0.354515625" u2="0.4755625" v2="0.999" v1="0.75490625" variant="" />
+		<Element name="tp_potion_brave_small.tex" u1="0.23146875" u2="0.352515625" v2="0.75290625" v1="0.5088125" variant="" />
+		<Element name="tp_potion_cool.tex" u1="0.354515625" u2="0.422828125" v2="0.75290625" v1="0.516625" variant="" />
+		<Element name="tp_potion_crazy.tex" u1="0.001" u2="0.08884375" v2="0.5068125" v1="0.26271875" variant="" />
+		<Element name="tp_potion_detoxify.tex" u1="0.09084375" u2="0.15915625" v2="0.5068125" v1="0.27053125" variant="" />
+		<Element name="tp_potion_dry.tex" u1="0.001" u2="0.08884375" v2="0.26071875" v1="0.016625" variant="" />
+		<Element name="tp_potion_fire.tex" u1="0.16115625" u2="0.22946875" v2="0.5068125" v1="0.27053125" variant="" />
+		<Element name="tp_potion_frozen.tex" u1="0.09084375" u2="0.15915625" v2="0.26853125" v1="0.03225" variant="" />
+		<Element name="tp_potion_health_large.tex" u1="0.23146875" u2="0.352515625" v2="0.5068125" v1="0.26271875" variant="" />
+		<Element name="tp_potion_health_small.tex" u1="0.354515625" u2="0.4755625" v2="0.514625" v1="0.27053125" variant="" />
+		<Element name="tp_potion_holy.tex" u1="0.16115625" u2="0.22946875" v2="0.26853125" v1="0.03225" variant="" />
+		<Element name="tp_potion_horror.tex" u1="0.424828125" u2="0.493140625" v2="0.75290625" v1="0.516625" variant="" />
+		<Element name="tp_potion_iron.tex" u1="0.23146875" u2="0.3193125" v2="0.26071875" v1="0.016625" variant="" />
+		<Element name="tp_potion_killer.tex" u1="0.3213125" u2="0.40915625" v2="0.26071875" v1="0.016625" variant="" />
+		<Element name="tp_potion_metal.tex" u1="0.41115625" u2="0.499" v2="0.26853125" v1="0.0244375" variant="" />
+		<Element name="tp_potion_moon.tex" u1="0.4775625" u2="0.598609375" v2="0.999" v1="0.75490625" variant="" />
+		<Element name="tp_potion_sanity_large.tex" u1="0.600609375" u2="0.72165625" v2="0.999" v1="0.75490625" variant="" />
+		<Element name="tp_potion_sanity_small.tex" u1="0.495140625" u2="0.6161875" v2="0.75290625" v1="0.5088125" variant="" />
+		<Element name="tp_potion_shadow.tex" u1="0.72365625" u2="0.8115" v2="0.999" v1="0.75490625" variant="" />
+		<Element name="tp_potion_shine.tex" u1="0.6181875" u2="0.739234375" v2="0.75290625" v1="0.5088125" variant="" />
+		<Element name="tp_potion_smell.tex" u1="0.8135" u2="0.90134375" v2="0.999" v1="0.75490625" variant="" />
+		<Element name="tp_potion_warm.tex" u1="0.4775625" u2="0.545875" v2="0.5068125" v1="0.27053125" variant="" />
+		<Element name="tp_potion_warth.tex" u1="0.547875" u2="0.668921875" v2="0.5068125" v1="0.26271875" variant="" />
+	</Elements>
+</Atlas>
