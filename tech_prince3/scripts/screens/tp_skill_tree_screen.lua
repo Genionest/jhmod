@@ -372,13 +372,13 @@ function TpSkillTreeScreen:SetItemBoard()
 			item:SetAnim(v:GetAnims())
 			item:SetString(v:GetName())
 			item:Disable()
-			if v:IsLock() then
-				item.image:SetTint(1, 1, 1, .3)
-				item.anim:GetAnimState():SetMultColour(1, 1, 1, .3)
-			else
-				item.image:SetTint(1, 1, 1, 1)
-				item.anim:GetAnimState():SetMultColour(1, 1, 1, 1)
-			end
+			-- if v:IsLock() then
+			-- 	item.image:SetTint(1, 1, 1, .3)
+			-- 	item.anim:GetAnimState():SetMultColour(1, 1, 1, .3)
+			-- else
+			-- 	item.image:SetTint(1, 1, 1, 1)
+			-- 	item.anim:GetAnimState():SetMultColour(1, 1, 1, 1)
+			-- end
 			-- item:SetOnClick(function()
             --     v:TryUnlock(self.owner)
             --     self:SetItemBoard()

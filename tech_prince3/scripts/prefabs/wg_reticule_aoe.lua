@@ -149,88 +149,52 @@ local function MakeReticule(name, anim)
     return Prefab("wg_"..name, fn, assets)
 end
 
---------------------------------------------------------------------------
+local reticule_target = Prefab("wg_reticule_target", function(inst)
+    local inst = CreateEntity()
 
-local FADE_FRAMES = 10
+    inst:AddTag("FX")
+    inst:AddTag("NOCLICK")
+    --[[Non-networked entity]]
+    inst.entity:SetCanSleep(false)
+    inst.persists = false
 
-local function OnUpdateTargetFade(inst, r, g, b, a)
-    local k
-    if inst._fade:value() <= FADE_FRAMES then
-        inst._fade:set_local(math.min(inst._fade:value() + 1, FADE_FRAMES))
-        k = inst._fade:value() / FADE_FRAMES
-    else
-        inst._fade:set_local(math.min(inst._fade:value() + 1, FADE_FRAMES * 2 + 1))
-        k = (FADE_FRAMES * 2 + 1 - inst._fade:value()) / FADE_FRAMES
+    inst.entity:AddTransform()
+    inst.entity:AddAnimState()
+
+    inst.AnimState:SetBank("reticuleaoe")
+    inst.AnimState:SetBuild("reticuleaoe")
+    inst.AnimState:PlayAnimation("idle_small")
+    inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
+    inst.AnimState:SetLayer(LAYER_WORLD_BACKGROUND)
+    inst.AnimState:SetSortOrder(3)
+    inst.AnimState:SetScale(SCALE, SCALE)
+
+    --[[if ThePlayer ~= nil and not TheInput:ControllerAttached() then
+        inst.base = CreateBase()
+        inst.base.entity:SetParent(ThePlayer.entity)
+
+        inst._Hide = inst.Hide
+        inst._Show = inst.Show
+        inst.Hide = OnHideReticule
+        inst.Show = OnShowReticule
+        inst.OnRemoveEntity = OnRemoveReticule
+    end]]
+    inst:DoTaskInTime(0, function()
+        local fx = SpawnPrefab("wg_reticuleaoesmall")
+        fx.Transform:SetPosition(0,0,0)
+        fx.Transform:SetScale(0.3,0.3,0.3)
+        inst:AddChild(fx)
+    end)
+
+    inst.UpdatePosition = function(inst)
+        inst.Transform:SetPosition(TheInput:GetWorldPosition():Get())
     end
 
-    inst.AnimState:OverrideMultColour(r, g, b, a * k)
+    return inst
+end)
 
-    if inst._fade:value() == FADE_FRAMES then
-        inst._fadetask:Cancel()
-        inst._fadetask = nil
-    elseif inst._fade:value() > FADE_FRAMES * 2 then
-        inst:Remove()
-    end
-end
-
-local function MakeTarget(name, anim, colour)
-    local function OnTargetFadeDirty(inst)
-        if inst._fadetask == nil then
-            inst._fadetask = inst:DoPeriodicTask(FRAMES, OnUpdateTargetFade, nil, unpack(colour))
-        end
-        OnUpdateTargetFade(inst, unpack(colour))
-    end
-
-    local function KillTarget(inst)
-        if inst._fade:value() <= FADE_FRAMES then
-            inst._fade:set(FADE_FRAMES * 2 + 1 - inst._fade:value())
-            if inst._fadetask == nil then
-                inst._fadetask = inst:DoPeriodicTask(FRAMES, OnUpdateTargetFade, nil, unpack(colour))
-            end
-        end
-    end
-
-    local function fn()
-        local inst = CreateEntity()
-
-        inst.entity:AddTransform()
-        inst.entity:AddAnimState()
-        inst.entity:AddNetwork()
-
-        inst:AddTag("FX")
-        inst:AddTag("NOCLICK")
-
-        inst.AnimState:SetBank("reticuleaoe")
-        inst.AnimState:SetBuild("reticuleaoe")
-        inst.AnimState:PlayAnimation(anim)
-        inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
-        inst.AnimState:SetLayer(LAYER_BACKGROUND)
-        inst.AnimState:SetSortOrder(1)
-        inst.AnimState:SetScale(SCALE, SCALE)
-        inst.AnimState:OverrideMultColour(1, 1, 1, 0)
-
-        inst._fade = net_smallbyte(inst.GUID, name.."._fade", "fadedirty")
-        inst._fadetask = inst:DoPeriodicTask(FRAMES, OnUpdateTargetFade, nil, unpack(colour))
-
-        inst.entity:SetPristine()
-
-        if not TheWorld.ismastersim then
-            inst:ListenForEvent("fadedirty", OnTargetFadeDirty)
-
-            return inst
-        end
-
-        inst.persists = false
-
-        inst.KillFX = KillTarget
-
-        return inst
-    end
-
-    return Prefab("wg_"..name, fn, assets)
-end
-
-return MakeReticule("reticuleaoe", "idle"),
+return reticule_target,
+    MakeReticule("reticuleaoe", "idle"),
     MakeReticule("reticuleaoesmall", "idle_small"),
     MakeReticule("reticuleaoesummon", "idle_summon")
     -- MakePing("reticuleaoeping", "idle", 1.05),

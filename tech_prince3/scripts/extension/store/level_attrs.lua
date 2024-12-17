@@ -21,7 +21,7 @@ local function LevelAttr(id, Uimg)
     self.id = id
     self.name = Info.Attr.PlayerAttrStr[self.id]
     -- self.desc = desc
-    self.Uimg = Uimg
+    self.Uimg = Uimg or AssetUtil:MakeImg("tp_icons2", "attr_"..id)
     return self
 end
 
@@ -78,33 +78,15 @@ function LevelAttrData:Done()
 end
 
 local level_attrs = {
-    LevelAttr("health", 
-        AssetUtil:MakeImg("half_health")
-    ),
-    LevelAttr("endurance",
-        AssetUtil:MakeImg("bedroll_straw")
-    ),
-    LevelAttr("stamina",
-        AssetUtil:MakeImg("backpack")
-    ),
-    LevelAttr("attention",
-        AssetUtil:MakeImg("tophat")
-    ),
-    LevelAttr("strengthen",
-        AssetUtil:MakeImg("hambat")
-    ),
-    LevelAttr("agility",
-        AssetUtil:MakeImg("cutlass")
-    ),
-    LevelAttr("faith",
-        AssetUtil:MakeImg("relic_4")
-    ),
-    LevelAttr("intelligence",
-        AssetUtil:MakeImg("walrushat")
-    ),
-    LevelAttr("lucky",
-        AssetUtil:MakeImg("piratehat")
-    )
+    LevelAttr("health"),
+    LevelAttr("endurance"),
+    LevelAttr("stamina"),
+    LevelAttr("attention"),
+    LevelAttr("strengthen"),
+    LevelAttr("agility"),
+    LevelAttr("faith"),
+    LevelAttr("intelligence"),
+    LevelAttr("lucky"),
 }
 
 local shelfs = WgShelf("升级", 20)

@@ -1,11 +1,13 @@
 local WgValue = require "components/wg_value"
 local WgBadge = require "extension/uis/wg_badge"
 local AssetUtil = require "extension/lib/asset_util"
+local WgValModifier = require "extension.lib.wg_val_modifier"
 
 local TpValVigor = Class(WgValue, function(self, inst)
-    self.inst = inst
     WgValue._ctor(self, inst)
+    self.wg_val_modifier = WgValModifier(self)
     self.rate = -.5
+    self.wg_val_modifier:RegisterAttr("rate")
     self.period = .1
     self:SetMax(10)
     self.event = "val_vigor_delta"
@@ -61,7 +63,7 @@ end)
 
 function TpValVigor:MakeBadge()
     local widget = ValBadge(self.inst)
-    local Uimg = AssetUtil:MakeImg("tp_icons2", "badge_30")
+    local Uimg = AssetUtil:MakeImg("tp_icons2", "tp_val_vigor")
     local atlas, image = AssetUtil:GetImage(Uimg)
     widget:SetImage(atlas, image)
     widget:SetString("精力值")

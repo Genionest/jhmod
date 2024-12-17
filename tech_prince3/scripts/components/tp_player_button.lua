@@ -1,4 +1,6 @@
 local WgValue = require "components/wg_value"
+local Image = require "widgets/image"
+local AssetUtil = require "extension.lib.asset_util"
 local SkillButtonManager = Sample.SkillButtonManager
 
 local TpPlayerButton = Class(WgValue, function(self, inst)
@@ -17,6 +19,11 @@ local TpPlayerButton = Class(WgValue, function(self, inst)
         end
         self:SetSkillButton(id, true)
     end)
+    TheInput:AddKeyDownHandler(Sample.button_key, function()
+        if not IsPaused() then
+            self:Click()
+        end
+    end)
 end)
 
 function TpPlayerButton:HasId()
@@ -30,6 +37,9 @@ function TpPlayerButton:SetSkillButton(id, force)
     self.id = id
     local data = SkillButtonManager:GetDataById(self.id)
     self:SetMax(data.time)
+    if data.init then
+        data.init(self.inst, self, id)
+    end
     local widget = data:GetButton(self.inst)
     local inst = self.inst
     if inst.HUD then
@@ -38,6 +48,18 @@ function TpPlayerButton:SetSkillButton(id, force)
             self.badge = nil
         end
         self.badge = inst.HUD.controls.status:AddBadge(widget)
+        -- 特效
+        local atlas, image = AssetUtil:GetImage(data.Uimg)
+        local im = Image(atlas, image)
+        local source_pos = Vector3(TheSim:GetScreenPos(inst.Transform:GetWorldPosition()))
+        -- local dest_pos = Vector3(TheSim:GetScreenPos(widget:GetPosition()))
+        local dest_pos = self:GetScreenPos()
+        -- print(source_pos, dest_pos)
+        im:MoveTo(source_pos, dest_pos, .3, function() 
+            widget:ScaleTo(2, 1, .25) 
+            im:Kill() 
+        end)
+
         -- self.badge = inst.HUD.controls.status:AddChild(widget)
         -- widget:SetPosition(-150, 0, 0)
         widget.max = self:GetMax()
@@ -54,8 +76,38 @@ function TpPlayerButton:SetSkillButton(id, force)
     end
 end
 
+function TpPlayerButton:GetScreenPos()
+    local w, h = TheSim:GetScreenSize()
+    local dest_pos = Vector3(w, h, 0)
+    local parent = self.badge.parent
+    while parent ~= nil do
+        dest_pos = dest_pos + parent:GetPosition()
+        parent = parent.parent
+    end
+    return dest_pos
+end
+
 function TpPlayerButton:SetFn(fn)
     self.fn = fn
+end
+
+function TpPlayerButton:Click()
+    local data = SkillButtonManager:GetDataById(self.id)
+    local player = self.inst
+    local mana = data.mana
+    if player.components.tp_val_hollow
+    and player.components.tp_val_hollow:CanReduceManaCost() then
+        mana = mana * .2
+    end
+    if player.components.tp_val_mana:GetCurrent()>=mana then
+        player.components.tp_player_button:Trigger()
+        data.fn(player)
+        player.components.tp_val_mana:DoDelta(-mana)
+        if player.components.tp_val_hollow
+        and player.components.tp_val_hollow:CanReduceManaCost() then
+            player.components.tp_val_hollow:EffectReduceManaCost()
+        end
+    end
 end
 
 function TpPlayerButton:Trigger()

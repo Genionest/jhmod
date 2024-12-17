@@ -122,7 +122,7 @@ local tornado = MakeProjectile("tp_tornado_proj",
 	end)
 	inst.components.wg_projectile:SetOnHitFn(function(inst, owner, target)
 		inst.components.wg_projectile.onmiss(inst, owner, target)
-		BuffManager:AddBuff(owner, "wind")
+		BuffManager:AddBuff(target, "wind", nil, {attacker=owner})
 	end)
 	inst.components.wg_projectile:SetHoming(true)
 	inst.components.wg_projectile:SetLaunchOffset(Vector3(0, 0.2, 0))

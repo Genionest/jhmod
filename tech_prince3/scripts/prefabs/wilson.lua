@@ -37,7 +37,7 @@ local beard_fn = function(inst)
         -- end
         inst.AnimState:OverrideSymbol("beard", "beard", "beard_short")
         inst.components.beard.bits = beard_bits[1]
-        inst.components.combat:AddDefenseMod("beard", 10)
+        -- inst.components.combat:AddDefenseMod("beard", 10)
     end)
     
     inst.components.beard:AddCallback(beard_days[2], function()
@@ -46,7 +46,7 @@ local beard_fn = function(inst)
         -- end
         inst.AnimState:OverrideSymbol("beard", "beard", "beard_medium")
         inst.components.beard.bits = beard_bits[2]
-        inst.components.combat:AddDefenseMod("beard", 20)
+        -- inst.components.combat:AddDefenseMod("beard", 20)
     end)
     
     inst.components.beard:AddCallback(beard_days[3], function()
@@ -55,7 +55,7 @@ local beard_fn = function(inst)
         -- end
         inst.AnimState:OverrideSymbol("beard", "beard", "beard_long")
         inst.components.beard.bits = beard_bits[3]
-        inst.components.combat:AddDefenseMod("beard", 30)
+        -- inst.components.combat:AddDefenseMod("beard", 30)
     end)
     
 end
@@ -82,52 +82,10 @@ local function fn(inst)
     PlayerCommonFn(inst)
     beard_fn(inst)
     inst.components.health:SetMaxHealth(300)
-    -- inst.level_data = {
-    --     attrs = attrs,
-    --     level_fn = function(inst, level)
-    --         if level>=5 then
-    --             if inst.components.beard == nil then
-    --                 beard_fn(inst)
-    --             end
-    --         end
-    --     end,
-    --     advance_fn = function(inst, phase)
-    --         if phase>=2 then
-    --             EntUtil:add_hunger_mod(inst, "tp_level0", Info.Character.wilson.Phase2HungerRate)
-    --             local CalcDamage = inst.components.combat.CalcDamage
-    --             function inst.components.combat:CalcDamage(target, weapon, multiplier)
-    --                 multiplier = multiplier or 1
-    --                 local base = inst.components.locomotor.runspeed
-    --                 local total = inst.components.locomotor:GetRunSpeed()
-    --                 local p = total/base
-    --                 if p>1 then
-    --                     local mult = (p-1)*Info.Character.wilson.SpeedDmgMod
-    --                     print(mult)
-    --                     multiplier = multiplier+mult
-    --                 end
-    --                 return CalcDamage(self, target, weapon, multiplier)
-    --             end
-    --         end
-    --         if phase>=3 then
-    --             EntUtil:add_sanity_mod(inst, "tp_level0", Info.Character.wilson.Phase3SanityRate)
-    --             inst.components.builder.science_bonus = 1
-    --             inst.components.builder.magic_bonus = 1
-    --         end
-    --     end,
-    --     tp_level_up = function(inst, data)
-    --         if data and data.level then
-    --         end
-    --     end,
-    --     tp_be_advanced = function(inst, data)
-    --         if data and data.phase then
-    --             if data.phase == 2 then
-    --                 -- give_gift(inst, "tp_furnace_bp", 1)
-    --             elseif data.phase == 3 then
-    --                 -- give_gift(inst, "ak_smithing_table_bp", 1)
-    --             end
-    --         end
-    --     end,
-    -- }
+    inst.components.wg_start:AddFn(function(inst)
+        -- skill
+        inst.components.tp_skill_tree:UnlockSkill("SKbeard_defense")
+    end)
 end
 
 return MakePlayerCharacter("wilson", prefabs, assets, fn) 

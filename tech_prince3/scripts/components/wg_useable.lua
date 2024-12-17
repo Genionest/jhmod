@@ -17,7 +17,11 @@ function WgUseable:Use(doer)
 		self.use(self.inst, doer)
 	end
 	if doer.SoundEmitter then
-		doer.SoundEmitter:PlaySound(Sounds["get_item"])
+		if self.sound then
+			doer.SoundEmitter:PlaySound(self.sound)
+		else
+			doer.SoundEmitter:PlaySound(Sounds["get_item"])
+		end
 	end
 end
 

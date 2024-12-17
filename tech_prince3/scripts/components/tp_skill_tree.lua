@@ -26,16 +26,24 @@ end
 function TpSkillTree:AddId(id)
     if not self:HasId(id) then
         table.insert(self.ids, id)
-        SkillTreeManager:UnlockSkill(id, self.inst)
+        -- SkillTreeManager:UnlockSkill(id, self.inst)
+        -- local data = SkillTreeManager:GetDataById(id)
+        -- data:Unlock(self.inst)
     end
 end
 
 function TpSkillTree:UnlockSkill(id)
     if not self:HasId(id) then
         self:AddId(id)
-        SkillTreeManager:TriggerSkill(id, self.inst)
-        SkillTreeManager:ForverEffectSkill(id, self.inst)
-        self:ShowSkillDesc(id)
+        -- SkillTreeManager:TriggerSkill(id, self.inst)
+        -- SkillTreeManager:ForeverEffectSkill(id, self.inst)
+        local data = SkillTreeManager:GetDataById(id)
+        -- data:Trigger(self.inst)
+        data.fn(self.inst, self, id, data)
+        if data.fn2 then
+            data.fn2(self.inst, self, id, data)
+        end
+        -- self:ShowSkillDesc(id)
     end
 end
 
@@ -43,11 +51,11 @@ end
 --[[for k, v in pairs(GetPlayer().components.tp_skill_tree.ids) do print(k, v) end]]
 --[[print(GetPlayer().components.tp_skill_tree.ids)]]
 function TpSkillTree:ShowSkillDesc(id)
-    if id == nil then
-        -- 通过等级解锁天赋时可以不传入id
-        local tp_level = self.inst.components.tp_level
-        id = string.format("P%dL%d", tp_level.phase, tp_level.level)
-    end
+    -- if id == nil then
+    --     -- 通过等级解锁天赋时可以不传入id
+    --     local tp_level = self.inst.components.tp_level
+    --     id = string.format("P%dL%d", tp_level.phase, tp_level.level)
+    -- end
     -- self:AddId(id)
 end
 
@@ -87,7 +95,9 @@ function TpSkillTree:OnLoad(data)
     if data then
         self.ids = data.ids or {}
         for i, id in pairs(data.ids) do
-            SkillTreeManager:LoadSkill(id, self.inst)
+            local data = SkillTreeManager:GetDataById(id)
+            -- SkillTreeManager:LoadSkill(id, self.inst)
+            data.fn(self.inst, self, id, data)
         end
     end
 end

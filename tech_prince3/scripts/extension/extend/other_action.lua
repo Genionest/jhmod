@@ -3,6 +3,14 @@ local EntUtil = require "extension.lib.ent_util"
 local BuffManager = Sample.BuffManager
 local FxManager = Sample.FxManager
 
+local function PlayerAnimation(inst, fname, ...)
+    inst.AnimState[fname](inst.AnimState, ...)
+    if inst.tp_fx then
+        inst.tp_fx.Transform:SetRotation(inst.Transform:GetRotation())
+        inst.tp_fx.AnimState[fname](inst.tp_fx.AnimState, ...)
+    end
+end
+
 local function add_player_sg(state, no_boating)
     AddStategraphState("wilson", state)
     if not no_boating then
@@ -41,7 +49,7 @@ add_player_sg(State{
     name = "tp_battle_cry",
     tags = {"busy", "doing"},       
     onenter = function(inst)
-        inst.AnimState:PlayAnimation("multithrust_yell")
+        PlayerAnimation(inst, "PlayAnimation", "multithrust_yell")
         local ba = inst:GetBufferedAction()
         if ba then
             local pos = ba.pos or (ba.target and ba.target:GetPosition())
@@ -77,7 +85,7 @@ add_player_sg(State{
     name = "tp_multi_thrust",
     tags = {"busy", "doing"},       
     onenter = function(inst)
-        inst.AnimState:PlayAnimation("multithrust")
+        PlayerAnimation(inst, "PlayAnimation", "multithrust")
         local ba = inst:GetBufferedAction()
         if ba then
             local pos = ba.pos or (ba.target and ba.target:GetPosition())
@@ -133,7 +141,7 @@ add_player_sg(State{
     name = "tp_sail",
     tags = {"busy", "doing"},       
     onenter = function(inst)
-        inst.AnimState:PlayAnimation("sail_loop")
+        PlayerAnimation(inst, "PlayAnimation", "sail_loop")
         local ba = inst:GetBufferedAction()
         if ba then
             local pos = ba.pos or (ba.target and ba.target:GetPosition())
@@ -171,7 +179,7 @@ add_player_sg(State{
     name = "tp_chop_pre",
     tags = {"busy", "doing"},       
     onenter = function(inst)
-        inst.AnimState:PlayAnimation("chop_pre")
+        PlayerAnimation(inst, "PlayAnimation", "chop_pre")
 
         local ba = inst:GetBufferedAction()
         if ba then
@@ -196,7 +204,7 @@ add_player_sg(State{
     name = "tp_chop",
     tags = {"busy", "doing"},       
     onenter = function(inst)
-        inst.AnimState:PlayAnimation("chop_loop")
+        PlayerAnimation(inst, "PlayAnimation", "chop_loop")
         inst.components.locomotor:StopMoving()         
     end,
     timeline = {
@@ -208,6 +216,39 @@ add_player_sg(State{
         end),
         TimeEvent(4*FRAMES, function(inst)
             inst.SoundEmitter:PlaySound(Sounds.attack)
+        end),
+    },
+    events={
+        EventHandler("animover", function(inst) inst.sg:GoToState("idle") end ),
+    },
+})
+
+local tp_chop_start = Action({}, 3, nil, nil, 20)
+tp_chop_start.id = string.upper("tp_chop_start")
+tp_chop_start.str = "释放技能"
+tp_chop_start.fn = action_tool_fn
+AddAction(tp_chop_start)
+AddStategraphActionHandler("wilson", ActionHandler(tp_chop_start, "tp_chop_start"))
+AddStategraphActionHandler("wilsonboating", ActionHandler(tp_chop_start, "tp_chop_start"))
+
+add_player_sg(State{
+    name = "tp_chop_start",
+    tags = {"busy", "doing"},       
+    onenter = function(inst)
+        PlayerAnimation(inst, "PlayAnimation", "chop_pre")
+
+        local ba = inst:GetBufferedAction()
+        if ba then
+            local pos = ba.pos or (ba.target and ba.target:GetPosition())
+            if pos then
+                inst:ForceFacePoint(pos:Get())
+            end
+        end
+        inst.components.locomotor:StopMoving()         
+    end,
+    timeline = {
+        TimeEvent(4*FRAMES, function(inst) 
+            inst:PerformBufferedAction()
         end),
     },
     events={
@@ -227,9 +268,9 @@ add_player_sg(State{
     name = "tp_shovel",
     tags = {"busy", "doing"},       
     onenter = function(inst)
-        inst.AnimState:PlayAnimation("shovel_pre")
-        inst.AnimState:PushAnimation("shovel_loop")
-        inst.AnimState:PushAnimation("shovel_pst", false)
+        PlayerAnimation(inst, "PlayAnimation", "shovel_pre")
+        PlayerAnimation(inst, "PushAnimation", "shovel_loop")
+        PlayerAnimation(inst, "PushAnimation", "shovel_pst", false)
         local ba = inst:GetBufferedAction()
         if ba then
             local pos = ba.pos or (ba.target and ba.target:GetPosition())
@@ -265,7 +306,7 @@ add_player_sg(State{
     name = "tp_blowdart",
     tags = {"busy", "doing"},       
     onenter = function(inst)
-        inst.AnimState:PlayAnimation("dart")
+        PlayerAnimation(inst, "PlayAnimation", "dart")
         local ba = inst:GetBufferedAction()
         if ba then
             local pos = ba.pos or (ba.target and ba.target:GetPosition())
@@ -302,7 +343,7 @@ add_player_sg(State{
     name = "tp_mine_pre",
     tags = {"busy", "doing"},       
     onenter = function(inst)
-        inst.AnimState:PlayAnimation("pickaxe_pre")
+        PlayerAnimation(inst, "PlayAnimation", "pickaxe_pre")
 
         local ba = inst:GetBufferedAction()
         if ba then
@@ -327,7 +368,7 @@ add_player_sg(State{
     name = "tp_mine",
     tags = {"busy", "doing"},       
     onenter = function(inst)
-        inst.AnimState:PlayAnimation("pickaxe_loop")
+        PlayerAnimation(inst, "PlayAnimation", "pickaxe_loop")
         inst.components.locomotor:StopMoving()         
     end,
     timeline = {
@@ -371,7 +412,7 @@ add_player_sg(State{
     name = "tp_atk",
     tags = {"busy", "doing"},       
     onenter = function(inst)
-        inst.AnimState:PlayAnimation("atk")
+        PlayerAnimation(inst, "PlayAnimation", "atk")
         local ba = inst:GetBufferedAction()
         if ba then
             local pos = ba.pos or (ba.target and ba.target:GetPosition())
@@ -407,7 +448,7 @@ add_player_sg(State{
     tags = {"doing", "busy", "not_hit_stunned"},
     onenter = function(inst, pos)
         inst.components.locomotor:Stop()
-        inst.AnimState:PlayAnimation("jumpboat")
+        PlayerAnimation(inst, "PlayAnimation", "jumpboat")
         inst.components.combat:AddEvadeRateMod("high_jump", 10000)
     end,
     onexit = function(inst)
@@ -433,7 +474,7 @@ add_player_sg(State{
     tags = {"doing", "busy", "not_hit_stunned"},
     onenter = function(inst)
         inst.Physics:Stop()
-        inst.AnimState:PushAnimation("land", false)
+        PlayerAnimation(inst, "PushAnimation", "land", false)
         inst.SoundEmitter:PlaySound("dontstarve_DLC002/common/boatjump_to_land")
         PlayFootstep(inst)
         inst.components.combat:AddEvadeRateMod("high_jump", 10000)
@@ -467,8 +508,8 @@ add_player_sg(State{
         end
         inst.AnimState:AddOverrideBuild("player_lunge_wargon")
         -- inst.AnimState:SetDeltaTimeMultiplier(.5)
-        inst.AnimState:PlayAnimation("lunge_pre")
-        inst.AnimState:PushAnimation("chop_loop", false)
+        PlayerAnimation(inst, "PlayAnimation", "lunge_pre")
+        PlayerAnimation(inst, "PushAnimation", "chop_loop", false)
         inst.SoundEmitter:PlaySound("dontstarve/wilson/boomerang_throw", "wg_lunge_pre")
         inst.components.combat:AddEvadeRateMod("tp_spiral", 10000)
         inst.sg.statemem.event_fn = EntUtil:listen_for_event(inst, 
@@ -515,9 +556,13 @@ AddStategraphState("wilson", State{
         inst.components.locomotor:Stop()
         inst.SoundEmitter:PlaySound("dontstarve_DLC003/characters/wheeler/slide")
         inst.components.locomotor:EnableGroundSpeedMultiplier(false)
-        inst.Physics:SetMotorVelOverride(20, 0, 0)
+        local speed = 28
+        if inst:HasTag("far_lunge") then
+            speed = speed + 10
+        end
+        inst.Physics:SetMotorVelOverride(speed, 0, 0)
         inst.AnimState:AddOverrideBuild("player_lunge_wargon")
-        inst.AnimState:PlayAnimation("lunge_pst")
+        PlayerAnimation(inst, "PlayAnimation", "lunge_pst")
         inst:PerformBufferedAction()
         inst.SoundEmitter:PlaySound("dontstarve_DLC003/characters/wheeler/slide")
         if inst:HasTag("lunge_protect") then
@@ -568,8 +613,8 @@ AddStategraphState("wilson", State{
         inst.components.locomotor:EnableGroundSpeedMultiplier(false)
         -- inst.AnimState:AddOverrideBuild("player_lunge_wargon")
         inst.SoundEmitter:PlaySound("dontstarve_DLC003/characters/wheeler/slide")
-        -- inst.AnimState:PlayAnimation("lunge_pst")
-        inst.AnimState:PlayAnimation("atk")
+        -- PlayerAnimation(inst, "PlayAnimation", "lunge_pst")
+        PlayerAnimation(inst, "PlayAnimation", "atk")
         inst.sg:SetTimeout(.4+8*FRAMES)
     end,
     timeline =
@@ -630,7 +675,7 @@ AddStategraphState("wilson", State{
         -- EntUtil:add_tag(inst, "tp_not_freezable")
         -- inst.components.health:SetInvincible(true, "wg_dodge")
         inst.components.locomotor:Stop()
-        inst.AnimState:PlayAnimation("slide_loop")
+        PlayerAnimation(inst, "PlayAnimation", "slide_loop")
         inst.SoundEmitter:PlaySound("dontstarve_DLC003/characters/wheeler/slide")
         inst.components.locomotor:EnableGroundSpeedMultiplier(false)
         local ba = inst:GetBufferedAction()
@@ -717,7 +762,7 @@ add_player_sg(State{
     name = "tp_spear_zed",
     tags = {"busy", "doing"},       
     onenter = function(inst)
-        inst.AnimState:PlayAnimation("atk")
+        PlayerAnimation(inst, "PlayAnimation", "atk")
         local ba = inst:GetBufferedAction()
         if ba then
             local pos = ba.pos or (ba.target and ba.target:GetPosition())
@@ -759,7 +804,7 @@ AddStategraphState("wilson", State{
     tags = {"doing", "busy", "canrotate", "not_hit_stunned"},
     onenter = function(inst)
         inst.components.locomotor:Stop()
-        inst.AnimState:PlayAnimation("atk_leap_pre")
+        PlayerAnimation(inst, "PlayAnimation", "atk_leap_pre")
         inst.components.locomotor:EnableGroundSpeedMultiplier(false)
         inst.components.playercontroller:Enable(false)
         inst.sg:SetTimeout(4*FRAMES)
@@ -799,9 +844,9 @@ AddStategraphState("wilson", State{
         RemovePhysicsColliders(inst)
         inst.components.playercontroller:Enable(false)
 
-        -- inst.AnimState:PushAnimation("land", false)
+        -- PlayerAnimation(inst, "PushAnimation", "land", false)
         inst.AnimState:SetDeltaTimeMultiplier(1.5)
-        inst.AnimState:PlayAnimation("atk_leap")
+        PlayerAnimation(inst, "PlayAnimation", "atk_leap")
         inst.SoundEmitter:PlaySound("dontstarve_DLC002/common/boatjump_to_land")
         PlayFootstep(inst)
         inst.sg:SetTimeout(20*FRAMES)
@@ -856,7 +901,7 @@ add_player_sg(State{
     name = "tp_spear_darius",
     tags = {"doing", "busy", "canrotate", "not_hit_stunned"},       
     onenter = function(inst)
-        inst.AnimState:PlayAnimation("multithrust_yell")
+        PlayerAnimation(inst, "PlayAnimation", "multithrust_yell")
         local ba = inst:GetBufferedAction()
         if ba then
             local pos = ba.pos or (ba.target and ba.target:GetPosition())
@@ -884,7 +929,7 @@ add_player_sg(State{
     name = "tp_spear_darius2",
     tags = {"doing", "busy", "canrotate", "not_hit_stunned"},       
     onenter = function(inst)
-        inst.AnimState:PlayAnimation("chop_pre")
+        PlayerAnimation(inst, "PlayAnimation", "chop_pre")
         inst.components.locomotor:StopMoving()         
     end,
     timeline = {
@@ -902,7 +947,7 @@ AddStategraphState("wilson", State{
     tags = {"doing", "busy", "not_hit_stunned"},
     onenter = function(inst)
         inst.components.locomotor:Stop()
-        -- inst.AnimState:PlayAnimation("chop_loop")
+        -- PlayerAnimation(inst, "PlayAnimation", "chop_loop")
         inst.AnimState:SetPercent("chop_loop", 1-.9)
         inst.sg:SetTimeout(12*FRAMES)
         local rot = inst.Transform:GetRotation()
@@ -959,7 +1004,7 @@ add_player_sg(State{
     name = "tp_helm_garen",
     tags = {"doing", "busy", "canrotate", "not_hit_stunned"},       
     onenter = function(inst)
-        inst.AnimState:PlayAnimation("chop_pre")
+        PlayerAnimation(inst, "PlayAnimation", "chop_pre")
         inst.components.locomotor:StopMoving()         
     end,
     timeline = {
@@ -977,7 +1022,7 @@ add_player_sg(State{
     tags = {"doing", "busy", "canrotate", "not_hit_stunned"},
     onenter = function(inst)
         -- inst.components.locomotor:Stop()
-        -- inst.AnimState:PlayAnimation("chop_loop")
+        -- PlayerAnimation(inst, "PlayAnimation", "chop_loop")
         inst.AnimState:SetPercent("chop_loop", 1-.9)
         inst.sg:SetTimeout(12*FRAMES)
         local rot = inst.Transform:GetRotation()
@@ -1067,7 +1112,7 @@ local tmp_state = State{
     name = "tp_recover_bottle",
     tags = {"doing", "busy"},       
     onenter = function(inst)
-        inst.AnimState:PlayAnimation("eat")
+        PlayerAnimation(inst, "PlayAnimation", "eat")
         
         local ba = inst:GetBufferedAction()
         if ba then
@@ -1097,3 +1142,103 @@ local tmp_state = State{
 }
 AddStategraphState("wilson", tmp_state)
 AddStategraphState("wilsonboating", tmp_state)
+
+local tp_read_scroll = Action({})
+tp_read_scroll.id = string.upper("tp_read_scroll")
+tp_read_scroll.str = "阅读"
+tp_read_scroll.fn = function(act)
+end
+AddAction(tp_read_scroll)
+AddStategraphActionHandler("wilson", ActionHandler(tp_read_scroll, "tp_read_scroll"))
+AddStategraphActionHandler("wilsonboating", ActionHandler(tp_read_scroll, "tp_read_scroll"))
+
+local tp_scroll_weapon = Action({}, 3, nil, nil, 20)
+tp_scroll_weapon.id = string.upper("tp_scroll_weapon")
+tp_scroll_weapon.str = "释放技能"
+tp_scroll_weapon.fn = action_tool_fn
+AddAction(tp_scroll_weapon)
+AddStategraphActionHandler("wilson", ActionHandler(tp_scroll_weapon, "tp_read_scroll"))
+AddStategraphActionHandler("wilsonboating", ActionHandler(tp_scroll_weapon, "tp_read_scroll"))
+
+local state = State{
+    name = "tp_read_scroll",
+    tags = {"doing", "busy"},
+    onenter = function(inst)
+        inst.components.locomotor:Stop()
+        PlayerAnimation(inst, "PlayAnimation", "scroll", false)
+        PlayerAnimation(inst,"OverrideSymbol", "scroll", "messagebottle", "scroll")
+        PlayerAnimation(inst,"PushAnimation","scroll_pst", false)
+        
+        --PlayerAnimation(inst,"Hide","ARM_carry") 
+        PlayerAnimation(inst,"Show","ARM_normal")
+        if inst.components.inventory.activeitem and inst.components.inventory.activeitem.components.book then
+            inst.components.inventory:ReturnActiveItem()
+        end
+        PlayerAnimation(inst, "SetDeltaTimeMultiplier", 2.5)
+
+    end,
+    onexit = function(inst)
+        if inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS) and not inst.were then
+            PlayerAnimation(inst,"Show","ARM_carry") 
+            PlayerAnimation(inst,"Hide","ARM_normal")
+        end
+        PlayerAnimation(inst, "SetDeltaTimeMultiplier", 1)
+    end,
+    timeline=
+    {
+        TimeEvent(24/2*FRAMES, function(inst) 
+            PlayerAnimation(inst, "SetDeltaTimeMultiplier", 3.5)
+            inst.SoundEmitter:PlaySound("dontstarve_DLC002/common/treasuremap_open") 
+        end),
+        TimeEvent(58/2*FRAMES, function(inst) 
+            PlayerAnimation(inst, "SetDeltaTimeMultiplier", 2.5)
+            inst.SoundEmitter:PlaySound("dontstarve_DLC002/common/treasuremap_close") 
+        end),
+    },
+    events=
+    {
+        EventHandler("animover", function(inst)
+            inst:PerformBufferedAction()
+        end),
+        EventHandler("animqueueover", function(inst)
+            inst.sg:GoToState("idle")
+        end),
+    },
+}
+AddStategraphState("wilson", state)
+AddStategraphState("wilsonboating", state)
+
+local state = State{
+    name = "tp_lunge_pre",
+    tags = {"busy", "doing", "not_hit_stunned"},
+    onenter = function(inst)
+        inst.Physics:Stop()
+        local ba = inst:GetBufferedAction()
+        if ba and ba.pos then
+            inst:ForceFacePoint(ba.pos:Get())
+        end
+        inst.AnimState:AddOverrideBuild("player_lunge_wargon")
+        PlayerAnimation(inst, "PlayAnimation", "lunge_pre")
+        inst.SoundEmitter:PlaySound("dontstarve/wilson/boomerang_throw", "wg_lunge_pre")
+    end,
+    timeline={
+        TimeEvent(5*FRAMES, function(inst)
+            inst:PerformBufferedAction()
+        end)
+    },
+    events={
+        EventHandler("animover", function(inst)
+            inst.sg:GoToState("idle")
+        end ),
+    },
+}
+AddStategraphState("wilson", state)
+AddStategraphState("wilsonboating", state)
+
+local tp_lunge_pre = Action({}, 3, nil, nil, 20)
+tp_lunge_pre.id = string.upper("tp_lunge_pre")
+tp_lunge_pre.str = "释放技能"
+tp_lunge_pre.fn = action_tool_fn
+AddAction(tp_lunge_pre)
+AddStategraphActionHandler("wilson", ActionHandler(tp_lunge_pre, "tp_lunge_pre"))
+AddStategraphActionHandler("wilsonboating", ActionHandler(tp_lunge_pre, "tp_lunge_pre"))

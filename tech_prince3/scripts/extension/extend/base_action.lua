@@ -1,3 +1,11 @@
+local function PlayerAnimation(inst, fname, ...)
+    inst.AnimState[fname](inst.AnimState, ...)
+    if inst.tp_fx then
+        inst.tp_fx.Transform:SetRotation(inst.Transform:GetRotation())
+        inst.tp_fx.AnimState[fname](inst.tp_fx.AnimState, ...)
+    end
+end
+
 local function add_player_sg(state, no_boating)
     AddStategraphState("wilson", state)
     if not no_boating then
@@ -99,7 +107,7 @@ add_player_sg(State{
 	onenter = function(inst, noanim)
 		inst.components.locomotor:Stop()
 		if not noanim then
-			inst.AnimState:PlayAnimation("dial_loop", true)
+			PlayerAnimation(inst, "PlayAnimation", "dial_loop", true)
 		end
 		
 		local sound_name = inst.soundsname or inst.prefab

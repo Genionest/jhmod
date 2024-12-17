@@ -260,7 +260,13 @@ w_env_g["AddClassPostConstruct"]("screens/playerhud", function(w_self_g)
                     end
                 end
                 w_self_g["WgShowInfo"](w_self_g)
+                if w_self_g["owner"] then
+                    w_self_g["owner"]["should_hide_hover"] = w_v1_g
+                end
             else
+                if w_self_g["owner"] then
+                    w_self_g["owner"]["should_hide_hover"] = w_v0_g
+                end
                 w_self_g["w_wargon_tool_bg_g"]["Hide"](w_self_g["w_wargon_tool_bg_g"])
                 for w_k_g, w_v_g in pairs(w_self_g["w_wargon_tool_info_g"]) do
                     w_v_g["Hide"](w_v_g)

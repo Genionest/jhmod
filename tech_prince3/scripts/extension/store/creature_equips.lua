@@ -114,6 +114,9 @@ Equip("divine_sunderer", {
         --     return dmg
         -- end)
         inst.components.combat:WgAddOnHitFn(function(damage, inst, target, weapon, stimuli)
+            if not EntUtil:can_dmg_effect(stimuli) then
+                return 
+            end
             if not inst:HasTag(id.."_tag")
             and target
             and not target:HasTag("epic") then
@@ -169,6 +172,9 @@ Equip("duskblade_draktharr", {
         --     return dmg
         -- end)
         inst.components.combat:WgAddOnHitFn(function(damage, inst, target, weapon, stimuli)
+            if not EntUtil:can_dmg_effect(stimuli) then
+                return 
+            end
             if not inst:HasTag(id.."_tag") then
                 inst:AddTag(id.."_tag")
                 inst:DoTaskInTime(self.db[3], function()
@@ -293,6 +299,9 @@ Equip("galeforce", {
             --     return dmg
             -- end)
             inst.components.combat:WgAddOnHitFn(function(damage, inst, target, weapon, stimuli)
+                if not EntUtil:can_dmg_effect(stimuli) then
+                    return 
+                end
                 if can_trigger_skill(inst)
                 and not inst:HasTag(id.."_tag") then
                     inst:AddTag(id.."_tag")
@@ -361,6 +370,9 @@ Equip("goredrinker", {
         --     return dmg
         -- end)
         inst.components.combat:WgAddOnHitFn(function(damage, inst, target, weapon, stimuli)
+            if not EntUtil:can_dmg_effect(stimuli) then
+                return 
+            end
             if can_trigger_skill(inst)
             and not inst:HasTag(id.."_tag") then
                 inst:AddTag(id.."_tag")
@@ -420,6 +432,9 @@ Equip("kraken_slayer", {
         --     return dmg
         -- end)
         inst.components.combat:WgAddOnHitFn(function(damage, inst, target, weapon, stimuli)
+            if not EntUtil:can_dmg_effect(stimuli) then
+                return 
+            end
             local n = cmp[id.."_stack"]
             if n == 3 then
                 cmp[id.."_stack"] = 0
@@ -480,6 +495,9 @@ Equip("prowler_claw", {
         end
         cmp[id.."_wake"](self, inst, cmp, id)
         inst.components.combat:WgAddOnHitFn(function(damage, inst, target, weapon, stimuli)
+            if not EntUtil:can_dmg_effect(stimuli) then
+                return 
+            end
             if inst.components.locomotor then
                 local spd_mult = inst.components.locomotor:GetSpeedMultiplier()
                 if spd_mult>=self.db[1] then
@@ -605,6 +623,9 @@ Equip("trinity_force", {
         --     return dmg
         -- end)
         inst.components.combat:WgAddOnHitFn(function(damage, inst, target, weapon, stimuli)
+            if not EntUtil:can_dmg_effect(stimuli) then
+                return 
+            end
             if not inst:HasTag(id.."_tag")
             and target then
                 inst:AddTag(id.."_tag")
@@ -667,6 +688,12 @@ Equip("eclipse", {
         --     return dmg
         -- end)
         inst.components.combat:WgAddOnHitFn(function(damage, inst, target, weapon, stimuli)
+            if not EntUtil:can_dmg_effect(stimuli) then
+                return
+            end
+            if not EntUtil:can_extra_dmg(stimuli) then
+                return
+            end
             local n = cmp[id.."_stack"] or 0
             if n >= 2 then
                 if not inst:HasTag(id.."_tag") then
@@ -806,7 +833,8 @@ Equip("frostfire_gauntlet", {
     attack = function(self, inst, cmp, id, data)
         data.attacker = inst
         local attacker = data.target
-        if EntUtil:can_thorns(data) then
+        if EntUtil:can_extra_dmg(data.stimuli)
+        and EntUtil:can_thorns(data) then
             local max_hp = inst.components.health:GetMaxHealth()
             local ex_dmg = math.min(self.db[6], max_hp*self.db[3])
             local min, max = self.db[1], self.db[2]
@@ -815,7 +843,7 @@ Equip("frostfire_gauntlet", {
             EntUtil:get_attacked(attacker, inst, dmg, nil, EntUtil:add_stimuli(nil, "ice", "pure"))
             -- attacker.components.health:DoFireDamage(dmg, nil, true)
             BuffManager:AddBuff(attacker, "not_reflection")
-            FxManager:MakeFx("firesplash_fx", inst)
+            FxManager:MakeFx("thorns_blue", inst)
         end
         if not inst:HasTag(id.."_tag") then
             BuffManager:AddBuff(attacker, id.."_debuff", nil, {target=inst})
@@ -838,7 +866,7 @@ Equip("frostfire_gauntlet", {
             EntUtil:get_attacked(attacker, inst, dmg, nil, EntUtil:add_stimuli(nil, "ice", "pure"))
             -- attacker.components.health:DoFireDamage(dmg, nil, true)
             BuffManager:AddBuff(attacker, "not_reflection")
-            FxManager:MakeFx("firesplash_fx", inst)
+            FxManager:MakeFx("thorns_blue", inst)
         end
     end,
     -- post = function(self, inst, cmp, id)
@@ -892,7 +920,8 @@ Equip("turbo_chemtank", {
     attack = function(self, inst, cmp, id, data)
         data.attacker = inst
         local attacker = data.target
-        if EntUtil:can_thorns(data) then
+        if EntUtil:can_extra_dmg(data.stimuli)
+        and EntUtil:can_thorns(data) then
             local max_hp = inst.components.health.wg_max_health
             local ex_dmg = math.max(self.db[8], max_hp*self.db[3])
             local min, max = self.db[1], self.db[2]
@@ -1003,7 +1032,8 @@ Equip("SunFire_aegis", {
     attack = function(self, inst, cmp, id, data)
         data.attacker = inst
         local attacker = data.target
-        if EntUtil:can_thorns(data) then
+        if EntUtil:can_extra_dmg(data.stimuli)
+        and EntUtil:can_thorns(data) then
             local max_hp = inst.components.health:GetMaxHealth()
             local ex_dmg = math.min(self.db[4], max_hp*self.db[3])
             local dmg = ex_dmg+self.db[2]
@@ -1058,6 +1088,12 @@ Equip("heart_steel", {
         --     return dmg
         -- end)
         inst.components.combat:WgAddOnHitFn(function(damage, inst, target, weapon, stimuli)
+            if not EntUtil:can_dmg_effect(stimuli) then
+                return 
+            end
+            if not EntUtil:can_extra_dmg(stimuli) then
+                return 
+            end
             if not inst:HasTag(id.."_tag") then
                 inst:AddTag(id.."_tag")
                 inst:DoTaskInTime(self.db[3], function()
@@ -1069,7 +1105,7 @@ Equip("heart_steel", {
                 EntUtil:get_attacked(target, inst, ex_dmg, nil, EntUtil:add_stimuli(nil, "blood", "pure"))
 
                 BuffManager:AddBuff(inst, id.."_buff")
-                FxManager:MakeFx("hit_fx4", inst)
+                FxManager:MakeFx("hit_fx9", inst)
             end
         end)
     end,
@@ -1175,6 +1211,12 @@ Equip("ruined_king_blade",
         --     return dmg
         -- end)
         inst.components.combat:WgAddOnHitFn(function(damage, inst, target, weapon, stimuli)
+            if not EntUtil:can_dmg_effect(stimuli) then
+                return 
+            end
+            if not EntUtil:can_extra_dmg(stimuli) then
+                return    
+            end
             if not target:HasTag("epic") then
                 local max_hp = target.components.health:GetMaxHealth()
                 local ex_dmg = max_hp*self.db[1]
@@ -1304,6 +1346,12 @@ Equip("stormrazor",
         --     return dmg
         -- end)
         inst.components.combat:WgAddOnHitFn(function(damage, inst, target, weapon, stimuli)
+            if not EntUtil:can_dmg_effect(stimuli) then
+                return 
+            end
+            if not EntUtil:can_extra_dmg(stimuli) then
+                return
+            end
             if not inst:HasTag(id.."_tag") then
                 inst:AddTag(id.."_tag")
                 inst:DoTaskInTime(self.db[2], function()
@@ -1348,6 +1396,12 @@ Equip("guinsoo_rageblade",
         --     return dmg
         -- end)
         inst.components.combat:WgAddOnHitFn(function(damage, inst, target, weapon, stimuli)
+            if not EntUtil:can_dmg_effect(stimuli) then
+                return 
+            end
+            if not EntUtil:can_extra_dmg(stimuli) then
+                return 
+            end
             local ex_dmg = self.db[1]
             local rate = inst.components.combat.tp_crit or 0
             ex_dmg = ex_dmg + ex_dmg*rate*self.db[2]
@@ -1549,6 +1603,12 @@ Equip("titantic_hydra",
         --     return dmg
         -- end)
         inst.components.combat:WgAddOnHitFn(function(damage, inst, target, weapon, stimuli)
+            if not EntUtil:can_dmg_effect(stimuli) then
+                return 
+            end
+            if not EntUtil:can_extra_dmg(stimuli) then
+                return 
+            end
             local max_hp = inst.components.health:GetMaxHealth()
             local dmg = max_hp*self.db[1]
             EntUtil:get_attacked(target, inst, dmg, nil, EntUtil:add_stimuli(nil, "thump", "pure"))
@@ -1874,14 +1934,15 @@ Equip("sun_fire_cape",
     attack = function(self, inst, cmp, id, data)
         data.attacker = inst
         local attacker = data.target
-        if EntUtil:can_thorns(data) then
+        if EntUtil:can_extra_dmg(data.stimuli)
+        and EntUtil:can_thorns(data) then
             local max_hp = inst.components.health.wg_max_health
             local ex_dmg = math.min(self.db[3], max_hp*self.db[2])
             local dmg = ex_dmg+self.db[1]
             -- attacker.components.health:DoFireDamage(dmg, nil, true)
             EntUtil:get_attacked(attacker, inst, dmg, nil, EntUtil:add_stimuli(nil, "fire", "pure"))
             BuffManager:AddBuff(attacker, "not_reflection")
-            FxManager:MakeFx("firesplash_fx", inst)
+            FxManager:MakeFx("thorns_red", inst)
         end
     end,
     hit = function(self, inst, cmp, id, data)
@@ -1893,7 +1954,7 @@ Equip("sun_fire_cape",
             -- attacker.components.health:DoFireDamage(dmg, nil, true)
             EntUtil:get_attacked(attacker, inst, dmg, nil, EntUtil:add_stimuli(nil, "fire", "pure"))
             BuffManager:AddBuff(attacker, "not_reflection")
-            FxManager:MakeFx("firesplash_fx", inst)
+            FxManager:MakeFx("thorns_red", inst)
         end
     end,
     db = {6, .01, 20}
@@ -1923,6 +1984,12 @@ Equip("dead_plate",
         --     return dmg
         -- end)
         inst.components.combat:WgAddOnHitFn(function(damage, inst, target, weapon, stimuli)
+            if not EntUtil:can_dmg_effect(stimuli) then
+                return 
+            end
+            if not EntUtil:can_extra_dmg(stimuli) then
+                return
+            end
             if not inst:HasTag(id.."_tag") then
                 inst:AddTag(id.."_tag")
                 inst:DoTaskInTime(self.db[4], function()
@@ -1969,6 +2036,12 @@ Equip("iceborn_gauntlet",
         --     return dmg
         -- end)
         inst.components.combat:WgAddOnHitFn(function(damage, inst, target, weapon, stimuli)
+            if not EntUtil:can_dmg_effect(stimuli) then
+                return 
+            end
+            if not EntUtil:can_extra_dmg(stimuli) then
+                return 
+            end
             if not inst:HasTag(id.."_tag") then
                 inst:AddTag(id.."_tag")
                 inst:DoTaskInTime(self.db[2], function()
@@ -2292,13 +2365,19 @@ Equip("kircheis_shard",
         --     return dmg
         -- end)
         inst.components.combat:WgAddOnHitFn(function(damage, inst, target, weapon, stimuli)
+            if not EntUtil:can_dmg_effect(stimuli) then
+                return 
+            end
+            if not EntUtil:can_extra_dmg(stimuli) then
+                return
+            end
             if not inst:HasTag(id.."_tag") then
                 inst:AddTag(id.."_tag")
                 inst:DoTaskInTime(self.db[2], function()
                     inst:RemoveTag(id.."_tag")
                 end)
 
-                FxManager:MakeFx("slash_fx", inst, {target=target})
+                FxManager:MakeFx("hit_fx8", inst, {target=target})
                 local ex_dmg = self.db[1]
                 EntUtil:get_attacked(target, inst, ex_dmg, nil, EntUtil:add_stimuli(nil, "electric", "pure"))
             end
@@ -2330,6 +2409,12 @@ Equip("rageknife",
         --     return dmg
         -- end)
         inst.components.combat:WgAddOnHitFn(function(damage, inst, target, weapon, stimuli)
+            if not EntUtil:can_dmg_effect(stimuli) then
+                return 
+            end
+            if not EntUtil:can_extra_dmg(stimuli) then
+                return
+            end
             local ex_dmg = self.db[1]
             EntUtil:get_attacked(target, inst, ex_dmg, nil, EntUtil:add_stimuli(nil, "slash", "pure"))
         end)
@@ -2527,6 +2612,12 @@ Equip("noonquiver",
         --     return dmg
         -- end)
         inst.components.combat:WgAddOnHitFn(function(damage, inst, target, weapon, stimuli)
+            if not EntUtil:can_dmg_effect(stimuli) then
+                return 
+            end
+            if not EntUtil:can_extra_dmg(stimuli) then
+                return
+            end
             if target and not target:HasTag("epic")
             and not target:HasTag("largecreature") then
                 local ex_dmg = self.db[1]
@@ -2582,7 +2673,8 @@ Equip("bami_cinder",
     attack = function(self, inst, cmp, id, data)
         data.attacker = inst
         local attacker = data.target
-        if EntUtil:can_thorns(data) then
+        if EntUtil:can_thorns(data)
+        and EntUtil:can_extra_dmg(data.stimuli) then
             local max_hp = inst.components.health.wg_max_health
             local ex_dmg = math.min(self.db[3], max_hp*self.db[2])
             local dmg = ex_dmg+self.db[1]
@@ -2737,6 +2829,9 @@ local animal_equips = {
     Equip("poison_gland", {
         hp = 20,
         attack = function(self, inst, cmp, id, data)
+            if not EntUtil:can_extra_dmg(data.stimuli) then
+                return
+            end
             EntUtil:get_attacked(data.target, inst, 10, nil, EntUtil:add_stimuli(nil, "poison", "pure") )
         end,
     }, function(self, inst, cmp, id)
@@ -2748,6 +2843,9 @@ local animal_equips = {
     Equip("sharp_tooth", {
         dmg = 5,
         attack = function(self, inst, cmp, id, data)
+            if not EntUtil:can_extra_dmg(data.stimuli) then
+                return
+            end
             EntUtil:get_attacked(data.target, inst, 10, nil, EntUtil:add_stimuli(nil, "blood", "pure") )
         end,
     }, function(self, inst, cmp, id)

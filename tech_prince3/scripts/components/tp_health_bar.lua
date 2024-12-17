@@ -29,9 +29,10 @@ local TpHealthBar = Class(function(self, inst)
     self.task = nil
     self.hp_cur = nil
     self.shd_cur = nil
+    self.death = nil
     self.inst:ListenForEvent("death", function(inst, data)
         -- 死亡血条消失
-        self:Hide()
+        self.death = true
         self:Kill()
     end)
     self.inst:ListenForEvent("newcombattarget", function(inst, data)
@@ -59,22 +60,24 @@ end)
 
 function TpHealthBar:InitHealthBar()
     local scale
+    local sc = self.inst.Transform:GetScale()
     if self.inst:HasTag("epic") then
-        self.offset = Vector3(0, -1000, 0)
+        self.offset = Vector3(0, -1000/sc, 0)
         scale = 1.2
     elseif self.inst:HasTag("largecreature") then
-        self.offset = Vector3(0, -700, 0)
+        self.offset = Vector3(0, -700/sc, 0)
         scale = 1
     elseif self.inst:HasTag("smallcreature") then
-        self.offset = Vector3(0, -300, 0)
+        self.offset = Vector3(0, -300/sc, 0)
         scale = .5
     elseif self.inst:HasTag("player") then
-        self.offset = Vector3(0, -500, 0)
+        self.offset = Vector3(0, -500/sc, 0)
         scale = .8
     else
-        self.offset = Vector3(0, -500, 0)
+        self.offset = Vector3(0, -500/sc, 0)
         scale = .8
     end
+    scale = scale/sc
     self:SetWidget(HealthBar(), function(widget)
         widget.hp_bg:SetScale(scale)
         -- health_bar_delta(widget, p, txt)
@@ -82,6 +85,9 @@ function TpHealthBar:InitHealthBar()
 end
 
 function TpHealthBar:SetHealthBar()
+    if self.death then
+        return
+    end
     if self.widget == nil then
         self:InitHealthBar()
     end

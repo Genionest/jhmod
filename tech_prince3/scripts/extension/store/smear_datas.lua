@@ -145,6 +145,124 @@ Smear("skill_wake", 180,
         return "激活装备的技能"
     end
 ),
+Smear("fire_lunge", 100,
+    function(self, inst, cmp, id)
+        if cmp[id.."_fn"] == nil then
+            cmp[id.."_fn"] = EntUtil:listen_for_event(inst, "weapon_start_lunge", function(inst, data)
+                if cmp[id.."_task"] == nil then
+                    cmp[id.."_task"] = inst:DoPeriodicTask(1, function()
+                        FxManager:MakeFx("lunge_fire", data.owner, {owner=data.owner,weapon=inst})
+                    end)
+                end
+            end) 
+        end
+        if cmp[id.."_fn2"] == nil then
+            cmp[id.."_fn2"] = EntUtil:listen_for_event(inst, "weapon_stop_lunge", function(inst, data)
+                if cmp[id.."_task"] then
+                    cmp[id.."_task"]:Cancel()
+                    cmp[id.."_task"] = nil
+                end
+            end)
+        end
+    end,
+    function(self, inst, cmp, id)
+        if cmp[id.."_fn"] then
+            inst:RemoveEventCallback("weapon_start_lunge", cmp[id.."_fn"])
+            cmp[id.."_fn"] = nil
+        end
+        if cmp[id.."_fn2"] then
+            inst:RemoveEventCallback("weapon_stop_lunge", cmp[id.."_fn2"])
+            cmp[id.."_fn2"] = nil
+        end
+    end,
+    function(self, inst, cmp, id)
+        return "突刺附带火焰"
+    end
+),
+Smear("ice_lunge", 100,
+    function(self, inst, cmp, id)
+        if cmp[id.."_fn"] == nil then
+            cmp[id.."_fn"] = EntUtil:listen_for_event(inst, "weapon_start_lunge", function(inst, data)
+                if cmp[id.."_task"] == nil then
+                    cmp[id.."_task"] = inst:DoPeriodicTask(1, function()
+                        FxManager:MakeFx("lunge_ice", data.owner, {owner=data.owner,weapon=inst})
+                    end)
+                end
+            end) 
+        end
+        if cmp[id.."_fn2"] == nil then
+            cmp[id.."_fn2"] = EntUtil:listen_for_event(inst, "weapon_stop_lunge", function(inst, data)
+                if cmp[id.."_task"] then
+                    cmp[id.."_task"]:Cancel()
+                    cmp[id.."_task"] = nil
+                end
+            end)
+        end
+    end,
+    function(self, inst, cmp, id)
+        if cmp[id.."_fn"] then
+            inst:RemoveEventCallback("weapon_start_lunge", cmp[id.."_fn"])
+            cmp[id.."_fn"] = nil
+        end
+        if cmp[id.."_fn2"] then
+            inst:RemoveEventCallback("weapon_stop_lunge", cmp[id.."_fn2"])
+            cmp[id.."_fn2"] = nil
+        end
+    end,
+    function(self, inst, cmp, id)
+        return "突刺附带火焰"
+    end
+),
+Smear("shadow_lunge", 100,
+    function(self, inst, cmp, id)
+        if cmp[id.."_fn"] == nil then
+            cmp[id.."_fn"] = EntUtil:listen_for_event(inst, "weapon_start_lunge", function(inst, data)
+                FxManager:MakeFx("statue_transition", data.owner)
+                local fighter = SpawnPrefab("tp_shadow_fighter")
+                fighter.Transform:SetPosition(data.owner:GetPosition())
+                fighter.Transform:SetRotation(data.owner.Transform:GetRotation())
+                fighter:PushEvent("start_lunge")
+                data.owenr.components.leader:AddFollower(fighter)
+                BuffManager:AddBuff(fighter, "summon", 20)
+            end)
+        end
+    end,
+    function(self, inst, cmp, id)
+        if cmp[id.."_fn"] then
+            inst:RemoveEventCallback("weapon_start_lunge", cmp[id.."_fn"])
+            cmp[id.."_fn"] = nil
+        end
+    end,
+    function(self, inst, cmp, id)
+        return "突刺时会召唤一个暗影突刺者"
+    end
+),
+Smear("double_cyclone", 100,
+    function(self, inst, cmp, id)
+        if cmp[id.."_fn"] == nil then
+            cmp[id.."_fn"] = EntUtil:listen_for_event(inst, "cyclone_slash", function(inst, data)
+                if data.ignore then
+                    return
+                end
+                inst:DoTaskInTime(0.15, function()
+                    local item = data.owner.components.combat:GetWeapon()
+                    if item == inst and item.cyclone_slash then
+                        item:cyclone_slash(inst, true)
+                    end
+                end)
+            end)
+        end
+    end,
+    function(self, inst, cmp, id)
+        if cmp[id.."_fn"] then
+            inst:RemoveEventCallback("cyclone_slash", cmp[id.."_fn"])
+            cmp[id.."_fn"] = nil
+        end
+    end,
+    function(self, inst, cmp, id)
+        return "回旋斩击会额外触发1次"
+    end
+),
 }
 
 for k, v in pairs(Info.DmgTypeList) do
@@ -154,8 +272,8 @@ for k, v in pairs(Info.DmgTypeList) do
             if cmp[id.."_fn"] == nil then
                 cmp[id.."_fn"] = inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
                     local element = dmg_type
-                    local level = inst.components.tp_forge_level.level
-                    local base_dmg = inst.components.tp_forge_level.forge_level_dmg
+                    local level = inst.components.tp_forge_weapon.level
+                    local base_dmg = inst.components.tp_forge_weapon.forge_level_dmg
                     EntUtil:get_attacked(target, owner, base_dmg*level, nil, 
                         EntUtil:add_stimuli(nil, element, "pure") )
                 end)
@@ -172,6 +290,14 @@ for k, v in pairs(Info.DmgTypeList) do
                     owner.tp_fx.AnimState:SetAddColour(0/255,0/255,255/255,1)
                 elseif v[1] == "shadow" then
                     owner.tp_fx.AnimState:SetAddColour(255/255,0/255,255/255,1)
+                elseif v[1] == "poison" then
+                    owner.tp_fx.AnimState:SetAddColour(0/255,255/255,0/255,1)
+                elseif v[1] == "blood" then
+                    owner.tp_fx.AnimState:SetAddColour(255/255,0/255,0/255,1)
+                elseif v[1] == "wind" then
+                    owner.tp_fx.AnimState:SetAddColour(0/255,250/255,154/255,1)
+                elseif v[1] == "holly" then
+                    owner.tp_fx.AnimState:SetAddColour(0/255,255/255,255/255,1)
                 end
             end
             -- if cmp[id.."_fn2"] == nil then
@@ -197,8 +323,8 @@ for k, v in pairs(Info.DmgTypeList) do
         end,
         function(self, inst, cmp, id)
             return inst.components.weapon 
-                and inst.components.tp_forge_level
-                and inst.components.tp_forge_level.element == nil
+                and inst.components.tp_forge_weapon
+                and inst.components.tp_forge_weapon.element == nil
                 and not inst:HasTag("element_weapon")
         end,
         function(self, inst, cmp, id)

@@ -1,5 +1,6 @@
 local AssetUtil = require "extension.lib.asset_util"
 local Util = require "extension.lib.wg_util"
+local EntUtil = require "extension.lib.ent_util"
 local PrefabUtil = require "extension.lib.prefab_util"
 local FxManager = Sample.FxManager
 local AssetMaster = Sample.AssetMaster
@@ -13,16 +14,53 @@ local function get_sound_path(inst)
     return path..sound_name
 end
 
-local function set_retarget_fn(inst)
-    inst.components.combat:SetRetargetFunction(3, function(inst)
-        return FindEntity(inst, 16, function(target, inst)
-            return inst.components.combat:CanTarget(target)
-                and (target:HasTag("player") or target:HasTag("companion"))
-        end)
-    end)
-    inst.components.combat:SetKeepTargetFunction(function(inst, target)
+local function retarget_fn(inst)
+    return FindEntity(inst, 16, function(target, inst)
         return inst.components.combat:CanTarget(target)
+            and (target:HasTag("player") or target:HasTag("companion"))
     end)
+end
+
+local function keep_target_fn(inst, target)
+    return inst.components.combat:CanTarget(target)
+end
+
+local function on_attacked(inst, data)
+    if data.attacker then
+        inst.components.combat:SetTarget(data.attacker)
+    end
+end
+
+local function set_retarget_fn(inst)
+    inst.components.combat:SetRetargetFunction(3, retarget_fn)
+    inst.components.combat:SetKeepTargetFunction(keep_target_fn)
+
+    inst:ListenForEvent("attacked", on_attacked)
+end
+
+local function FollowerRetarget(inst)
+    local notags = {"FX", "NOCLICK","INLIMBO"}
+    local newtarget = FindEntity(inst, 20, function(guy)
+            return  guy.components.combat and 
+                    inst.components.combat:CanTarget(guy) and
+                    (guy.components.combat.target == GetPlayer() or GetPlayer().components.combat.target == guy)
+    end, nil, notags)
+
+    return newtarget
+end
+
+local function FollowerOnAttacked(inst, data)
+    local attacker = data and data.attacker
+    if attacker == GetPlayer() then
+        return
+    end
+    inst.components.combat:SetTarget(attacker)
+end
+
+local function set_follower_retarget_fn(inst)
+    inst.components.combat:SetRetargetFunction(3, FollowerRetarget)
+    inst.components.combat:SetKeepTargetFunction(keep_target_fn)
+    inst:ListenForEvent("attacked", FollowerOnAttacked)
 end
 
 --[[
@@ -825,6 +863,85 @@ local blacksmith = MakeNpc("tp_blacksmith", "wolfgang", nil, function(inst)
 end)
 table.insert(prefs, blacksmith)
 Util:AddString(blacksmith.name, "打铁的沃尔夫", "他的手艺应该很棒")
+
+local shadow_fighter = MakeNpc("tp_shadow_fighter", "maxwell", true, function(inst)
+    inst:DoTaskInTime(0, function()
+        inst.AnimState:SetBuild(GetPlayer().prefab)
+    end)
+    inst:AddTag("tp_shadow_fighter")
+    inst:AddTag("tp_not_freezable")
+    inst:AddTag("tp_not_fire_damage")
+    inst:AddTag("tp_not_burnable")
+    inst:AddTag("tp_not_poisonable")
+
+    inst:AddComponent("health")
+    inst.components.health:SetMaxHealth(500)
+    inst.components.health:StartRegen(20, 5)
+    inst:AddComponent("combat")
+    inst.components.combat:SetDefaultDamage(40)
+    inst.components.combat:SetAttackPeriod(3)
+    -- inst.components.combat:SetRange(1,1)
+    -- set_retarget_fn(inst)
+    set_follower_retarget_fn(inst)
+    inst.components.combat.dmg_type = "shadow"
+    inst.components.combat:SetDmgTypeAbsorb("shadow", .7)
+    inst.components.combat:SetDmgTypeAbsorb("holly", 1.3)
+    inst.components.combat.hiteffectsymbol = "torso"
+    inst:AddComponent("locomotor")
+    inst.components.locomotor.walkspeed = 4
+    inst.components.locomotor.runspeed = 6
+    inst:AddComponent("inventory")
+
+    inst:AddComponent("follower")
+    -- inst:ListenForEvent("doattack", function(inst)
+    -- end)
+    inst:ListenForEvent("start_lunge", function(inst, data)
+        inst.enemies = {}
+        local dmg = inst.components.combat.defaultdamage
+        inst.lunge_task = inst:DoTaskInTime(.1, function()
+            EntUtil:make_area_dmg(inst, 3.3, inst, dmg, nil, 
+                EntUtil:add_stimuli(nil, "shadow"), 
+                {
+                    test = function(v,attacker,weapon)
+                        return not inst.enemies[v]
+                    end,
+                    fn = function(v,attacker,weapon)
+                        inst.enemies[v] = true
+                    end,
+                }
+            )
+        end)
+    end)
+    inst:ListenForEvent("stop_lunge", function(inst, data)
+        inst.enemies = nil
+        if inst.lunge_task then
+            inst.lunge_task:Cancel()
+            inst.lunge_task = nil
+        end
+    end)
+    inst.set_symbol = function(inst, hand_symbol, body_symbol, head_symbol)
+        inst.hand_symbol = hand_symbol
+        inst.body_symbol = body_symbol
+        inst.head_symbol = head_symbol
+        override(inst, inst.hand_symbol, inst.body_symbol, inst.head_symbol)
+    end
+    inst.OnSave = function(inst, data)
+        data.hand_symbol = inst.hand_symbol
+        data.body_symbol = inst.body_symbol
+        data.head_symbol = inst.head_symbol
+    end
+    inst.OnLoad = function(inst, data)
+        if data then
+            inst:DoTaskInTime(0, function()
+                inst:set_symbol(data.hand_symbol, data.body_symbol, data.head_symbol)
+            end)
+        end
+    end
+    inst:SetStateGraph("SGtp_npc")
+    inst:SetBrain(require "brains/abigailbrain")
+end)
+table.insert(prefs, shadow_fighter)
+Util:AddString(shadow_fighter.name, "暗影斗士", "看不清楚")
 
 local guide = Prefab("tp_guide", function()
     local inst = CreateEntity()

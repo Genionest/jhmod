@@ -1,6 +1,14 @@
 local Sounds = require "extension/datas/sounds"
 local EntUtil = require "extension.lib.ent_util"
 
+local function PlayerAnimation(inst, fname, ...)
+    inst.AnimState[fname](inst.AnimState, ...)
+    if inst.tp_fx then
+        inst.tp_fx.Transform:SetRotation(inst.Transform:GetRotation())
+        inst.tp_fx.AnimState[fname](inst.tp_fx.AnimState, ...)
+    end
+end
+
 local function add_player_sg(state)
     AddStategraphState("wilson", state)
     AddStategraphState("wilsonboating", state)
@@ -40,7 +48,7 @@ add_player_sg(State{
         if ba and ba.target then
             inst:ForceFacePoint(ba.target:GetPosition():Get())
         end
-        inst.AnimState:PlayAnimation("atk")
+        PlayerAnimation(inst, "PlayAnimation", "atk")
         inst.SoundEmitter:PlaySound("dontstarve/wilson/attack_weapon")
     end,
     events={
@@ -70,7 +78,7 @@ AddStategraphState("wilson", State{
             inst:ForceFacePoint(ba.pos:Get())
         end
         inst.AnimState:AddOverrideBuild("player_lunge_wargon")
-        inst.AnimState:PlayAnimation("lunge_pre")
+        PlayerAnimation(inst, "PlayAnimation", "lunge_pre")
         inst.SoundEmitter:PlaySound("dontstarve/wilson/boomerang_throw", "wg_lunge_pre")
     end,
     timeline =
@@ -94,8 +102,12 @@ AddStategraphState("wilson", State{
         inst.components.locomotor:Stop()
         inst.SoundEmitter:PlaySound("dontstarve_DLC003/characters/wheeler/slide")
         inst.components.locomotor:EnableGroundSpeedMultiplier(false)
-        inst.Physics:SetMotorVelOverride(28, 0, 0)
-        inst.AnimState:PlayAnimation("lunge_pst")
+        local speed = 28
+        if inst:HasTag("far_lunge") then
+            speed = speed + 10
+        end
+        inst.Physics:SetMotorVelOverride(speed, 0, 0)
+        PlayerAnimation(inst, "PlayAnimation", "lunge_pst")
         inst:PerformBufferedAction()
         inst.SoundEmitter:KillSound("wg_lunge_pre")
         inst.SoundEmitter:PlaySound("dontstarve_DLC003/characters/wheeler/slide")
@@ -127,6 +139,11 @@ AddStategraphState("wilson", State{
             inst.components.health:SetInvincible(nil, "wg_lunge")
         end
         ChangeToCharacterPhysics(inst)
+        local weapon = inst.components.combat:GetWeapon()
+        if weapon then
+            weapon:PushEvent("weapon_stop_lunge", {owner=inst})
+        end
+        inst:PushEvent("stop_lunge", {weapon=weapon})
     end,
 })
 
@@ -141,7 +158,7 @@ add_player_sg(State{
             inst:ForceFacePoint(ba.pos:Get())
         end
         inst.components.locomotor:Stop()
-        inst.AnimState:PlayAnimation("atk_prop_pre")
+        PlayerAnimation(inst, "PlayAnimation", "atk_prop_pre")
         inst.SoundEmitter:PlaySound(Sounds.attack)
     end,
 
@@ -164,7 +181,7 @@ add_player_sg(State{
 
     onenter = function(inst)
         inst.components.locomotor:Stop()
-        inst.AnimState:PlayAnimation("atk_prop")
+        PlayerAnimation(inst, "PlayAnimation", "atk_prop")
         inst.SoundEmitter:PlaySound("dontstarve/wilson/attack_weapon")
         if inst:HasTag("attack_prop_protect") then
             inst.components.health:SetInvincible(true, "wg_attack_prop")
@@ -207,7 +224,7 @@ AddStategraphState("wilson", State{
         end
         inst.components.locomotor:Stop()
         inst:PerformBufferedAction()
-        inst.AnimState:PlayAnimation("slide_pre")
+        PlayerAnimation(inst, "PlayAnimation", "slide_pre")
         -- EntUtil:add_tag(inst, "tp_not_freezable")
         inst.components.health:SetInvincible(true, "wg_dodge")
     end,
@@ -228,7 +245,7 @@ AddStategraphState("wilson", State{
     onenter =   function(inst)
         -- EntUtil:add_tag(inst, "tp_not_freezable")
         inst.components.health:SetInvincible(true, "wg_dodge")
-        inst.AnimState:PushAnimation("slide_loop")
+        PlayerAnimation(inst, "PushAnimation", "slide_loop")
         inst.SoundEmitter:PlaySound("dontstarve_DLC003/characters/wheeler/slide")
         inst.Physics:SetMotorVelOverride(20,0,0)
         inst.components.locomotor:EnableGroundSpeedMultiplier(false)
@@ -254,7 +271,7 @@ AddStategraphState("wilson", State{
     tags = {"evade","no_stun", "doing"},
     onenter = function(inst)
         -- EntUtil:add_tag(inst, "tp_not_freezable")
-        inst.AnimState:PlayAnimation("slide_pst")
+        PlayerAnimation(inst, "PlayAnimation", "slide_pst")
         inst.components.health:SetInvincible(true, "wg_dodge")
     end,
     onexit = function(inst)

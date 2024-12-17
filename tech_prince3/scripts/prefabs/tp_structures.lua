@@ -85,21 +85,21 @@ local furnace = Prefab("tp_furnace", function()
             --     if food then food.components.tppowerfruit:Random() end
             -- end
             local equip = inst.components.container:FindItem(function(item)
-                return item.components.tp_forge_level
+                return item.components.tp_forge_weapon
             end)
             local material = inst.components.container:FindItem(function(item)
                 return item:HasTag("forge_material")
             end)
-            equip.components.tp_forge_level:Forge(material)
+            equip.components.tp_forge_weapon:Forge(material)
             inst.SoundEmitter:PlaySound("dontstarve/wilson/attack_whoosh",nil,.5)
         end,
         validfn = function(inst)
             local equip = inst.components.container:FindItem(function(item)
-                return item.components.tp_forge_level
+                return item.components.tp_forge_weapon
             end)
             if equip then
                 local material = inst.components.container:FindItem(function(item)
-                    return equip.components.tp_forge_level:CanForge(item)
+                    return equip.components.tp_forge_weapon:CanForge(item)
                 end)
                 if material then
                     return true
@@ -791,7 +791,8 @@ local food_compressor = Prefab("ak_food_compressor", function()
             return nug.components.tp_food_effect
         end)
         if food then
-            food.components.tp_food_effect:Random()
+            -- food.components.tp_food_effect:Random()
+            food.components.tp_food_effect.wake = true
         end
     end
     inst:ListenForEvent("animover", function(inst, data)
@@ -808,7 +809,7 @@ table.insert(prefs, PrefabUtil:MakePlacer(food_compressor.name,
     { scale = 2 },
     AssetMaster:GetAnimation(food_compressor.name)))
 Util:AddString(food_compressor.name, "食物压制机",
-    "电器，放入食材能够给食物添加词条（不同的词条叠加，优先级高的会覆盖优先级低的，优先级相同则随机取一）")
+    "电器,放入食物能够给食物添加调料,食用后会有特殊效果(叠加无调料的食物会失去调料效果)")
 
 local compost = Prefab("ak_compost", function()
     local bank, build, animation = AssetMaster:GetAnimation("ak_compost")

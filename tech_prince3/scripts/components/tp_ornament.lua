@@ -1,5 +1,5 @@
-local OrnamentManager = require "extension/datas/ornaments"
 local WgShelf = require "extension/lib/wg_shelf"
+local OrnamentManager = Sample.OrnamentManager
 
 local TpOrnament = Class(function(self, inst)
     self.inst = inst
@@ -24,7 +24,7 @@ end
 
 function TpOrnament:EffectOrnament(id)
     local data = OrnamentManager:GetDataById(id)
-    data:Take(self.inst)
+    data.take(self.inst, self, data.id, data.data)
 end
 
 function TpOrnament:LoseOrnament(id)
@@ -36,7 +36,7 @@ end
 
 function TpOrnament:UneffectOrnament(id)
     local data = OrnamentManager:GetDataById(id)
-    data.lose(self.inst, data.id, data.data)
+    data.lose(self.inst, self, data.id, data.data)
 end
 
 function TpOrnament:GetScreenData()

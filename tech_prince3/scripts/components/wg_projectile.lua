@@ -57,15 +57,16 @@ function WgProjectile:Hit(target)
         true_weapon = weapon
         damage = weapon.components.weapon:GetDamage()
     end
+    print("a001", damage, attacker, target)
     if damage>0 and attacker and attacker.components.combat 
     and attacker ~= target then
+        print("a002")
         -- attacker.components.combat:DoAttackattacker.components.combat:Get(target, weapon, self.inst)
         -- target.components.combat:GetAttacked(attacker, damage, weapon, 'wg_projectile')
         local rate = attacker.components.combat:GetDamageModifier()
         local stimuli = EntUtil:add_stimuli(nil, "wg_projectile")
-        if self.dmg_type then
-            EntUtil:add_stimuli(stimuli, self.dmg_type)
-        elseif weapon.components.weapon and weapon.components.weapon.dmg_type then
+        if weapon.components.weapon and weapon.components.weapon.dmg_type then
+            print("a003")
             EntUtil:add_stimuli(stimuli, weapon.components.weapon.dmg_type)
         end
         EntUtil:get_attacked(target, attacker, damage*rate, true_weapon, stimuli)

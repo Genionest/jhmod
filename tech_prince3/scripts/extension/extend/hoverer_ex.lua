@@ -4,8 +4,13 @@ if not mouse_info then
         local OnUpdate = self.OnUpdate
         function self:OnUpdate()
             OnUpdate(self)
-            self.text:Hide()
-            self.secondarytext:Hide()
+            if self.owner then
+                if self.owner.should_hide_hover 
+                and self.owner.should_hide_hover == 1 then
+                    self.text:Hide()
+                    self.secondarytext:Hide()
+                end
+            end
         end
     end)
 end

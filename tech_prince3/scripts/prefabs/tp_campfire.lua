@@ -214,9 +214,9 @@ local function fn(Sim)
         end
         
         if danger then
-            if doer.components.talker then
-                doer.components.talker:Say("无法使用营火")
-            end
+            -- if doer.components.talker then
+            --     doer.components.talker:Say("无法使用营火")
+            -- end
             return
         end
 

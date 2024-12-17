@@ -45,7 +45,8 @@ for k, v in pairs(interalbe_items) do
     end)
 end
 
-AddPrefabPostInitAny(function(inst)
+local function fn(inst)
+
     -- 附魔
     if inst.components.equippable 
     and inst.components.inventoryitem
@@ -63,19 +64,23 @@ AddPrefabPostInitAny(function(inst)
     local food_type = {
         "MEAT", "VEGGIE", "INSECT", "SEEDS", "GENERIC"
     }
-    if inst.components.edible 
-	and (inst.components.edible.healthvalue > Info.FoodEffect.HealthValueLimit
-	or inst.components.edible.sanityvalue > Info.FoodEffect.SanityValueLimit
-	or inst.components.edible.hungervalue > Info.FoodEffect.HungerValueLimit) 
-    then
+    if inst.components.edible then
         for k, v in pairs(food_type) do
             if inst.components.edible.foodtype==v then
                 inst:AddComponent("tp_food_effect")
                 -- inst.components.tp_food_effect:Random()
             end
         end
-	end
-end)
+    end
+    -- 存在时间
+    if inst.components.inventoryitem
+    and inst.components.inventoryitem.cangoincontainer then
+        if inst.components.tp_exist_time == nil then
+            inst:AddComponent("tp_exist_time")
+        end
+    end
+end
+AddPrefabPostInitAny(fn)
 
 -- AddPrefabPostInit("armorwood", function(inst)
 --     inst.components.equippable:WgAddEquipAttackedFn(function(damage, attacker, weapon, owner, inst)
@@ -170,4 +175,8 @@ end)
 AddPrefabPostInit("tornado", function(inst)
     inst:AddComponent("combat")
     inst.components.combat:SetDefaultDamage(TUNING.TORNADO_DAMAGE)
+end)
+
+AddPrefabPostInit("roottrunk", function(inst)
+    inst:RemoveComponent("workable")
 end)

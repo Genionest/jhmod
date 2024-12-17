@@ -47,6 +47,10 @@ local w_WgFollowImage_g = w_Class_g(function(w_self_g, w_inst_g)
 					if w_fn_g then
 						w_fn_g(w_self_g["widget"])
 					end
+					if w_self_g["execute"] then
+						w_self_g["execute"](w_self_g["widget"])
+						w_self_g["execute"] = w_nil_g
+					end
 				end
 			else
 				w_self_g["widget"]["wg_image"]:SetTexture(w_atlas_g, w_img_g)
@@ -60,6 +64,13 @@ local w_WgFollowImage_g = w_Class_g(function(w_self_g, w_inst_g)
 	w_self_g["SetFn"] = function(w_self_g, w_fn_g)
 		if w_self_g["widget"] then
 			w_fn_g(w_self_g["widget"])
+		end
+	end
+	w_self_g["Execute"] = function(w_self_g, w_fn_g)
+		if w_self_g["widget"] then
+			w_fn_g(w_self_g["widget"])
+		else
+			w_self_g["execute"] = w_fn_g
 		end
 	end
 	-- :SetScale(...)

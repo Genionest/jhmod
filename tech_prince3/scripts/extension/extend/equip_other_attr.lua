@@ -8,15 +8,16 @@ local BuffManager = Sample.BuffManager
 
 -- 装备重量
 local equip_weight = {
-    armorwood = 2,
+    armorgrass = 2,
+    armorwood = 3,
     armormarble = 5,
-    armorslurper = 2,
+    armorslurper = 3,
     armorruins = 4,
-    armordragonfly = 2,
+    armordragonfly = 3,
 
-    footballhat = 2,
-    wathgrithrhat = 2,
-    slurtlehat = 2,
+    footballhat = 3,
+    wathgrithrhat = 3,
+    slurtlehat = 3,
     ruinshat = 4,
     beefalohat = 2,
     watermelonhat = 2,
@@ -27,9 +28,15 @@ local equip_weight = {
     piggyback = 4,
     icepack = 2,
     krampus_sack = 6,
+    backpack = 2,
 
-    hambat = 2,
-    tentacle_spike = 2,
+    spear = 2,
+    spear_wathgrithr = 2,
+    nightstick = 3,
+    batbat = 3,
+    hambat = 3,
+    nightsword = 1,
+    tentaclespike = 3,
     ruins_bat = 4,
     multitool_axe_pickaxe = 3,
 
@@ -60,7 +67,7 @@ local weapon_cost_vigor = {
     spear_wathgrithr = 1.5,
     hambat = 3,
     nightstick = 3,
-    tentacle_spike = 3,
+    tentaclespike = 3,
     batbat = 3,
     boomerang = 1,
     nightsword = 2,
@@ -80,16 +87,16 @@ local weapon_attr_factor = {
     spear_wathgrithr = {agility = .3},
     hambat = {strengthen = .25},
     nightstick = {faith = .4},
-    tentacle_spike = {lucky = .4},
+    tentaclespike = {lucky = .4},
     batbat = {faith = .4},
     nightsword = {intelligence = .4},
     ruins_bat = {strengthen = .3},
 }
 for k, v in pairs(weapon_attr_factor) do
     AddPrefabPostInit(k, function(inst)
+        inst:AddComponent("tp_forge_weapon")
         for k2, v2 in pairs(v) do 
-            inst:AddComponent("tp_forge_level")
-            inst.components.tp_forge_level:SetAttrFactor(k2, v2)
+            inst.components.tp_forge_weapon:SetAttrFactor(k2, v2)
         end
     end)
 end
@@ -101,7 +108,7 @@ local weapon_forge_element = {
 }
 for k, v in pairs(weapon_forge_element) do
     AddPrefabPostInit(k, function(inst)
-        inst.components.tp_forge_level:SetElement(v)
+        inst.components.tp_forge_weapon:SetElement(v)
     end)
 end
 
@@ -121,7 +128,7 @@ local armors = {
 }
 for k, v in pairs(armors) do
     AddPrefabPostInit(v, function(inst)
-        inst:AddComponent("tp_forge_level_armor")
+        inst:AddComponent("tp_forge_armor")
     end)
 end
 

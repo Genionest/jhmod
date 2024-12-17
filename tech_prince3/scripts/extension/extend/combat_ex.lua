@@ -2,6 +2,7 @@ local EntUtil = require "extension.lib.ent_util"
 local Util = require "extension.lib.wg_util"
 local Info = Sample.Info
 local FxManager = Sample.FxManager
+local BuffManager = Sample.BuffManager
 
 -- 伤害类型翻译
 STRINGS.TP_DMG_TYPE = {}
@@ -40,15 +41,22 @@ Combat:GetAttacked(attacker, damage, weapon, stimuli)
     return not blocked
 ]]
 --[[
-Combat:CalcDamage(target, weapon, multiplier)
-
+DoAttack造成的伤害自带stimuli(atk)
+stimuli(true)不会触发 伤害类型吸收, 防御减伤, 闪避, 暴击, 吸血
+stimuli(pure)不会触发暴击,吸血, attacked_fn, on_hit_fn
+暴击需要stimuli(atk)或stimuli(can_crit)触发
+stimuli(not_crit)不会触发暴击
+stimuli(not_evade)不会触发闪避
+stimuli(not_life_steal)不会触发吸血
+EntUtil:can_thorns stimuli(没有pure,thorns)返回true
+EntUtil:can_dmg_effect stimuli(atk且没有pure)返回true
 ]]
 -- Inventory:ApplyDamage
 local function fn(self)
     -- 攻击时减少精力值, 无论集中与否
     local DoAttack = self.DoAttack
     function self:DoAttack(target_override, weapon, projectile, stimuli, instancemult)
-        self.inst:PushEvent("tp_do_attack")
+        self.inst:PushEvent("tp_do_attack", {weapon=weapon})
         local stimuli = EntUtil:add_stimuli(stimuli, "atk")
         DoAttack(self, target_override, weapon, projectile, stimuli, instancemult)
     end
@@ -108,7 +116,8 @@ local function fn(self)
             -- 暴击
             if attacker and attacker.components.combat
             and attacker.components.combat.tp_crit
-            and not EntUtil:in_stimuli(stimuli, "pure")
+            and (EntUtil:can_dmg_effect(stimuli) 
+            or EntUtil:in_stimuli(stimuli, "can_crit"))
             and not EntUtil:in_stimuli(stimuli, "not_crit") then
                 if math.random() < attacker.components.combat.tp_crit then
                     FxManager:MakeFx("crit", self.inst)
@@ -164,6 +173,15 @@ local function fn(self)
         -- 将stimuli记录起来, 好让其能传到inventory:ApplyDamage
         if stimuli and self.inst.components.inventory then
             self.inst.components.inventory.temp_stimuli = stimuli
+        end
+        -- 根据伤害类型触发debuff
+        if dmg_type then
+            if dmg_type ~= "holly" then
+                local rand = math.random()
+                if rand < 0.1 then 
+                    BuffManager:AddBuff(self.inst, dmg_type)
+                end
+            end
         end
         return GetAttacked(self, attacker, damage, weapon, stimuli)
     end
@@ -257,6 +275,9 @@ local function fn(self)
             for k, v in pairs(self.tp_evade_mods) do
                 mod = mod + v
             end
+            if self.inst:HasTag("evade_percent_up") then
+                mod = mod * 1.3
+            end
             return mod
         end
     end
@@ -287,7 +308,9 @@ local function fn(self)
     -- 生命偷取
     self.inst:ListenForEvent("onhitother", function(inst, data)
         if data and data.damage and data.damage>0
-        and not EntUtil:in_stimuli(data.stimuli, "pure") 
+        -- and not EntUtil:in_stimuli(data.stimuli, "pure") 
+        and (EntUtil:can_dmg_effect(data.stimuli)
+        or EntUtil:in_stimuli(data.stimuli, "can_life_steal"))
         and not EntUtil:in_stimuli(data.stimuli, "not_life_steal") then
             if self.tp_life_steal then
                 local amount = data.damage*self.tp_life_steal
@@ -340,20 +363,20 @@ local function fn(self)
     self.inst:AddComponent("combat2")
     self.tp_dmg_type_absorb = nil
     
-    function self:AddDmgTypeAbsorb(key, val)
+    function self:AddDmgTypeAbsorb(dmg_type, val)
         if self.tp_dmg_type_absorb == nil then
             self.tp_dmg_type_absorb = {}
         end
-        if self.tp_dmg_type_absorb[key] == nil then
-            self.tp_dmg_type_absorb[key] = 1
+        if self.tp_dmg_type_absorb[dmg_type] == nil then
+            self.tp_dmg_type_absorb[dmg_type] = 1
         end
-        self.tp_dmg_type_absorb[key] = self.tp_dmg_type_absorb[key]+val
+        self.tp_dmg_type_absorb[dmg_type] = self.tp_dmg_type_absorb[dmg_type]+val
     end
-    function self:SetDmgTypeAbsorb(key, val)
+    function self:SetDmgTypeAbsorb(dmg_type, val)
         if self.tp_dmg_type_absorb == nil then
             self.tp_dmg_type_absorb = {}
         end
-        self.tp_dmg_type_absorb[key] = val
+        self.tp_dmg_type_absorb[dmg_type] = val
     end
     function self:GetDmgTypeAbsorb(dmg_type)
         if self.tp_dmg_type_absorb then
@@ -362,12 +385,14 @@ local function fn(self)
     end
     
     local CalcDamage = self.CalcDamage
-    function self:CalcDamage(target, weapon, multiplier)
+    function self:CalcDamage(target, weapon, multiplier, stimuli)
+        -- stimuli本体的函数时不会接受到这个值得
+        -- 这里,只是给EntUtil:get_attacked用
         local retDamage = 0
         retDamage = CalcDamage(self, target, weapon, multiplier)
         if self.wg_calc_damage_fns then
             for k, v in pairs(self.wg_calc_damage_fns) do
-                retDamage = v(retDamage, self.inst, target, weapon)
+                retDamage = v(retDamage, self.inst, target, weapon, stimuli)
                 assert(retDamage~=nil, "wg_calc_damage_fns member function return nil value")
             end
         end

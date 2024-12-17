@@ -346,6 +346,7 @@ local function obstacle()
     inst:AddTag("obstacle")
     inst:AddComponent("wg_useable")
     -- inst.components.wg_useable.test = function(inst, doer) end
+    inst.components.wg_useable.sound = "dontstarve/common/deathpoof"
     inst.components.wg_useable.use = function(inst, doer) 
         GetPlayer().HUD:Hide()
         TheFrontEnd:Fade(false,.5)

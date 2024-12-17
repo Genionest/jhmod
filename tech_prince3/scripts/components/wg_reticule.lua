@@ -61,6 +61,9 @@ function WgReticule:ShowReticule()
 		self.reticule:Show()
 	else
 		self.reticule = SpawnPrefab(self.reticule_prefab) --SetDebugEntity(self.reticule)
+		if self.reticule_fn then
+			self.reticule_fn(self.reticule)
+		end
 		self.reticule:DoPeriodicTask(0,function(inst)
 			inst:UpdatePosition(self.inst:GetPosition(), self.inst:GetAngleToPoint(TheInput:GetWorldPosition()))
 		end)

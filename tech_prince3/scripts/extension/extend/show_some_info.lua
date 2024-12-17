@@ -96,9 +96,9 @@ local fns = {
         else
             dmg = self.defaultdamage * dmg_mult
         end
-        local s = string.format("伤害:%d,攻速:%d%%",
+        local s = string.format("伤害:%d,攻速:%d%%,",
             dmg, atk_spd*100, crit*100)
-        s = s..string.format("防御:%d(%d%%),穿透:%d",
+        s = s..string.format("防御:%d(%d%%),穿透:%d,",
             defense, def_ab*100, penetrate)
         if WG_TEST then
             local evade = self.tp_evade or 0
@@ -118,7 +118,7 @@ local fns2 = {
 {
     "locomotor",
     function(self)
-        local s = string.format("走:%d,跑:%d", 
+        local s = string.format("走:%.1f,跑:%.1f", 
             self:GetWalkSpeed(), self:GetRunSpeed())
         return s
     end

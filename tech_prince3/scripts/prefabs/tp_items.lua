@@ -982,8 +982,9 @@ end)
 table.insert(prefs, coin)
 Util:AddString(coin.name, "呼噜假币", "希望不是假币")
 
-local amulet_tbl = { loadfile("prefabs/amulet")() }
-local green_amulet = deepcopy(amulet_tbl[5])
+-- local amulet_tbl = { loadfile("prefabs/amulet")() }
+-- local green_amulet = deepcopy(amulet_tbl[5])
+local green_amulet = EntUtil:deepcopy_prefab("prefabs/amulet", "greenamulet")
 PrefabUtil:SetPrefabName(green_amulet, "tp_green_amulet")
 PrefabUtil:HookPrefabFn(green_amulet, function(inst)
     inst.components.equippable.dapperness = TUNING.DAPPERNESS_MED 
@@ -1153,8 +1154,12 @@ local recover_bottle = Prefab("tp_recover_bottle", function()
         end
     end
     inst.use = function(inst, doer)
+        local rcv = inst.rcv
+        if doer:HasTag("tp_recover_bottle") then
+            rcv = rcv * 1.3
+        end
+        doer.components.health:DoDelta(rcv)
         inst.components.finiteuses:Use(1)
-        doer.components.health:DoDelta(inst.rcv)
     end
     inst.max = 3
     inst.rcv = 100
@@ -1183,7 +1188,7 @@ local recover_bottle = Prefab("tp_recover_bottle", function()
     return inst
 end)
 table.insert(prefs, recover_bottle)
-Util:AddString(recover_bottle.name, "恢复瓶", "恢复生命")
+Util:AddString(recover_bottle.name, "医疗液", "恢复生命")
 
 local beast_essence = Prefab("tp_beast_essence", function()
     local bank, build, animation, water = AssetMaster:GetAnimation("tp_beast_essence", true)
@@ -1199,5 +1204,31 @@ local beast_essence = Prefab("tp_beast_essence", function()
 end)
 table.insert(prefs, beast_essence)
 Util:AddString(beast_essence.name, "兽王之魂", "强大生物的精华")
+
+local wolfgang_can = EntUtil:deepcopy_prefab("prefabs/tunacan", "tunacan")
+PrefabUtil:SetPrefabName(wolfgang_can, "tp_wolfgang_can")
+PrefabUtil:HookPrefabFn(wolfgang_can, function(inst)
+    inst.components.inventoryitem:ChangeImageName("tunacan")
+    inst.components.useableitem:SetOnUseFn(function(inst)
+        inst.SoundEmitter:PlaySound("dontstarve_DLC002/common/can_open")
+        local veggies = {
+            "sweet_potato", "corn", "coffeebeans", "cave_banana", "pomegranate", "watermelon", 
+            "cactus_meat", "dragonfruit", "carrot", "berries", "durian", "aloe", "pumpkin", 
+            "eggplant", "asparagus", "radish", 
+        }
+        local meats = {
+            "meat", "smallmeat", "fish_med", "froglegs"
+        }
+        local food1 = veggies[math.random(#veggies)]
+        local food2 = veggies[math.random(#veggies)]
+        local food3 = meats[math.random(#meats)]
+        GetPlayer().components.inventory:GiveItem(SpawnPrefab(food1.."_cooked"))
+        GetPlayer().components.inventory:GiveItem(SpawnPrefab(food2.."_cooked"))
+        GetPlayer().components.inventory:GiveItem(SpawnPrefab(food3.."_cooked"))
+        inst:Remove()
+    end)
+end)
+table.insert(prefs, wolfgang_can)
+Util:AddString(wolfgang_can.name, "食品罐头", "随机获得3种食物")
 
 return unpack(prefs)

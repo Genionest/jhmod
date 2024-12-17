@@ -21,9 +21,11 @@ local monster_dmg_type = {
     hound = "slash",
     icehound = "slash",
     firehound = "slash",
+    walrus = "spike",
     beefalo = "thump",
     tallbird = "slash",
     krampus = "shadow",
+    spat = "thump",
     bat = "spike",
     monkey = "strike",
     bee = "spike",
@@ -45,8 +47,7 @@ local monster_dmg_type = {
     tentacle = "strike",
     koalefant = "thump",
     koalefant_summer = "thump",
-    rocky = "strke",
-    spat = "thump",
+    rocky = "strike",
     worm = "slash",
     -- boss
     leif = "strike",
@@ -70,6 +71,14 @@ for k, v in pairs(monster_dmg_type) do
     end) 
 end
 
+AddPrefabPostInit("lightninggoat", function(inst)
+    inst.components.combat.get_dmg_type_fn = function(inst)
+        if inst:HasTag("charged") then
+            return "electric"
+        end 
+        return "strike"
+    end
+end)
 
 --[[
 伤害类型有 打,刺,斩,捶,火,冰,暗,圣,雷,毒,风,血.
@@ -92,11 +101,11 @@ local weapon_dmg_type = {
     spear_wathgrithr = "spike",
     hambat = "strike",
     nightstick = "spike",
-    tentacle_spike = "slash",
+    tentaclespike = "slash",
     batbat = "slash",
-    boomerang = "spike",
     nightsword = "shadow",
     ruins_bat = "thump",
+    boomerang = "spike",
     blowdart_pipe = "spike",
     blowdart_fire = "fire",
 }

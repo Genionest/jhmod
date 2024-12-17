@@ -1,10 +1,11 @@
 local WgBookShelf = require "extension.lib.wg_book_shelf"
 local EntUtil = require "extension.lib.ent_util"
+local WgValModifier = require "extension.lib.wg_val_modifier"
 local Info = Sample.Info
 
 local function OnPlayerWeightChange(inst, data)
     local weight = inst.components.tp_player_attr:GetPlayerWeight()
-    local load_weight = inst.components.tp_player_attr.load_weight
+    local load_weight = inst.components.tp_player_attr:GetLoadWeight()
     if weight/load_weight > 1 then
         -- self.inst.components.locomotor
         EntUtil:add_speed_mod(inst, "load_weight", -.5)
@@ -45,6 +46,7 @@ local TpPlayerAttr = Class(function(self, inst)
         lucky = 0,
     }
     self.attr_mods = {}
+    self.attr_buff = {}
     self.factors = {
         health = 0,
         endurance = 0,
@@ -63,10 +65,16 @@ local TpPlayerAttr = Class(function(self, inst)
     end)
     -- 负重
     self.load_weight = Info.Attr.BaseLoadWeight
+    self.wg_val_modifier = WgValModifier(self)
+    self.wg_val_modifier:RegisterAttr("load_weight")
+    -- self.load_weight_mods = {}
+    -- self.load_weight_buff = 0
+    
     self.inst:ListenForEvent("itemget", OnPlayerWeightChange)
     self.inst:ListenForEvent("itemlose", OnPlayerWeightChange)
     self.inst:ListenForEvent("take_ornament", OnPlayerWeightChange)
     self.inst:ListenForEvent("lose_ornament", OnPlayerWeightChange)
+    
     self.loot_chance = 0
     self.crit_dmg_mod = 0
     -- 升级相关
@@ -80,10 +88,10 @@ end
 
 function TpPlayerAttr:GetAttr(attr)
     local val = self.attr[attr]
-    if self.attr_mods[attr] then
-        val = val + self.attr_mods[attr]
+    if self.attr_buff[attr] then
+        val = val + self.attr_buff[attr]
     end
-    return val
+    return math.max(0,val)
 end
 
 function TpPlayerAttr:SetAttr(attr, value)
@@ -94,9 +102,33 @@ function TpPlayerAttr:AddAttr(attr, value)
     self.attr[attr] = self.attr[attr] + value
 end
 
-function TpPlayerAttr:AddAttrMod(attr, mod)
-    local n = self.attr_mods[attr] or 0
-    self.attr_mods[attr] = mod + n
+function TpPlayerAttr:AddAttrMod(attr, key, val)
+    -- local n = self.attr_mods[attr] or 0
+    -- self.attr_mods[attr] = mod + n
+    if self.attr_mods[attr] == nil then
+        self.attr_mods[attr] = {}
+    end
+    self.attr_mods[attr][key] = val
+    self.attr_buff[attr] = self:GetAttrMod(attr)
+    self:UpdateAttr()
+end
+
+function TpPlayerAttr:RmAttrMod(attr, key)
+    if self.attr_mods[attr] then
+        self.attr_mods[attr][key] = nil
+    end
+    self.attr_buff[attr] = self:GetAttrMod(attr)
+    self:UpdateAttr()
+end
+
+function TpPlayerAttr:GetAttrMod(attr)
+    local val = 0
+    if self.attr_mods[attr] then
+        for k, v in pairs(self.attr_mods[attr]) do
+            val = val + v
+        end
+    end
+    return val
 end
 
 function TpPlayerAttr:SetAttrRate(attr, rate)
@@ -194,6 +226,7 @@ function TpPlayerAttr:GetAttrArgs(attr, attr_val)
         -- 消化速度
         local eat_time = math.min(attr_val, 40) * .2 * rate -- 8
         eat_time = eat_time + math.max(0, attr_val-40) * .02 * rate
+        eat_time = math.min(9, eat_time)
         -- agility factor
         local factor = math.min(attr_val, 40)
         factor = factor + math.max(0, math.min(attr_val-40, 20)) * .5 * rate
@@ -215,7 +248,7 @@ function TpPlayerAttr:GetAttrArgs(attr, attr_val)
         shadow_dmg_absorb = shadow_dmg_absorb + math.max(0, attr_val-60) * .001 * rate
         -- faith factor
         local factor = math.min(attr_val, 20) * .5
-        factor = factor + math.max(0, math.min(attr_val-20, 60)) * 1 * rate
+        factor = factor + math.max(0, math.min(attr_val-20, 60)) * 1 * rate  -- 70
         factor = factor + math.max(0, attr_val-80) * .3 * rate
 
         return recover, shadow_dmg_absorb, factor
@@ -233,8 +266,8 @@ function TpPlayerAttr:GetAttrArgs(attr, attr_val)
         san_resist = san_resist + math.max(0, math.min(attr_val-40, 20)) * .003 * rate
         san_resist = san_resist + math.max(0, attr_val-60) * .001 * rate
         -- intelligence factor
-        local factor = math.min(attr_val, 20) * .5
-        factor = factor + math.max(0, math.min(attr_val-20, 60)) * 1 * rate
+        local factor = math.min(attr_val, 20) * .5  -- 10
+        factor = factor + math.max(0, math.min(attr_val-20, 60)) * 1 * rate  -- 70
         factor = factor + math.max(0, attr_val-80) * .3 * rate
 
         return mana_rate, san_resist, factor
@@ -247,10 +280,10 @@ function TpPlayerAttr:GetAttrArgs(attr, attr_val)
         local chance_loot = math.min(attr_val, 30)*0.01*rate
         chance_loot = chance_loot + math.max(attr_val-30, 0)*0.003*rate
         -- 暴击伤害
-        local crit = math.min(attr_val, 40)*0.01*rate  -- 40
+        local crit = math.min(attr_val, 40)*0.01*rate  -- 40%
         crit = crit + math.max(attr_val-40, 0)*0.003*rate
         -- lucky factor
-        local factor = math.min(attr_val, 20) * 1.5
+        local factor = math.min(attr_val, 20) * 1.5  -- 30
         factor = factor + math.max(0, attr_val-20) * .4 * rate
 
         return chance_loot, crit, factor
@@ -402,7 +435,8 @@ function TpPlayerAttr:UpdateAttr()
     -- local mana_rate2 = max/100*.5
     -- self.inst.components.tp_val_mana:SetRate(-(1+mana_rate2)*(1+mana_rate))
     -- self.mana_rate = mana_rate + mana_rate2
-    self.inst.components.tp_val_mana:SetRate(-1*(1+mana_rate))
+    -- self.inst.components.tp_val_mana:SetRate(-1*(1+mana_rate))
+    self.inst.components.tp_val_mana:SetRateMult(1+mana_rate)
     self.mana_rate = mana_rate
     -- 理智抗性
     self.inst.components.sanity:WgAddNegativeModifier("level", -san_resist)  
@@ -418,6 +452,8 @@ function TpPlayerAttr:UpdateAttr()
     self.crit_dmg_mod = crit
     -- 系数
     self.factors.lucky = factor
+
+    self.inst:PushEvent("player_attr_update")
 end
 
 function TpPlayerAttr:GetAttrFactor(attr)
@@ -431,6 +467,10 @@ end
 function TpPlayerAttr:GetCritDmgMod()
     return self.crit_dmg_mod
 end
+
+-- function TpPlayerAttr:GetLoadWeight()
+--     return self.load_weight + self.load_weight_buff
+-- end
 
 function TpPlayerAttr:GetPlayerWeight()
     local inv = self.inst.components.inventory
@@ -553,7 +593,7 @@ function TpPlayerAttr:GetScreenData()
         "其他",
         string.format("精力值:%d", self.inst.components.tp_val_vigor:GetMax()),
         string.format("法力值:%d", self.inst.components.tp_val_mana:GetMax()),
-        string.format("法力恢复:%.2f/s", -self.inst.components.tp_val_mana.rate),
+        string.format("法力恢复:%.2f/s", -self.inst.components.tp_val_mana:GetRate()),
         string.format("移动速度:%d%%", self.inst.components.locomotor:GetSpeedMultiplier()*100),
         string.format("负重:%d/%d(%d%%)", self:GetPlayerWeight(), self.load_weight, 
             self:GetPlayerWeight()/self.load_weight*100),

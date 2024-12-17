@@ -1,3 +1,5 @@
+local Sounds = require "extension.datas.sounds"
+
 local EntUtil = {}
 
 -- 非实体的标签
@@ -52,7 +54,7 @@ end
 令实体受到攻击，需要事先判断其是否可以被攻击  
 inst (EntityScript)受伤实体  
 attacker (EntityScript)伤害来源  
-damage (number)伤害数值  
+damage (number/func)伤害数值/伤害函数func(inst,attacker,weapon,reason)  
 weapon (EntityScript)武器，可以为nil  
 reason (string)原因，可以为nil  
 calc (bool)为true则会让伤害来源计算伤害并附加damage的伤害  
@@ -61,9 +63,13 @@ mult (number)计算伤害时的倍率，有这个默认calc为true
 function EntUtil:get_attacked(inst, attacker, damage, weapon, reason, calc, mult)
     local dmg = 0
     if mult or calc then
-        dmg = attacker.components.combat:CalcDamage(inst, weapon, mult)
+        dmg = attacker.components.combat:CalcDamage(inst, weapon, mult, reason)
     end
-	dmg = dmg+damage
+	if type(damage) == "number" then
+		dmg = dmg + damage
+	elseif type(damage) == "function" then
+		dmg = dmg + damage(inst, attacker, weapon, reason)
+	end
     inst.components.combat:GetAttacked(attacker, dmg, weapon, reason)
 end
 
@@ -92,8 +98,8 @@ function EntUtil:check_combat_target(inst, target)
 end
 
 --[[
-检测目标能否被攻击
-检测其是否包含非实体标签，是否为主体的随从，是否可被主体攻击，主体一般是非player  
+检测目标能否被攻击  
+检测其是否包含非实体标签，是否和主体是同类, 是否为主体的随从，是否可被主体攻击，主体一般是非player  
 (bool) 返回bool，  
 inst 攻击主体  
 target 攻击目标  
@@ -105,6 +111,10 @@ function EntUtil:check_combat_target2(inst, target)
             can = false
         end
     end
+	if inst.components.combat.target ~= target 
+	and self:check_congeneric(target) then
+		can = false
+	end
     if can then
 		if not target.components.follower or target.components.follower.leader ~= inst then
 			if inst.components.combat
@@ -120,7 +130,7 @@ end
 pos (Vector3)中心位置  
 range 攻击范围  
 attacker 攻击主体  
-damage 伤害数值  
+damage (number/func)伤害数值/伤害函数func(inst,attacker,weapon,reason)  
 weapon 武器，可以为nil  
 reason 原因，可以为nil  
 data 其他数据 {tags,no_tags,calc(bool),fn(func(v,attacker,weapon)),  test(func(v,attacker,weapon)),mult(number)}  
@@ -142,7 +152,7 @@ end
 造成范围伤害，主体一般是非player  
 pos (Vector3)中心位置  
 range 攻击范围  
-attacker 攻击主体  
+damage (number/func)伤害数值/伤害函数func(inst,attacker,weapon,reason)  
 damage 伤害数值  
 weapon 武器，可以为nil  
 reason 原因，可以为nil  
@@ -165,6 +175,49 @@ function EntUtil:make_area_dmg2(pos, range, attacker, damage, weapon, reason, da
     end
 end
 
+--[[
+执行突刺  
+weapon (entity) 武器  
+doer (entity) 攻击者  
+range (number) 攻击范围  
+damage (number) 伤害  
+stimuli (string) 伤害类型  
+data (table) 伤害附加数据  
+]]
+function EntUtil:do_lunge(weapon, doer, range, damage, stimuli, data)
+	weapon.enemies = {}
+    doer:PushEvent("start_lunge", {weapon=weapon})
+	weapon:PushEvent("weapon_start_lunge", {owner=doer})
+    doer.lunge_task = doer:DoPeriodicTask(.05, function()
+        EntUtil:make_area_dmg(doer, range, doer, damage, weapon, stimuli, data)
+    end)
+    if doer.lunge_event_fn == nil then
+        doer.lunge_event_fn = EntUtil:listen_for_event(doer, "stop_lunge", function(weapon, data)
+            if doer.lunge_task then
+                doer.lunge_task:Cancel()
+                doer.lunge_task = nil
+            end
+        end)
+    end
+end
+
+--[[
+执行回旋斩击  
+weapon (entity) 武器  
+doer (entity) 攻击者  
+range (number) 攻击范围  
+damage (number) 伤害  
+stimuli (string) 伤害类型  
+data (table) 伤害附加数据  
+not_ignore (bool) 推送事件时的参数  
+]]
+function EntUtil:do_cyclone_slash(weapon, doer, range, damage, stimuli, data, not_ignore)
+    doer.SoundEmitter:PlaySound(Sounds.cyclone_slash)
+    EntUtil:make_area_dmg(doer, range, doer, damage, weapon, stimuli, data)
+    doer:PushEvent("cyclone_slash", {weapon=weapon, not_ignore=not_ignore})
+	weapon:PushEvent("weapon_cyclone_slash", {owner=doer, not_ignore=not_ignore})
+end
+
 -- local stimuli_part = {
 -- 	"pure", "thorns", "not_crit", "not_life_steal",
 -- 	"not_evade",
@@ -174,17 +227,26 @@ end
 是否包含某类伤害原因  
 (bool) 返回bool  
 stimuli (table/string)总伤害原因  
-part (string)检查是否包含的伤害原因  
+... (string)检查是否包含的伤害原因  
 ]]
-function EntUtil:in_stimuli(stimuli, part)
+function EntUtil:in_stimuli(stimuli, ...)
+	local part = {...}
 	if stimuli then
 		if type(stimuli) == "string" then
-			return stimuli == part
+			if #part == 1 then
+				return stimuli == part[1]
+			end
+			return false
 		end
 		if type(stimuli) == "table" then
-			return stimuli[part]~=nil
+			for k, v in pairs(part) do
+				if not stimuli[v] then
+					return false
+				end
+			end
+			return true
 		end
-		assert(nil, "stimuli must be string or table")
+		assert(nil, string.format("stimuli must be string or table, but get %s", tostring(stimuli)))
 		-- for i=1, #stimuli do
 		-- 	if string.byte(stimuli, i)==string.byte("a", 1) then
 		-- 		return stimuli_part[i]==part
@@ -197,7 +259,7 @@ end
 添加伤害原因  
 (string) 返回添加后的伤害原因  
 stimuli (table/string)需要修改的伤害原因，可以为nil  
-part (string)需要添加的部分  
+... (string)需要添加的部分  
 ]]
 function EntUtil:add_stimuli(stimuli, ...)
 	if stimuli == nil then
@@ -269,7 +331,7 @@ end
 
 --[[
 获取其伤害类型,  
-stimuli (table/string)总伤害原因，可以为nil
+stimuli (table/string)总伤害原因，可以为nil  
 ]]
 function EntUtil:get_dmg_stimuli(stimuli)
 	if stimuli == nil then
@@ -288,18 +350,21 @@ end
 
 --[[
 是否能够造成伤害效果，返回bool,  
-stimuli (table/string)总伤害原因，可以为nil
+stimuli (table/string)总伤害原因，可以为nil  
 ]]
 function EntUtil:can_dmg_effect(stimuli)
-	if stimuli == nil then
-		stimuli = {}
-	end
-	if type(stimuli) == "string" then
-		local t = {stimuli=true}
-		stimuli = t
-	end
 	if not self:in_stimuli(stimuli, "pure")
 	and self:in_stimuli(stimuli, "atk") then
+		return true
+	end
+end
+
+--[[
+是否能够触发额外伤害，返回bool,  
+stimuli (table/string)总伤害原因，可以为nil  
+]]
+function EntUtil:can_extra_dmg(stimuli)
+	if self:can_dmg_effect(stimuli) then
 		return true
 	end
 end
@@ -334,6 +399,7 @@ target 客体
 function EntUtil:check_congeneric(inst, target)
     local v = inst
 	if v ~= target and ((v.prefab==target.prefab)
+	or (v.creature_kind ~= nil and v.creature_kind==target.creature_kind)
 	or (v:HasTag("hound") and target:HasTag("hound")) 
 	or (v:HasTag("spider") and target:HasTag("spider")) 
 	or (v:HasTag("chess") and target:HasTag("chess"))
@@ -848,6 +914,45 @@ function EntUtil:set_container(inst, cont_type)
 		inst.components.container.widgetpos = Vector3(0, 200, 0)
 		inst.components.container.side_align_tip = 160
 	end
+end
+
+--[[
+晃动镜头  
+inst (EntityScript) 操作主体  
+dist (number) 距离(如果玩家在距离内，则晃动)  
+]]
+function EntUtil:shake_camera(inst, dist)
+	local player = GetClosestInstWithTag("player", inst, dist)
+    if player then
+        player.components.playercontroller:ShakeCamera(inst, "FULL", 0.7, 0.02, 3, dist)
+    end
+end
+
+--[[
+导入prefab文件,获取指定名字的prefab对象,返回其深复制  
+(Prefab)返回深复制的prefab对象  
+file (string)文件路径  
+pref_name (string)指定名字  
+]]
+function EntUtil:deepcopy_prefab(file, pref_name)
+	local pref_tbl = { loadfile(file)() }
+	for k, v in pairs(pref_tbl) do
+		if v.name == pref_name then
+			return deepcopy(v)
+		end
+	end
+end
+
+--[[
+给予玩家物品,并附带获取特效  
+item (EntityScript)物品  
+player (EntityScript)玩家  
+pos (Vector3)位置  
+]]
+function EntUtil:give_player_item(item, player, pos)
+	player = player or GetPlayer()
+	pos = pos and GetPos(pos, true) or player:GetPosition()
+	player.components.inventory:GiveItem(item, nil, Vector3(TheSim:GetScreenPos(pos:Get())))
 end
 
 return EntUtil

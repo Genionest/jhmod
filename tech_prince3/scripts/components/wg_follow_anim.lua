@@ -50,6 +50,10 @@ local w_WgFollowAnim_g = w_Class_g(function(w_self_g, w_inst_g)
 					if w_fn_g then
 						w_fn_g(w_self_g["widget"])
 					end
+					if w_self_g["execute"] then
+						w_self_g["execute"](w_self_g["widget"])
+						w_self_g["execute"] = w_nil_g
+					end
 				end
 			else
                 w_self_g["widget"]["wg_anim"]["GetAnimState"](w_self_g["widget"]["wg_anim"])["SetBank"](w_bank_g)
@@ -65,6 +69,13 @@ local w_WgFollowAnim_g = w_Class_g(function(w_self_g, w_inst_g)
 	w_self_g["SetScale"] = function(w_self_g, ...)
 		if w_self_g["widget"] then
 			w_self_g["widget"]["wg_anim"]["SetScale"](w_self_g["widget"]["wg_anim"], ...)
+		end
+	end
+	w_self_g["Execute"] = function(w_self_g, w_fn_g)
+		if w_self_g["widget"] then
+			w_fn_g(w_self_g["widget"])
+		else
+			w_self_g["execute"] = w_fn_g
 		end
 	end
 	-- :Show()

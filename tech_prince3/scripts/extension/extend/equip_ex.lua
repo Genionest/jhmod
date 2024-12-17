@@ -237,6 +237,15 @@ local function fn(self)
 	function self:SetEquipWeight(weight)
 		self.equip_weight = weight
 	end
+
+	function self:SetSomeAttr(weight, dmg_type, vigor_cost)
+		self:SetEquipWeight(weight)
+		if dmg_type or vigor_cost then
+			assert(self.inst.components.weapon, string.format("%s don't have component weapon", tostring(self.inst)))
+			self.inst.components.weapon.dmg_type = dmg_type
+			self.inst.components.weapon:SetAttackCostVigor(vigor_cost)
+		end
+	end
 	
 	function self:GetWargonString()
 		local s = ""

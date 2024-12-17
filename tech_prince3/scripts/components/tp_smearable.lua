@@ -1,3 +1,4 @@
+local Sounds = require "extension.datas.sounds"
 local SmearManager = Sample.SmearManager
 
 local TpSmearable = Class(function(self, inst)
@@ -8,8 +9,7 @@ local TpSmearable = Class(function(self, inst)
     self.inst:AddComponent("tp_enchantmentable2")
 end)
 
-function TpSmearable:CanSmear(item, doer)
-    local id = item.components.tp_smear_item.id
+function TpSmearable:CanSmearId(id)
     if self.ids then
         for _, v in pairs(self.ids) do
             if v == id then
@@ -21,10 +21,16 @@ function TpSmearable:CanSmear(item, doer)
     if data.test and not data.test(data, self.inst, self, id) then
         return false
     end
-    return true
 end
 
-function TpSmearable:SmearItem(item)
+function TpSmearable:CanSmear(item, doer)
+    local id = item.components.tp_smear_item.id
+    if self:CanSmearId(id) then
+        return true
+    end
+end
+
+function TpSmearable:SmearItem(item, doer)
     local id = item.components.tp_smear_item.id
     if item.components.stackable then
         item = item.components.stackable:Get()
@@ -32,6 +38,9 @@ function TpSmearable:SmearItem(item)
     elseif item.components.finiteuses then
         item.components.finiteuses:Use(1)
     end
+    if doer.SoundEmitter then
+        doer.SoundEmitter:PlaySound(Sounds["get_item"])
+	end
     self:Smear(id)
 end
 
@@ -45,7 +54,11 @@ function TpSmearable:Smear(id, time)
         self.ids = {}
     end
     local data = SmearManager:GetDataById(id)
+    local owner = self.inst.components.equippable.owner
     time = time or data.time
+    if owner and owner:HasTag("tp_smear_longer") then
+        time = time * 1.2
+    end
     self.ids[id] = true
     if data.add then
         data.add(data, self.inst, self, id)
@@ -73,7 +86,16 @@ function TpSmearable:Clear(id)
     end
 end
 
+function TpSmearable:ClearAll()
+    if self.ids then
+        for id, _ in pairs(self.ids) do
+            self:Clear(id)
+        end
+    end
+end
+
 function TpSmearable:OnRemoveEntity()
+    self:ClearAll()
 	self:GetManager()
 	self.mgr:RemoveSmearTimer(self.inst)
 end
@@ -105,7 +127,7 @@ function TpSmearable:GetInfoString()
             local data = SmearManager:GetDataById(id)
             local time = self:GetSmearTime(id)
             if s == nil then
-                s = string.format("%s(%ds)", data.desc(data, self.inst, self, id), time or 0)
+                s = string.format("buffs:\n%s(%ds)", data.desc(data, self.inst, self, id), time or 0)
             else
                 s = s..string.format("\n%s(%ds)", data.desc(data, self.inst, self, id), time or 0)
             end
@@ -113,5 +135,9 @@ function TpSmearable:GetInfoString()
         return s
     end
 end
+
+-- function TpSmearable:GetWargonStringColour()
+--     return 
+-- end
 
 return TpSmearable

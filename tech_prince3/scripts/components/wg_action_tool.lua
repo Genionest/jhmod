@@ -7,10 +7,14 @@ local WgActionTool = Class(function(self, inst)
     self.get_action_fn = nil
     self.click_fn = nil
     self.click_no_action = nil  -- 按键或点击直接触发click_fn,不进行动作收集
+    self.no_catch_action = nil  -- 不直接捕获动作
     self.raw_skill_fn = nil  -- 直接触发的
     self.cd = nil
     self.mana = nil
     self.vigor = nil
+    self.sleep = nil
+
+    self.skill_id = nil
 end)
 
 function WgActionTool:SetRawSkillFn(fn)
@@ -57,17 +61,17 @@ function WgActionTool:SetDescription(desc)
 end
 
 function WgActionTool:SetDefaultClickFn()
---     self.click_fn = function(inst, doer)
---         if self.get_action_fn or self. then
---             if inst.components.equippable:IsEquipped() then
---                 if inst.components.wg_action_tool
---                 and inst.components.wg_action_tool:Test(doer) then
---                     inst.components.wg_action_tool:PushAction(doer)
---                 end
---             end
---         else
---         end
---     end
+    self.click_fn = function(inst, doer)
+        if self.get_action_fn then
+            if inst.components.equippable:IsEquipped() then
+                if inst.components.wg_action_tool
+                and inst.components.wg_action_tool:Test(doer) then
+                    inst.components.wg_action_tool:PushAction(doer)
+                end
+            end
+        else
+        end
+    end
 end
 
 function WgActionTool:SetClickFn(fn)
@@ -197,9 +201,12 @@ function WgActionTool:Test(doer)
 end
 
 function WgActionTool:Click(doer)
+    if self.inst.components.tp_forge_scroll then
+        doer:PushEvent("use_scroll", {scroll=self.inst})
+    end
     if self.click_fn and self.click_no_action then
         self.click_fn(self.inst, doer)
-        doer:PushEvent("tp_equip_skill", {owner=doer, equip=self.inst})
+        doer:PushEvent("use_equip_skill", {owner=doer, item=self.inst})
     else
         local ba = self:GetBufferedAction()
         -- assert(ba, "buffered_action can't be nil")
@@ -210,7 +217,7 @@ function WgActionTool:Click(doer)
                 self.on_push(self.inst, doer, ba)
             end
             player:PushBufferedAction(ba)
-            doer:PushEvent("tp_equip_skill", {owner=doer, equip=self.inst})
+            doer:PushEvent("use_equip_skill", {owner=doer, item=self.inst})
         else
         end
     end
@@ -286,14 +293,16 @@ function WgActionTool:CollectActions(data, actions)
 end
 
 function WgActionTool:CollectPointActions(doer, pos, actions, right)
-    if right == self.right and self:Test(doer) and self:CheckReticule() then
+    if right == self.right and self:Test(doer) and self:CheckReticule()
+    and self.no_catch_action == nil then
         local data = { doer=doer, pos=pos }
         self:CollectActions(data, actions)
 	end
 end
 
 function WgActionTool:CollectEquippedActions(doer, target, actions, right)
-    if right == self.right and self:Test(doer) and self:CheckReticule() then
+    if right == self.right and self:Test(doer) and self:CheckReticule()
+    and self.no_catch_action == nil then
         local data = { doer=doer, target=target }
         self:CollectActions(data, actions)
 	end

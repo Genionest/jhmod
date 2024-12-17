@@ -32,14 +32,17 @@ AddPlayerPostInit(function(inst)
         inst.tp_fx = man
         inst.tp_fx:Hide()
         inst:AddChild(inst.tp_fx)
+        -- test
+        -- inst.tp_fx.AnimState:SetBuild("wes")
+        -- inst.tp_fx.AnimState:SetScale(.5, .5, .5)
         -- 加载武器在inventory.OnLoad里,更早
         local weapon = inst.components.combat:GetWeapon()
         if weapon
-        and weapon.components.tp_forge_level
-        and weapon.components.tp_forge_level.element == nil then
+        and weapon.components.tp_forge_weapon
+        and weapon.components.tp_forge_weapon.element == nil then
             if weapon.components.equippable.symbol then
-                inst.tp_fx:Show("ARM_carry")
-                inst.tp_fx:Hide("ARM_normal")
+                inst.tp_fx.AnimState:Show("ARM_carry")
+                inst.tp_fx.AnimState:Hide("ARM_normal")
                 local symbol, build, symbol2 = AssetMaster:GetSymbol(weapon.components.equippable.symbol)
                 inst.tp_fx.AnimState:OverrideSymbol(symbol, build, symbol2)
             else
@@ -64,13 +67,13 @@ AddPlayerPostInit(function(inst)
         if inst.tp_fx 
         and data.eslot == EQUIPSLOTS.HANDS 
         and data.item
-        and data.item.components.tp_forge_level
-        and data.item.components.tp_forge_level.element == nil then
+        and data.item.components.tp_forge_weapon
+        and data.item.components.tp_forge_weapon.element == nil then
             if data.item.components.equippable.symbol then
-                inst.tp_fx:Show("ARM_carry")
-                inst.tp_fx:Hide("ARM_normal")
                 local symbol, build, symbol2 = AssetMaster:GetSymbol(data.item.components.equippable.symbol)
                 inst.tp_fx.AnimState:OverrideSymbol(symbol, build, symbol2)
+                inst.tp_fx.AnimState:Show("ARM_carry")
+                inst.tp_fx.AnimState:Hide("ARM_normal")
             else
                 local onequipfn = data.item.components.equippable.onequipfn
                 onequipfn(data.item, inst.tp_fx)
@@ -170,6 +173,8 @@ AddPlayerPostInit(function(inst)
     -- inst:DoTaskInTime(3, function()
     --     inst.components.tp_point_collector:Collect()
     -- end)
+    -- 记录数据
+    inst:AddComponent("tp_recorder")
     -- 传递击杀事件给装备
     inst:ListenForEvent("killed", function(inst, data)
         data.owner = inst

@@ -127,6 +127,7 @@ function WgSimpleBuff:ClearBuff(id)
 	if on_rm then
 		on_rm(buff_data, self.inst, self, id)
 	end
+	-- 需要mgr把该id下的time清空
 	-- self.inst:PushEvent("wg_rm_buff", {id=id})
 end
 
@@ -172,6 +173,7 @@ function WgSimpleBuff:HasBuff(id)
 end
 
 function WgSimpleBuff:OnRemoveEntity()
+	self:ClearAllBuff()
 	self:GetManager()
 	self.mgr:RemoveBuffTimer(self.inst)
 end

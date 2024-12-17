@@ -184,6 +184,186 @@ local buffs = {
             return string.format("不会掉落战利品")
         end, nil, nil, true
     ),
+    Buff("attack_speed_up", 10, {
+        on_add = function(self, inst, cmp, id, data)
+            EntUtil:add_attack_speed_mod(inst, id, data)
+        end, 
+        on_repeat = function(self, inst, cmp, id, data)
+            local n = inst.components.combat.attack_period_modifiers[id] or 0
+            if data > n then
+                EntUtil:add_attack_speed_mod(inst, id, data)
+            end
+        end,
+        on_rm = function(self, inst, cmp, id)
+            EntUtil:rm_attack_speed_mod(inst, id)
+        end,
+    }, AssetUtil:MakeImg("tp_icons", "badge_56"),
+        function(self, inst, cmp, id, data)
+            return string.format("提高%d%%攻速", data*100)
+        end, {}
+    ),
+    Buff("damage_up", 10, {
+        on_add = function(self, inst, cmp, id, data)
+            EntUtil:add_damage_mod(inst, id, data)
+        end, 
+        on_repeat = function(self, inst, cmp, id, data)
+            local n = inst.components.combat.attack_damage_modifiers[id] or 0
+            if data > n then
+                EntUtil:add_damage_mod(inst, id, data)
+            end
+        end,
+        on_rm = function(self, inst, cmp, id)
+            EntUtil:rm_damage_mod(inst, id)
+        end,
+    }, AssetUtil:MakeImg("tp_icons", "badge_68"),
+        function(self, inst, cmp, id, data)
+            return string.format("提高%d%%攻击", data*100)
+        end, {}
+    ),
+    Buff("speed_up", 6, {
+        on_add = function(self, inst, cmp, id, data)
+            EntUtil:add_speed_mod(inst, id, data)
+        end, 
+        on_repeat = function(self, inst, cmp, id, data)
+            local n = inst.components.locomotor.speed_modifiers_mult[id] or 0
+            if data > n then
+                EntUtil:add_speed_mod(inst, id, data)
+            end
+        end,
+        on_rm = function(self, inst, cmp, id)
+            EntUtil:rm_speed_mod(inst, id)
+        end,
+    }, AssetUtil:MakeImg("tp_icons", "badge_70"),
+        function(self, inst, cmp, id, data)
+            return string.format("提高%d%%移速", data*100)
+        end, {}
+    ),
+    Buff("defense_up", 10, {
+        on_add = function(self, inst, cmp, id, data)
+            inst.components.combat:AddDefenseMod(id, data)
+        end, 
+        on_repeat = function(self, inst, cmp, id, data)
+            local n = inst.components.combat.tp_defense_mods[id] or 0
+            if data > n then
+                inst.components.combat:AddDefenseMod(id, data)
+            end
+        end,
+        on_rm = function(self, inst, cmp, id)
+            inst.components.combat:RmDefenseMod(id)
+        end,
+    }, AssetUtil:MakeImg("tp_icons", "badge_52"),
+        function(self, inst, cmp, id, data)
+            return string.format("提高%d防御", data)
+        end, {}
+    ),
+    Buff("penetrate_up", 10, {
+        on_add = function(self, inst, cmp, id, data)
+            inst.components.combat:AddPenetrateMod(id, data)
+        end, 
+        on_repeat = function(self, inst, cmp, id, data)
+            local n = inst.components.combat.tp_penetrate_mods[id] or 0
+            if data > n then
+                inst.components.combat:AddPenetrateMod(id, data)
+            end
+        end,
+        on_rm = function(self, inst, cmp, id)
+            inst.components.combat:RmPenetrateMod(id)
+        end,
+    }, AssetUtil:MakeImg("tp_icons", "badge_73"),
+        function(self, inst, cmp, id, data)
+            return string.format("提高%d穿透", data)
+        end, {}
+    ),
+    Buff("evade_up", 10, {
+        on_add = function(self, inst, cmp, id, data)
+            inst.components.combat:AddEvadeRateMod(id, data)
+        end, 
+        on_repeat = function(self, inst, cmp, id, data)
+            local n = inst.components.combat.tp_evade_mods[id] or 0
+            if data > n then
+                inst.components.combat:AddEvadeRateMod(id, data)
+            end
+        end,
+        on_rm = function(self, inst, cmp, id)
+            inst.components.combat:RmEvadeRateMod(id)
+        end,
+    }, AssetUtil:MakeImg("tp_icons", "badge_61"),
+        function(self, inst, cmp, id, data)
+            return string.format("提高%d闪避", data)
+        end, {}
+    ),
+    Buff("hit_rate_up", 10, {
+        on_add = function(self, inst, cmp, id, data)
+            inst.components.combat:AddHitRateMod(id, data)
+        end, 
+        on_repeat = function(self, inst, cmp, id, data)
+            local n = inst.components.combat.tp_hit_rate_mods[id] or 0
+            if data > n then
+                inst.components.combat:AddHitRateMod(id, data)
+            end
+        end,
+        on_rm = function(self, inst, cmp, id)
+            inst.components.combat:RmHitRateMod(id)
+        end,
+    }, AssetUtil:MakeImg("tp_icons", "badge_59"),
+        function(self, inst, cmp, id, data)
+            return string.format("提高%d命中", data)
+        end, {}
+    ),
+    Buff("crit_up", 10, {
+        on_add = function(self, inst, cmp, id, data)
+            inst.components.combat:AddCritRateMod(id, data)
+        end, 
+        on_repeat = function(self, inst, cmp, id, data)
+            local n = inst.components.combat.tp_crit_mods[id] or 0
+            if data > n then
+                inst.components.combat:AddCritRateMod(id, data)
+            end
+        end,
+        on_rm = function(self, inst, cmp, id)
+            inst.components.combat:RmCritRateMod(id)
+        end,
+    }, AssetUtil:MakeImg("tp_icons", "badge_63"),
+        function(self, inst, cmp, id, data)
+            return string.format("提高%d%%暴击", data*100)
+        end, {}
+    ),
+    Buff("life_steal_up", 10, {
+        on_add = function(self, inst, cmp, id, data)
+            inst.components.combat:AddLifeStealRateMod(id, data)
+        end, 
+        on_repeat = function(self, inst, cmp, id, data)
+            local n = inst.components.combat.tp_life_steal_mods[id] or 0
+            if data > n then
+                inst.components.combat:AddLifeStealRateMod(id, data)
+            end
+        end,
+        on_rm = function(self, inst, cmp, id)
+            inst.components.combat:RmLifeStealRateMod(id)
+        end,
+    }, AssetUtil:MakeImg("tp_icons", "badge_76"),
+        function(self, inst, cmp, id, data)
+            return string.format("提高%d%%吸血", data*100)
+        end, {}
+    ),
+    Buff("recover_up", 10, {
+        on_add = function(self, inst, cmp, id, data)
+            inst.components.health:AddRecoverRateMod(id, data)
+        end, 
+        on_repeat = function(self, inst, cmp, id, data)
+            local n = inst.components.health.tp_recover_mods[id] or 0
+            if data > n then
+                inst.components.health:AddRecoverRateMod(id, data)
+            end
+        end,
+        on_rm = function(self, inst, cmp, id)
+            inst.components.health:RmRecoverRateMod(id)
+        end,
+    }, AssetUtil:MakeImg("tp_icons", "badge_72"),
+        function(self, inst, cmp, id, data)
+            return string.format("提高%d%%生命恢复效果", data*100)
+        end, {}
+    ),
     Buff("torch", 120, {
         on_add = function(self, inst, cmp, id)
             if cmp[id.."_fx"] == nil then
@@ -204,6 +384,43 @@ local buffs = {
             return string.format("燃起一束火焰在你的脚下")
         end
     ),
+    Buff("willow_skill", 20, {
+        on_add = function(self, inst, cmp, id)
+            if cmp[id.."_fn"] == nil then
+                cmp[id.."_fn"] = inst.components.combat:WgAddCalcDamageFn(function(damage, owner, target, weapon, stimuli)
+                    if EntUtil:in_stimuli(stimuli, "fire") 
+                    and EntUtil:in_stimuli(stimuli, "magic") then
+                        damage = damage + self.data[1]
+                    end
+                    return damage
+                end) 
+            end
+        end, 
+        on_rm = function(self, inst, cmp, id)
+            if cmp[id.."_fn"] then
+                inst.components.combat:WgRemoveCalcDamageFn(cmp[id.."_fn"])
+                cmp[id.."_fn"] = nil
+            end
+        end,
+    }, AssetUtil:MakeImg("tp_scrolls2", "tp_scroll_fire1"),
+        function(self, inst, cmp, id)
+            return string.format("你的火魔法伤害%+d", self.data[1])
+        end, {30}
+    ),
+    Buff("tp_spear_overload", 10, {
+        on_add = function(self, inst, cmp, id)
+            EntUtil:add_attack_speed_mod(inst, id, self.data[1])
+            EntUtil:add_damage_mod(inst, id, self.data[2])
+        end,
+        on_rm = function(self, inst, cmp, id)
+            EntUtil:rm_attack_speed_mod(inst, id)
+            EntUtil:rm_damage_mod(inst, id)
+        end,
+    }, AssetMaster:GetUimg("tp_spear_overload"),
+        function(self, inst, cmp, id)
+            return string.format("增加%d%%攻击力和攻速", self.data[1]*100)
+        end, {.2}
+    ),
     Buff("tp_spear_conqueror3", 5, {
             on_add = function(self, inst, cmp, id, data)
                 cmp[id .. "_data"] = data
@@ -220,6 +437,18 @@ local buffs = {
             local n = cmp[id .. "_data"] or 0
             return string.format("提升%d生命", n)
         end
+    ),
+    Buff("dmg_up", 20, {
+        on_add = function(self, inst, cmp, id)
+            EntUtil:add_damage_mod(inst, id, self.data[1])
+        end, 
+        on_rm = function(self, inst, cmp, id)
+            EntUtil:rm_damage_mod(inst, id)
+        end,
+    }, AssetUtil:MakeImg("tp_icons2", "badge_67"),
+        function(self, inst, cmp, id)
+            return string.format("提升%d%%攻击力", self.data[1])
+        end, {.15}
     ),
     -- lol
     Buff("tp_spear_jarvaniv", 1, {
@@ -298,6 +527,49 @@ local buffs = {
             return string.format("每秒回复%d%%最大生命值", self.data[1] * 100)
         end, { 0.01 }
     ),
+    Buff("tp_scroll_electric2", 50, {
+        on_add = function(self, inst, cmp, id, data)
+            if cmp[id.."_fx"] == nil then
+                cmp[id.."_fx"] = FxManager:MakeFx("scroll_electric2", inst, data)
+            end
+            inst.components.combat:AddDmgTypeAbsorb("electric", -self.data[1])
+            inst.components.combat:AddDmgTypeAbsorb("spike", -self.data[1])
+        end, 
+        on_rm = function(self, inst, cmp, id)
+            if cmp[id.."_fx"] then
+                cmp[id.."_fx"]:WgRecycle()
+                cmp[id.."_fx"] = nil
+            end
+            inst.components.combat:AddDmgTypeAbsorb("electric", self.data[1])
+            inst.components.combat:AddDmgTypeAbsorb("spike", self.data[1])
+        end,
+    }, AssetUtil:MakeImg("tp_scrolls2", "tp_scroll_electric2"),
+        function(self, inst, cmp, id)
+            return string.format("召唤3个电球环绕自身,受到的刺和雷属性伤害降低%d%%", self.data[1]*100)
+        end, {.2}
+    ),
+    Buff("tp_scroll_holly2", 50, {
+        on_add = function(self, inst, cmp, id, data)
+            if cmp[id.."_fx"] == nil then
+                cmp[id.."_fx"] = FxManager:MakeFx("scroll_holly2", inst, data)
+            end
+            inst.components.combat:AddDmgTypeAbsorb("holly", -self.data[1])
+            inst.components.combat:AddDmgTypeAbsorb("slash", -self.data[1])
+        end, 
+        on_rm = function(self, inst, cmp, id)
+            if cmp[id.."_fx"] then
+                cmp[id.."_fx"]:WgRecycle()
+                cmp[id.."_fx"] = nil
+            end
+            inst.components.combat:AddDmgTypeAbsorb("holly", self.data[1])
+            inst.components.combat:AddDmgTypeAbsorb("slash", self.data[1])
+        end,
+    }, AssetUtil:MakeImg("tp_scrolls2", "tp_scroll_holly2"),
+        function(self, inst, cmp, id)
+            return string.format("受到的斩和圣属性伤害降低%d%%", self.data[1]*100)
+        end, {.3}
+    ),
+
     Buff("tp_scroll_templar", 300, {
             on_add = function(self, inst, cmp, id)
                 cmp[id .. "_fn"] = EntUtil:listen_for_event(inst, "onhitother", function(inst, data)
@@ -549,7 +821,7 @@ local buffs = {
     }, AssetUtil:MakeImg("ash"),
         function(self, inst, cmp, id)
             return string.format("提高%d%%冰火毒雷抗性", self.data[1]*100)
-        end, {.2}
+        end, {-.2}
     ),
     Buff("hearthbound_axe_buff", 5, {
             on_add = function(self, inst, cmp, id)
@@ -781,14 +1053,12 @@ local buffs = {
     Buff("tp_potion_vigor", 180, {
         on_add = function(self, inst, cmp, id)
             if inst.components.tp_val_vigor then
-                local rate = inst.components.tp_val_vigor.rate
-                inst.components.tp_val_vigor:SetRate(rate + self.data[1])
+                inst.components.tp_val_vigor:AddRateMod(id, self.data[1])
             end
         end, 
         on_rm = function(self, inst, cmp, id)
             if inst.components.tp_val_vigor then
-                local rate = inst.components.tp_val_vigor.rate
-                inst.components.tp_val_vigor:SetRate(rate - self.data[1])
+                inst.components.tp_val_vigor:RmRateMod(id)
             end
         end,
     }, AssetMaster:GetUimg("tp_potion_vigor"),
@@ -1596,10 +1866,14 @@ local buffs = {
     --         return string.format("你穿戴木甲时,若你的生命值不大于%d%%,受到的伤害-%d",
     --             Info.FoodArmorWood3Const[1] * 100, Info.FoodArmorWood3Const[2])
     --     end, nil),
-    -- food effect
+
+    
+    -- food effect over
     -- origin item
     Buff("hollow_evade", 100, {
         on_add = function(self, inst, cmp, id)
+            inst:AddTag(id)
+            inst.SoundEmitter:PlaySound("dontstarve/characters/wolfgang/grow_medtolrg")
             if cmp[id .. "_fx"] == nil then
                 cmp[id .. "_fx"] = FxManager:MakeFx("hollow_evade", Vector3(0, 0, 0))
                 inst:AddChild(cmp[id .. "_fx"])
@@ -1608,6 +1882,7 @@ local buffs = {
             inst.components.locomotor:AddSpeedModifier_Additive(id, self.data[2])
             -- EntUtil:add_speed_mod(inst, id, self.data[2])
             inst.components.tp_val_hollow:SetRate(1)
+            inst.components.tp_val_mana:AddRateMod(id, -self.data[3])
             if cmp[id.."_fn"] == nil then
                 cmp[id.."_fn"] = EntUtil:listen_for_event(inst, "val_hollow_delta", function(inst, data)
                     if data.new_p <= 0 then
@@ -1617,6 +1892,7 @@ local buffs = {
             end
         end, 
         on_rm = function(self, inst, cmp, id)
+            inst:RemoveTag(id)
             if cmp[id .. "_fx"] then
                 cmp[id .. "_fx"]:WgRecycle()
                 cmp[id .. "_fx"] = nil
@@ -1625,16 +1901,17 @@ local buffs = {
             inst.components.locomotor:RemoveSpeedModifier_Additive(id)
             -- EntUtil:rm_speed_mod(inst, id)
             inst.components.tp_val_hollow:SetRate(-1)
+            inst.components.tp_val_mana:RmRateMod(id)
             if cmp[id.."_fn"] then
                 inst:RemoveEventCallback("val_hollow_delta", cmp[id.."_fn"])
                 cmp[id.."_fn"] = nil
             end
         end,
-    }, AssetUtil:MakeImg("tp_icons2", "badge_31"),
+    }, AssetUtil:MakeImg("tp_icons2", "hollow_evade"),
         function(self, inst, cmp, id)
-            return string.format("无量空洞:获得%d闪避,增加%d点移速,但会不断消耗六目值", 
-                self.data[1], self.data[2])
-        end, {800, 5}, nil, true
+            return string.format("无量空洞:获得%d闪避,增加%d点移速,法力回复+%.2f,增加80%%防雨,大幅降低苍,赫,有下限的法力消耗;但会不断消耗六目值", 
+                self.data[1], self.data[2], self.data[3])
+        end, {800, 8, .88}, nil, true
     ),
 }
 
@@ -1659,6 +1936,186 @@ local debuffs = {
             return string.format("沉默")
         end, {}, true
     ),
+    Buff("attack_speed_down", 10, {
+        on_add = function(self, inst, cmp, id, data)
+            EntUtil:add_attack_speed_mod(inst, id, -data)
+        end, 
+        on_repeat = function(self, inst, cmp, id, data)
+            local n = inst.components.combat.attack_period_modifiers[id] or 0
+            if data > n then
+                EntUtil:add_attack_speed_mod(inst, id, -data)
+            end
+        end,
+        on_rm = function(self, inst, cmp, id)
+            EntUtil:rm_attack_speed_mod(inst, id)
+        end,
+    }, AssetUtil:MakeImg("tp_icons", "badge_56"),
+        function(self, inst, cmp, id, data)
+            return string.format("降低%d%%攻速", data*100)
+        end, {}, true
+    ),
+    Buff("damage_down", 10, {
+        on_add = function(self, inst, cmp, id, data)
+            EntUtil:add_damage_mod(inst, id, -data)
+        end, 
+        on_repeat = function(self, inst, cmp, id, data)
+            local n = inst.components.combat.attack_damage_modifiers[id] or 0
+            if data > n then
+                EntUtil:add_damage_mod(inst, id, -data)
+            end
+        end,
+        on_rm = function(self, inst, cmp, id)
+            EntUtil:rm_damage_mod(inst, id)
+        end,
+    }, AssetUtil:MakeImg("tp_icons", "badge_68"),
+        function(self, inst, cmp, id, data)
+            return string.format("降低%d%%攻击", data*100)
+        end, {}, true
+    ),
+    Buff("speed_down", 6, {
+        on_add = function(self, inst, cmp, id, data)
+            EntUtil:add_speed_mod(inst, id, -data)
+        end, 
+        on_repeat = function(self, inst, cmp, id, data)
+            local n = inst.components.locomotor.speed_modifiers_mult[id] or 0
+            if data > n then
+                EntUtil:add_speed_mod(inst, id, -data)
+            end
+        end,
+        on_rm = function(self, inst, cmp, id)
+            EntUtil:rm_speed_mod(inst, id)
+        end,
+    }, AssetUtil:MakeImg("tp_icons", "badge_70"),
+        function(self, inst, cmp, id, data)
+            return string.format("降低%d%%移速", data*100)
+        end, {}, true
+    ),
+    Buff("defense_down", 10, {
+        on_add = function(self, inst, cmp, id, data)
+            inst.components.combat:AddDefenseMod(id, -data)
+        end, 
+        on_repeat = function(self, inst, cmp, id, data)
+            local n = inst.components.combat.tp_defense_mods[id] or 0
+            if data > n then
+                inst.components.combat:AddDefenseMod(id, -data)
+            end
+        end,
+        on_rm = function(self, inst, cmp, id)
+            inst.components.combat:RmDefenseMod(id)
+        end,
+    }, AssetUtil:MakeImg("tp_icons", "badge_52"),
+        function(self, inst, cmp, id, data)
+            return string.format("降低%d防御", data)
+        end, {}, true
+    ),
+    Buff("penetrate_down", 10, {
+        on_add = function(self, inst, cmp, id, data)
+            inst.components.combat:AddPenetrateMod(id, -data)
+        end, 
+        on_repeat = function(self, inst, cmp, id, data)
+            local n = inst.components.combat.tp_penetrate_mods[id] or 0
+            if data > n then
+                inst.components.combat:AddPenetrateMod(id, -data)
+            end
+        end,
+        on_rm = function(self, inst, cmp, id)
+            inst.components.combat:RmPenetrateMod(id)
+        end,
+    }, AssetUtil:MakeImg("tp_icons", "badge_73"),
+        function(self, inst, cmp, id, data)
+            return string.format("降低%d穿透", data)
+        end, {}, true
+    ),
+    Buff("evade_down", 10, {
+        on_add = function(self, inst, cmp, id, data)
+            inst.components.combat:AddEvadeRateMod(id, -data)
+        end, 
+        on_repeat = function(self, inst, cmp, id, data)
+            local n = inst.components.combat.tp_evade_mods[id] or 0
+            if data > n then
+                inst.components.combat:AddEvadeRateMod(id, -data)
+            end
+        end,
+        on_rm = function(self, inst, cmp, id)
+            inst.components.combat:RmEvadeRateMod(id)
+        end,
+    }, AssetUtil:MakeImg("tp_icons", "badge_61"),
+        function(self, inst, cmp, id, data)
+            return string.format("降低%d闪避", data)
+        end, {}, true
+    ),
+    Buff("hit_rate_down", 10, {
+        on_add = function(self, inst, cmp, id, data)
+            inst.components.combat:AddHitRateMod(id, -data)
+        end, 
+        on_repeat = function(self, inst, cmp, id, data)
+            local n = inst.components.combat.tp_hit_rate_mods[id] or 0
+            if data > n then
+                inst.components.combat:AddHitRateMod(id, -data)
+            end
+        end,
+        on_rm = function(self, inst, cmp, id)
+            inst.components.combat:RmHitRateMod(id)
+        end,
+    }, AssetUtil:MakeImg("tp_icons", "badge_59"),
+        function(self, inst, cmp, id, data)
+            return string.format("降低%d命中", data)
+        end, {}, true
+    ),
+    Buff("crit_down", 10, {
+        on_add = function(self, inst, cmp, id, data)
+            inst.components.combat:AddCritRateMod(id, -data)
+        end, 
+        on_repeat = function(self, inst, cmp, id, data)
+            local n = inst.components.combat.tp_crit_mods[id] or 0
+            if data > n then
+                inst.components.combat:AddCritRateMod(id, -data)
+            end
+        end,
+        on_rm = function(self, inst, cmp, id)
+            inst.components.combat:RmCritRateMod(id)
+        end,
+    }, AssetUtil:MakeImg("tp_icons", "badge_63"),
+        function(self, inst, cmp, id, data)
+            return string.format("降低%d%%暴击", data*100)
+        end, {}, true
+    ),
+    Buff("life_steal_down", 10, {
+        on_add = function(self, inst, cmp, id, data)
+            inst.components.combat:AddLifeStealRateMod(id, -data)
+        end, 
+        on_repeat = function(self, inst, cmp, id, data)
+            local n = inst.components.combat.tp_life_steal_mods[id] or 0
+            if data > n then
+                inst.components.combat:AddLifeStealRateMod(id, -data)
+            end
+        end,
+        on_rm = function(self, inst, cmp, id)
+            inst.components.combat:RmLifeStealRateMod(id)
+        end,
+    }, AssetUtil:MakeImg("tp_icons", "badge_76"),
+        function(self, inst, cmp, id, data)
+            return string.format("降低%d%%吸血", data*100)
+        end, {}, true
+    ),
+    Buff("recover_down", 10, {
+        on_add = function(self, inst, cmp, id, data)
+            inst.components.health:AddRecoverRateMod(id, -data)
+        end, 
+        on_repeat = function(self, inst, cmp, id, data)
+            local n = inst.components.health.tp_recover_mods[id] or 0
+            if data > n then
+                inst.components.health:AddRecoverRateMod(id, -data)
+            end
+        end,
+        on_rm = function(self, inst, cmp, id)
+            inst.components.health:RmRecoverRateMod(id)
+        end,
+    }, AssetUtil:MakeImg("tp_icons", "badge_72"),
+        function(self, inst, cmp, id, data)
+            return string.format("降低%d%%生命恢复效果", data*100)
+        end, {}, true
+    ),
     Buff("poison", 20, {
             on_add = function(self, inst, cmp, id)
                 if cmp[id .. "_task"] == nil then
@@ -1671,6 +2128,7 @@ local debuffs = {
                             rate = inst.components.combat.tp_dmg_type_absorb.poison
                         end
                         inst.components.health:DoDelta(-self.data[1]*rate, false, "poison")
+                        FxManager:MakeFx("poison_debuff_fx", inst)
                     end)
                 end
                 if inst.components.eater then
@@ -1717,7 +2175,7 @@ local debuffs = {
                 EntUtil:rm_speed_mod(inst, id)
                 EntUtil:rm_attack_speed_mod(inst, id)
             end,
-        }, AssetUtil:MakeImg("tp_icons2", "badge_23"),
+        }, AssetUtil:MakeImg("tp_icons2", "ice_debuff"),
         function(self, inst, cmp, id)
             return string.format("寒冷:移动速度%d%%,攻击速度%d%%", self.data[1] * 100, self.data[2] * 100)
         end, { -.15, -.15 }, true
@@ -1737,14 +2195,19 @@ local debuffs = {
                     end)
                 end
                 if cmp[id .. "_fn"] == nil then
-                    cmp[id .. "_fn"] = inst.components.combat:AddAttackedCalcFn(function(damage, attacker, inst, weapon,
-                                                                                         stimuli)
-                        if EntUtil:in_stimuli(stimuli, "fire") then
-                            BuffManager:AddBuff(inst, "burning")
-                            damage = damage + 4
+                    cmp[id .. "_fn"] = inst.components.combat:AddAttackedCalcFn(
+                        function(damage, attacker, inst, weapon, stimuli)
+                            if EntUtil:in_stimuli(stimuli, "fire") then
+                                BuffManager:AddBuff(inst, "burning")
+                                damage = damage + 4
+                            end
+                            return damage
                         end
-                        return damage
-                    end)
+                    )
+                end
+                if cmp[id.."_fx"] == nil then
+                    cmp[id .. "_fx"] = FxManager:MakeFx("fire_debuff_fx", Vector3(0, 0, 0))
+                    inst:AddChild(cmp[id .. "_fx"])
                 end
             end,
             on_rm = function(self, inst, cmp, id)
@@ -1756,8 +2219,12 @@ local debuffs = {
                     inst.components.combat:RemoveAttackedCalcFn(cmp[id .. "_fn"])
                     cmp[id .. "_fn"] = nil
                 end
+                if cmp[id .. "_fx"] then
+                    cmp[id .. "_fx"]:WgRecycle()
+                    cmp[id .. "_fx"] = nil
+                end
             end,
-        }, AssetUtil:MakeImg("tp_icons2", "badge_24"),
+        }, AssetUtil:MakeImg("tp_icons2", "fire_debuff"),
         function(self, inst, cmp, id)
             return string.format("灼烧:每秒受到%d点烧伤,受到的火属性伤害+%d,受到火属性伤害时刷新持续时间", self.data[1], self.data[2])
         end, { 1, 4 }, true
@@ -1783,41 +2250,6 @@ local debuffs = {
             return string.format("风扰:叠到%d层时,buff来源对你造成%d风属性伤害,增加%d%%移速%ds,然后令你掉落所有物品",
                 self.data[1], self.data[2], self.data[3] * 100, self.data[4])
         end, { 3, 40, .4, 10 }, true
-    ),
-    Buff("shadow", 240, {
-        on_add = function(self, inst, cmp, id)
-            if cmp[id.."_fn"] == nil then
-                cmp[id.."_fn"] = inst.components.combat:AddAttackedCalcFn(function(damage, attacker, inst, weapon, stimuli)
-                    if EntUtil:is_physics_dmg(stimuli) then
-                        damage = damage * (1 - self.data[1])
-                    elseif EntUtil:is_element_dmg(stimuli) then
-                        damage = damage * (1 + self.data[2])
-                    end
-                    return damage
-                end)
-            end
-            if cmp[id.."_fn2"] == nil then
-                cmp[id.."_fn2"] = inst.components.combat:WgAddOnHitFn(function(damage, owner, target, weapon, stimuli)
-                    EntUtil:get_attacked(target, owner, self.data[3], nil, 
-                        EntUtil:add_stimuli(nil, "pure", "shadow") )
-                end)
-            end
-        end,
-        on_rm = function(self, inst, cmp, id)
-            if cmp[id.."_fn"] then
-                inst.components.combat:RemoveAttackedCalcFn(cmp[id.."_fn"])
-                cmp[id.."_fn"] = nil
-            end
-            if cmp[id.."_fn2"] then
-                inst.components.combat:WgRemoveOnHitFn(cmp[id.."_fn2"])
-                cmp[id.."_fn2"] = nil
-            end
-        end
-    },  AssetUtil:MakeImg("purpleamulet"),
-        function(self, inst, cmp, id)
-            return string.format("虚无:受到的物理伤害降低%d%%,受到的元素伤害提高%d%%,攻击额外造成%d暗属性伤害",
-                self.data[1] * 100, self.data[2] * 100, self.data[3])
-        end, { .2, .3, 25 }, true
     ),
     Buff("electric", 20, {
         on_add = function(self, inst, cmp, id)
@@ -1859,14 +2291,38 @@ local debuffs = {
                 cmp[id .. "_fx"] = nil
             end
         end,
-    }, AssetUtil:MakeImg("transistor"),
+    }, AssetUtil:MakeImg("ak_icons", "ak_over_load"),
         function(self, inst, cmp, id)
             return string.format("导电:受到电属性伤害会发射电磁炮攻击周围处于导电的目标,造成%d%%的伤害", 
                 self.data[1] * 100)
         end, { .2 }, true
     ),
-    Buff("blood", 10, {
+    Buff("shadow", 20, {
+        on_add = function(self, inst, cmp, id)
+            local n = cmp.stacks[id] or 0
+            n = math.min(20, n + 1)
+            inst.components.combat:AddDmgTypeAbsorb("shadow", n*self.data[1])
+            cmp.stacks[id] = n
+        end,
+        on_repeat = function(self, inst, cmp, id)
+            local n = cmp.stacks[id] or 0
+            n = math.min(20, n + 1)
+            inst.components.combat:AddDmgTypeAbsorb("shadow", n*self.data[1])
+            cmp.stacks[id] = n
+        end,
+        on_rm = function(self, inst, cmp, id)
+            local n = cmp.stacks[id]
+            inst.components.combat:AddDmgTypeAbsorb("shadow", -n*self.data[1])
+        end,
+    }, AssetUtil:MakeImg("tp_icons2", "shadow_debuff"),
+        function(self, inst, cmp, id)
+            local n = cmp.stacks[id] or 0
+            return string.format("受到的暗影伤害%+d%%", self.data[1]*100*n)
+        end, {.05}, true
+    ),
+    Buff("blood", 20, {
         on_add = function(self, inst, cmp, id, data)
+            FxManager:MakeFx("hit_fx7", inst)
             local n = cmp.stacks[id] or 0
             local dt = data or 1
             n = math.min(self.data[1], n + dt)
@@ -1877,6 +2333,7 @@ local debuffs = {
         end,
         on_fade = function(self, inst, cmp, id)
             -- 这里不需要减少
+            FxManager:MakeFx("hit_fx7", inst)
         end,
         on_rm = function(self, inst, cmp, id)
             cmp.stacks[id] = nil
@@ -1888,7 +2345,6 @@ local debuffs = {
     ),
     Buff("blooding", 10, {
         on_add = function(self, inst, cmp, id)
-            FxManager:MakeFx("hit_fx7", inst)
             local rate = 1
             if inst.components.combat.tp_dmg_type_absorb
             and inst.components.combat.tp_dmg_type_absorb.blood then
@@ -1896,10 +2352,14 @@ local debuffs = {
             end
             if cmp[id.."_task"] == nil then
                 cmp[id .. "_task"] = inst:DoPeriodicTask(2, function()
-                    local max = inst.components.health:GetMaxHealth()
-                    local dt = max*self.data[1]*rate
+                    local cur = inst.components.health.currenthealth
+                    local dt = cur*self.data[1]*rate
                     inst.components.health:DoDelta(-dt, nil, id)
                 end)
+            end
+            if cmp[id.."_fx"] == nil then
+                cmp[id.."_fx"] = FxManager:MakeFx("blood_bubble", Vector3(0, 0, 0))
+                inst:AddChild(cmp[id.."_fx"])
             end
         end,
         on_rm = function(self, inst, cmp, id)
@@ -1907,12 +2367,51 @@ local debuffs = {
                 cmp[id .. "_task"]:Cancel()
                 cmp[id .. "_task"] = nil
             end
+            if cmp[id.."_fx"] then
+                cmp[id.."_fx"]:kill()  -- 播放动画,然后回收
+                cmp[id.."_fx"] = nil
+            end
         end,
     }, nil,
         function(self, inst, cmp, id)
-            return string.format("流血:每秒降低%d%%最大生命值的生命,受血属性抗性影响", 
+            return string.format("流血:每秒降低%d%%当前生命值的生命,受血属性抗性影响", 
                 self.data[1]*100)
         end, {.01}, true
+    ),
+    Buff("virtual", 240, {
+        on_add = function(self, inst, cmp, id)
+            if cmp[id.."_fn"] == nil then
+                cmp[id.."_fn"] = inst.components.combat:AddAttackedCalcFn(function(damage, attacker, inst, weapon, stimuli)
+                    if EntUtil:is_physics_dmg(stimuli) then
+                        damage = damage * (1 - self.data[1])
+                    elseif EntUtil:is_element_dmg(stimuli) then
+                        damage = damage * (1 + self.data[2])
+                    end
+                    return damage
+                end)
+            end
+            if cmp[id.."_fn2"] == nil then
+                cmp[id.."_fn2"] = inst.components.combat:WgAddOnHitFn(function(damage, owner, target, weapon, stimuli)
+                    EntUtil:get_attacked(target, owner, self.data[3], nil, 
+                        EntUtil:add_stimuli(nil, "pure", "shadow") )
+                end)
+            end
+        end,
+        on_rm = function(self, inst, cmp, id)
+            if cmp[id.."_fn"] then
+                inst.components.combat:RemoveAttackedCalcFn(cmp[id.."_fn"])
+                cmp[id.."_fn"] = nil
+            end
+            if cmp[id.."_fn2"] then
+                inst.components.combat:WgRemoveOnHitFn(cmp[id.."_fn2"])
+                cmp[id.."_fn2"] = nil
+            end
+        end
+    },  AssetUtil:MakeImg("purpleamulet"),
+        function(self, inst, cmp, id)
+            return string.format("虚无:受到的物理伤害降低%d%%,受到的元素伤害提高%d%%,攻击额外造成%d暗属性伤害",
+                self.data[1] * 100, self.data[2] * 100, self.data[3])
+        end, { .2, .3, 25 }, true
     ),
     Buff("armor_broken", 5, {
             on_add = function(self, inst, cmp, id)
@@ -1968,6 +2467,40 @@ local debuffs = {
             return string.format("达到%d层时,直接死亡,当前层数(%d)", self.data[1], n)
         end, { 20 }, true, nil, true
     ),
+    Buff("tp_scroll_blood1", 30, {
+        on_add = function(self, inst, cmp, id)
+            if cmp[id .. "_fn"] == nil then
+                cmp[id .. "_fn"] = inst.components.combat:AddAttackedCalcFn(function(damage, attacker, owner, weapon, stimuli)
+                    if EntUtil:in_stimuli(stimuli, "blood") then
+                        owner.components.health:DoDelta(-self.data[1])
+                        if attacker.components.health then
+                            attacker.components.health:DoDelta(self.data[1])
+                        end
+                    end
+                    return damage
+                end)
+            end
+            if cmp[id.."_fx"] == nil then
+                cmp[id.."_fx"] = FxManager:MakeFx("scroll_blood1", Vector3(0, 0, 0))
+                inst:AddChild(cmp[id.."_fx"])
+            end
+        end, 
+        on_rm = function(self, inst, cmp, id)
+            if cmp[id .. "_fn"] then
+                inst.components.combat:RemoveAttackedCalcFn(cmp[id .. "_fn"])
+                cmp[id .. "_fn"] = nil
+            end
+            if cmp[id.."_fx"] then
+                inst:RemoveChild(cmp[id.."_fx"])
+                cmp[id.."_fx"] = nil
+            end
+        end,
+    }, AssetUtil:MakeImg("ash"),
+        function(self, inst, cmp, id)
+            return string.format("受到血属性伤害时,失去%d生命值以治愈攻击者", self.data[1])
+        end, {10}, true
+    ),
+
     Buff("tp_templar_proj_debuff", 5, {
             on_add = function(self, inst, cmp, id)
                 local n = cmp.stacks[id] or 0
@@ -2313,6 +2846,52 @@ local debuffs = {
             return string.format("降低%d的防御", rate)
         end, {}, true)
 }
+
+local function make_food_effect_buff(name, img, data)
+    table.insert(buffs, Buff(name, 80, {
+        on_add = function(self, inst, cmp, id)
+            inst:AddTag("food_effect")
+            if inst.components.tp_player_attr then
+                for k, v in pairs(self.data) do
+                    inst.components.tp_player_attr:AddAttrMod(k, v)
+                end
+            end
+        end, 
+        on_rm = function(self, inst, cmp, id)
+            inst:RemoveTag("food_effect")
+            if inst.components.tp_player_attr then
+                for k, v in pairs(self.data) do
+                    inst.components.tp_player_attr:RmAttrMod(k)
+                end
+            end
+        end,
+    }, AssetUtil:MakeImg(img),
+        function(self, inst, cmp, id)
+            local s = ""
+            for k, v in pairs(self.data) do
+                s = s..string.format("%+d%s,", v, Info.Attr.PlayerAttrStr[k])
+            end
+            return s
+        end, data
+    ))
+end
+make_food_effect_buff("meat", "meat", {strengthen=5})
+make_food_effect_buff("veggie", "carrot", {agility=5, strengthen=-3})
+make_food_effect_buff("sweetener", "honey", {intelligence=5, health=-5})
+make_food_effect_buff("fruit", "watermelon", {health=5, stamina=1})
+make_food_effect_buff("monster", "monstermeat", {health=-6, agility=-6})
+make_food_effect_buff("fish", "fish", {attention=5})
+make_food_effect_buff("jellyfish", "fish", {attention=3})
+make_food_effect_buff("magic", "mandrake", {intelligence=8, strengthen=-4})
+make_food_effect_buff("egg", "bird_egg", {endurance=2, faith=2})
+make_food_effect_buff("seed", "seeds", {agility=1})
+make_food_effect_buff("decoration", "butterflywings", {agility=3, attention=-1})
+make_food_effect_buff("fat", "butter", {lucky=5, endurance=-2})
+make_food_effect_buff("dairy", "goatmilk", {intelligence=5, faith=3})
+make_food_effect_buff("frozen", "ice", {stamina=2, lucky=-2})
+make_food_effect_buff("jellybug", "bug", {stamina=2, lucky=-5})
+make_food_effect_buff("antihistamine", "cutnettle", {faith=3, agility=-3, strengthen=-3})
+make_food_effect_buff("bone", "snake_bone", {strengthen=5, agility=5, intelligence=5, faith=5, lucky=5})
 
 BuffManager:AddDatas(buffs, "buff")
 BuffManager:AddDatas(debuffs, "debuff")

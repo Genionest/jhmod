@@ -3,6 +3,7 @@ local EntUtil = require "extension/lib/ent_util"
 local Util = require "extension/lib/wg_util"
 local AssetMaster = Sample.AssetMaster
 local Info = Sample.Info
+local ScrollManager = Sample.ScrollManager
 
 local SkillData = Class(function(self, data)
 end)
@@ -12,7 +13,7 @@ end)
 (SkillData) 返回
 id (String) 标识
 name (String) 名字
-desc (String) 描述
+desc (String/func) 描述
 Uimg (Img) 图片资源,
 anim (table{String}) 动画资源列表, bank, build, animation
 fn (func) 拥有此技能后触发的函数  
@@ -56,7 +57,7 @@ function SkillData:Trigger(owner)
     self.fn(owner, self)
 end
 
-function SkillData:ForverEffect(owner)
+function SkillData:ForeverEffect(owner)
     if self.fn2 then
         self.fn2(owner, self)
     end
@@ -93,17 +94,26 @@ function SkillData:GetName()
 end
 
 function SkillData:GetDescription()
-    if self:IsLock() then
-        local a1 = string.find(self.id, "P")
-        local a2 = string.find(self.id, "L")
-        if a1 and a2 then
-            local phase = string.sub(self.id, a1+1, a2-1)
-            local level = string.sub(self.id, a2+1, -1)
-            return "阶段"..phase.."等级"..level.."解锁"
-        end
+    -- if self:IsLock() then
+    --     local a1 = string.find(self.id, "P")
+    --     local a2 = string.find(self.id, "L")
+    --     if a1 and a2 then
+    --         local phase = string.sub(self.id, a1+1, a2-1)
+    --         local level = string.sub(self.id, a2+1, -1)
+    --         return "阶段"..phase.."等级"..level.."解锁"
+    --     end
+    -- else
+    
+    -- end
+    local desc
+    if type(self.desc) == "function" then
+        desc = self.desc(self)
+    elseif type(self.desc) == "string" then
+        desc = self.desc
     else
-        return Util:SplitSentence(self.desc, nil, true)
+        assert(nil, string.format("SkillData's desc must be function or string, not %s", type(self.desc)))
     end
+    return Util:SplitSentence(desc, nil, true)
 end
 
 local function skill_grow(name, phase)
@@ -141,386 +151,423 @@ local function skill_grow(name, phase)
 end
 
 local player_tree = {
-    Skill("wilson", "科学家",
-        "获得15点智力,15点专注\n威尔逊长出的胡子会提高防御值",
+    Skill("wilson", "威尔逊",
+    function(self)
+        return string.format("耐力+%d,体力%+d,专注%+d;你使用%d张卷轴后,升级你的技能", 
+            self.data[1], self.data[2], self.data[3], self.data[4])
+    end,
     AssetUtil:MakeImg("minimap/minimap_data.xml", "wilson.png", true),
     nil,
-    function(inst, self)
+    function(inst, cmp, id, self)
+        inst.components.tp_player_attr:AddAttrMod("endurance", self.data[1])
+        inst.components.tp_player_attr:AddAttrMod("stamina", self.data[1])
+        inst.components.tp_player_attr:AddAttrMod("attention", self.data[3])
+        inst:ListenForEvent("use_scroll", function(inst, data)
+            local btn_id = inst.components.tp_player_button.id
+            if btn_id == "wilson" then
+                local n = cmp[id.."_val"] or 0
+                n = n + 1
+                if n >= self.data[4] then
+                    inst.components.tp_player_button:SetSkillButton("wilson2")
+                end
+                cmp[id.."_val"] = n
+            end
+        end)
     end, -- always
-    function(inst, self)
-        inst.components.tp_player_attr:AddAttrMod("attention", 15)
-        inst.components.tp_player_attr:AddAttrMod("intelligence", 15)
-        inst.components.tp_player_attr:UpdateAttr()
+    function(inst, cmp, id, self)
     end, -- once
-    nil),
+    {10, 5, 15, 30}),
+    
+    Skill("willow", "薇洛",
+    function(self)
+        return string.format("专注%+d,信仰%+d;你使用%d张火卷轴后,获得1本火魔法书;低理智时不再会放火",
+            self.data[1], self.data[2], self.data[3])
+    end,
+    AssetUtil:MakeImg("minimap/minimap_data.xml", "willow.png", true),
+    nil,
+    function(inst, cmp, id, self)
+        inst.components.tp_player_attr:AddAttrMod("attention", 10)
+        inst:ListenForEvent("use_scroll", function(inst, data)
+            local scroll_name = data.scroll.prefab
+            if ScrollManager:GetDataKindById(scroll_name) == "fire" then
+                local n = cmp[id.."_val"] or 0
+                local scroll_num = self.data[3]
+                if n < scroll_num then
+                    n = n + 1
+                    if n >= scroll_num then
+
+                    end
+                end
+                cmp[id.."_val"] = n
+            end
+        end)
+    end, -- always
+    function(inst, cmp, id, self)
+    end, -- once
+    {15, 10, 20}),
+    
+    Skill("wathgrithr", "薇格弗德",
+    function(self)
+        return string.format("健康%+d;耐力%+d;强壮%+d;强壮效果提升至%d%%;原本的杀死单位效果不再触发",
+            self.data[1], self.data[2], self.data[3], self.data[4]*100)
+    end,
+    AssetUtil:MakeImg("minimap/minimap_data.xml", "wathgrithr.png", true),
+    nil,
+    function(inst, cmp, id, self)
+        inst.components.tp_player_attr:SetAttrRate("strengthen", self.data[4])
+        inst.components.tp_player_attr:AddAttrMod("health", self.data[1])
+        inst.components.tp_player_attr:AddAttrMod("endurance", self.data[2])
+        inst.components.tp_player_attr:AddAttrMod("strengthen", self.data[3])
+    end, -- always
+    function(inst, cmp, id, self)
+    end, -- once
+    {10, 10, 10, 1.3}),
+    
+    Skill("wickerbottom", "薇克巴顿",
+    function(self)
+        return string.format("智力%+d,专注%+d;专注效果提升至%d%%;",
+            self.data[1], self.data[2], self.data[3]*100)
+    end,
+    AssetUtil:MakeImg("minimap/minimap_data.xml", "wickerbottom.png", true),
+    nil,
+    function(inst, cmp, id, self)
+        inst.components.tp_player_attr:SetAttrRate("attention", self.data[3])
+        inst.components.tp_player_attr:AddAttrMod("intelligence", self.data[1])
+        inst.components.tp_player_attr:AddAttrMod("attention", self.data[2])
+    end, -- always
+    function(inst, cmp, id, self)
+    end, -- once
+    {15, 15, 1.25}),
+    
+    Skill("waxwell", "麦斯威尔", 
+    function(self)
+        return string.format("专注%+d,信仰%+d;智力效果提升至%d%%;你使用20个暗卷轴后,升级你的技能",
+            self.data[1], self.data[2], self.data[3]*100, self.data[4])
+    end,
+    AssetUtil:MakeImg("minimap/minimap_data.xml", "waxwell.png", true),
+    nil,
+    function(inst, cmp, id, self)
+        inst.components.tp_player_attr:SetAttrRate("intelligence", self.data[3])
+        inst.components.tp_player_attr:AddAttrMod("attention", self.data[1])
+        inst.components.tp_player_attr:AddAttrMod("faith", self.data[2])
+        inst:ListenForEvent("use_scroll", function(inst, data)
+            local btn_id = inst.components.tp_player_button.id
+            if btn_id == "waxwell" then
+                local n = cmp[id.."_val"] or 0
+                n = n + 1
+                if n >= self.data[4] then
+                    inst.components.tp_player_button:SetSkillButton("waxwell2")
+                end
+                cmp[id.."_val"] = n
+            end
+        end)
+    end, -- always
+    function(inst, cmp, id, self)
+    end, -- once
+    {20, 10, 1.3, 20}),
+
+    Skill("wolfgang", "沃尔夫冈",
+    function(self)
+        return string.format("健康%+d,耐力%+d,体力%+d;健康效果提升至%d%%",
+            self.data[1], self.data[2], self.data[3], self.data[4]*100)
+    end,
+    AssetUtil:MakeImg("minimap/minimap_data.xml", "wolfgang.png", true),
+    nil,
+    function(inst, cmp, id, self)
+        inst.components.tp_player_attr:SetAttrRate("health", self.data[4])
+        inst.components.tp_player_attr:AddAttrMod("health", self.data[1])
+        inst.components.tp_player_attr:AddAttrMod("endurance", self.data[2])
+        inst.components.tp_player_attr:AddAttrMod("stamina", self.data[3])
+    end, -- always
+    function(inst, cmp, id, self)
+    end, -- once
+    {10, 10, 10, 1.4}),
+}
+
+local other_tree = {
+    Skill("SKbeard_defense", "胡子",
+    function(self)
+        return string.format("防御%+d;长出的胡子会提高防御值", self.data[1])
+    end,
+    AssetUtil:MakeImg("beardhair"),
+    nil,
+    function(inst, cmp, id, self)
+        inst.components.combat:AddDefenseMod(id, self.data[1])
+        if inst.components.beard then
+            inst:ListenForEvent("daycomplete", function(world, data)
+                local cmp = inst.components.beard
+                if not cmp.pause then
+                    local n = cmp.daysgrowth
+                    if cmp.callbacks[n] then
+                        inst.components.combat:AddDefenseMod(id, n*2)
+                    end
+                end
+            end, GetWorld())
+        end
+    end, -- always
+    function(inst, cmp, id, self)
+    end, -- once
+    {10}),
+    Skill("SKfire_scroll_liker", "火魔法爱好",
+    function(self)
+        return string.format("法力%+d;你使用火卷轴后,恢复%d点理智", 
+            self.data[1], self.data[2])
+    end,
+    AssetUtil:MakeImg("tp_scrolls2", "tp_scroll_fire_ball"),
+    nil,
+    function(inst, cmp, id, self)
+        inst.components.tp_val_mana:AddMaxMod(id, self.data[1])
+        inst:ListenForEvent("use_scroll", function(inst, data)
+            local scroll_name = data.scroll.prefab
+            if ScrollManager:GetDataKindById(scroll_name) == "fire" then
+                inst.components.sanity:DoDelta(self.data[2])
+            end
+        end)
+    end, -- always
+    function(inst, cmp, id, self)
+    end, -- once
+    {30, 10}),
+    Skill("SKfire_scroll_master", "火魔法精通",
+    function(self)
+        return string.format("法力%+d;你的火卷轴造成的获得%d%%智力收益的伤害加成",
+            self.data[1], self.data[2]*100)
+    end,
+    AssetUtil:MakeImg("tp_scrolls2", "tp_scroll_fire1"),
+    nil,
+    function(inst, cmp, id, self)
+        inst.components.tp_val_mana:AddMaxMod(id, self.data[1])
+        inst.components.combat:WgAddCalcDamageFn(function(damage, owner, target, weapon, stimuli)
+            if EntUtil:in_stimuli(stimuli, "fire", "magic") then
+                local amt = owner.components.tp_player_attr:GetAttrFactor("intelligence")
+                damage = damage + amt*self.data[2]
+            end
+            return damage
+        end)
+    end, -- always
+    function(inst, cmp, id, self)
+    end, -- once
+    {50, 1}),
+    Skill("SKcombat_blood", "战斗之血",
+    function(self)
+        return string.format("体力%+d;装备武器后,获得%d防御,和%d%%吸血",
+            self.data[1], self.data[2], self.data[3]*100)
+    end,
+    AssetUtil:MakeImg("wathgrithrhat"),
+    nil,
+    function(inst, cmp, id, self)
+        inst:ListenForEvent("equip", function(inst, data)
+            if data.elsot == EQUIPSLOTS.HANDS then
+                if data.item.components.weapon then
+                    inst.components.combat:AddDefenseMod(id, self.data[2])
+                    inst.components.combat:AddLifeStealRateMod(id, self.data[3])
+                end
+            end
+        end)
+    end, -- always
+    function(inst, cmp, id, self)
+        inst:ListenForEvent("unequip", function(inst, data)
+            if data.elsot == EQUIPSLOTS.HANDS then
+                if data.item.components.weapon then
+                    inst.components.combat:RmDefenseMod(id)
+                    inst.components.combat:RmLifeStealRateMod(id)
+                end
+            end
+        end)
+    end, -- once
+    {5, 50, .25}),
+    Skill("brute", "野蛮",
+    function(self)
+        return string.format("强壮%+d;普通攻击造成的伤害%+d", 
+            self.data[1], self.data[2])
+    end,
+    AssetUtil:MakeImg("spear_wathgrithr"),
+    nil,
+    function(inst, cmp, id, self)
+        inst.components.tp_player_attr:AddAttrMod("strengthen", self.data[1])
+        inst.components.combat:WgAddCalcDamageFn(function(damage, owner, target, weapon, stimuli)
+            if EntUtil:can_dmg_effect(stimuli) then
+                damage = damage + self.data[2]
+            end
+            return damage
+        end)
+    end, -- always
+    function(inst, cmp, id, self)
+    end, -- once
+    {5, 20}),
+    Skill("SKdesire_fight", "战斗渴望",
+    function(self)
+        return string.format("理智%+d;你因吸血恢复生命时,同时恢复理智,但效果只有%d%%",
+            self.data[1], self.data[2]*100)
+    end,
+    AssetUtil:MakeImg("tp_icons2", "talent1"),
+    nil,
+    function(inst, cmp, id, self)
+        inst.components.sanity:WgAddMaxSanityModifier(id, self.data[1])
+        inst:ListenForEvent("life_steal", function(inst, data)
+            if data.amount then
+                inst.components.sanity:DoDelta(data.amount*self.data[2])
+            end
+        end)
+    end, -- always
+    function(inst, cmp, id, self)
+    end, -- once
+    {50, .5}),
+    Skill("library_wind", "书院来风",
+    function(self)
+        return string.format("法力恢复%+.2f;你使用1张风卷轴后,随机获得1张卷轴",
+            self.data[1])
+    end,
+    AssetUtil:MakeImg("tp_scrolls2", "tp_scroll_wind2"),
+    nil,
+    function(inst, cmp, id, self)
+        inst.components.tp_val_mana:AddRateMod(id, self.data[1])
+        inst:ListenForEvent("use_scroll", function(inst, data)
+            local scroll_name = data.scroll.prefab
+            if ScrollManager:GetDataKindById(scroll_name) == "wind" then
+                local scroll_name2 = ScrollManager:GetRandomIds(1)
+                EntUtil:give_player_item(SpawnPrefab(scroll_name2), inst)
+            end
+        end)
+    end, -- always
+    function(inst, cmp, id, self)
+    end, -- once
+    {.3}),
+    Skill("wind_comfortable", "风系亲和",
+    function(self)
+        return string.format("体力%+d;你使用风卷轴后提升%d%%移速,持续%ds",
+            self.data[1], self.data[2]*100, self.data[3])
+    end,
+    AssetUtil:MakeImg("tp_scrolls2", "tp_scroll_wind1"),
+    nil,
+    function(inst, cmp, id, self)
+        inst.components.tp_player_attr:AddAttrMod("stamina", self.data[1])
+        inst:ListenForEvent("use_scroll", function(inst, data)
+            local scroll_name = data.scroll.prefab
+            if ScrollManager:GetDataKindById(scroll_name) == "wind" then
+                EntUtil:add_speed_mod(inst, self.data[2], self.data[3])
+            end
+        end)
+    end, -- always
+    function(inst, cmp, id, self)
+    end, -- once
+    {3, .2, 60}),
+    Skill("wind_caster", "风之魔导士",
+    function(self)
+        return string.format("智力+%d;你的风卷轴造成的伤害提升%d%%",
+            self.data[1], self.data[2]*100)
+    end,
+    AssetUtil:MakeImg("tp_scrolls2", "tp_scroll_wind_ball"),
+    nil,
+    function(inst, cmp, id, self)
+        inst.components.combat:WgAddCalcDamageFn(function(damage, owner, target, weapon, stimuli)
+            if EntUtil:in_stimuli(stimuli, "wind", "magic") then
+                damage = damage * (1 + self.data[2])
+            end
+            return damage
+        end)
+    end, -- always
+    function(inst, cmp, id, self)
+    end, -- once
+    {5, .3}),
+    Skill("shadow_manipulator", "暗影操纵者",
+    function(self)
+        return string.format("暗抗%+d%%;你造成的暗影伤害增加%d%%",
+            self.data[1]*100, self.data[2]*100)
+    end,
+    AssetUtil:MakeImg("researchlab3"),
+    nil,
+    function(inst, cmp, id, self)
+        inst.components.combat:AddDmgTypeAbsorb("shadow", -self.data[1])
+        inst.components.combat:WgAddCalcDamageFn(function(damage, owner, target, weapon, stimuli)
+            if EntUtil:in_stimuli(stimuli, "shadow") then
+                damage = damage * (1 + self.data[2])
+            end
+            return damage
+        end)
+    end, -- always
+    function(inst, cmp, id, self)
+    end, -- once
+    {.05, .2}),
+    Skill("SKshadow_inflatrate", "暗影渗透",
+    function(self)
+        return string.format("法力%+d;你每使用1张暗影卷轴,技能cd-%ds", 
+            self.data[1], self.data[2] )
+    end,
+    AssetUtil:MakeImg("ash"),
+    nil,
+    function(inst, cmp, id, self)
+        inst.components.tp_val_mana:AddMaxMod(id, self.data[1])
+        inst:ListenForEvent("use_scroll", function(inst, data)
+            local scroll_name = data.scroll.prefab 
+            local kind = ScrollManager:GetDataKindById(scroll_name)
+            if kind == "shadow" then
+                cmp:DoDelta(self.data[2])
+            end
+        end)
+    end, -- always
+    function(inst, cmp, id, self)
+    end, -- once
+    {30, 10}),
+    Skill("MrMuscle", "威猛先生",
+    function(self)
+        return string.format("生命%+d;普通攻击提升生命上限%d%%的伤害",
+            self.data[1], self.data[2]*100 )
+    end,
+    AssetUtil:MakeImg("tp_icons2", "attr_health"),
+    nil,
+    function(inst, cmp, id, self)
+        inst.components.health:WgAddMaxHealthModifier(id, self.data[1])
+        inst.components.combat:WgAddCalcDamageFn(function(damage, owner, target, weapon, stimuli)
+            if EntUtil:can_dmg_effect(stimuli) then
+                local max = owner.components.health:GetMaxHealth()
+                local amt = max * self.data[2]
+                damage = damage * amt
+            end
+        end)
+    end, -- always
+    function(inst, cmp, id, self)
+    end, -- once
+    {50, .03}),
+    Skill("physical_training", "体能训练",
+    function(self)
+        return string.format("强壮%+d;你每拥有1点强壮系数,便%+d生命", 
+            self.data[1], self.data[2] )
+    end,
+    AssetUtil:MakeImg("tp_icons2", "talent2"),
+    nil,
+    function(inst, cmp, id, self)
+        inst:ListenForEvent("player_attr_update", function(inst, data)
+            local strengthen = inst.components.tp_player_attr:GetAttrFactor("strengthen")
+            local amt = self.data[2] * strengthen
+            inst.components.health:WgAddMaxHealthModifier(id, amt)
+        end)
+        inst.components.tp_player_attr:AddAttrMod("strengthen", self.data[1])
+    end, -- always
+    function(inst, cmp, id, self)
+    end, -- once
+    {5, 5}),
+    -- 
     Skill("hollow", "六目",
-        "你获得六目值",
+        "你获得六目能量",
     AssetUtil:MakeImg("tp_icons2", "badge_31"),
     nil,
-    function(inst, self)
+    function(inst, cmp, id, self)
         inst:AddComponent("tp_val_hollow")
         inst:DoTaskInTime(0, function()
             inst.components.tp_val_hollow:InitBadge()
         end)
     end, -- always
-    function(inst, self)
+    function(inst, cmp, id, self)
     end, -- once
     {}),
+    
 }
 
--- local wilson_tree = {
--- Skill("skill_btn", "天才发明家", 
---     "获得技能\"发明创造\"", 
---     AssetMaster:GetUimg("tp_desk"), 
---     nil, 
---     function(inst)
---     end
--- ),
--- Skill("P1L3", "成熟的科学家",
---     "威尔逊可以长胡子了",
---     AssetUtil:MakeImg("beardhair"), 
---     nil, 
---     function(inst)
---         if inst.components.beard == nil then
---             inst.beard_fn(inst)
---         end
---     end
--- ),
--- Skill("P1L6", "助学金",
---     string.format("获得%d呼噜币", Info.Character.wilson.Phase1RewardOinc100*100),
---     AssetUtil:MakeImg("oinc"), 
---     nil, 
---     function(inst)
---     end,
---     function(inst)
---         local coin = SpawnPrefab("oinc100")
---         coin.components.stackable:SetStackSize(Info.Character.wilson.Phase1RewardOinc100)
---         inst.components.inventory:GiveItem(coin)
---         inst.components.tp_skill_tree:ShowSkillDesc()
---     end
--- ),
--- skill_grow("wilson", 2),
--- Skill("P2L12", "风行者", 
---     string.format("每提升100%%的移速，提升%d%%攻击", 
---         Info.Character.wilson.SpeedDmgMod*100),
---     AssetUtil:MakeImg("coffee"), 
---     nil, 
---     function(inst)
---         local CalcDamage = inst.components.combat.CalcDamage
---         function inst.components.combat:CalcDamage(target, weapon, multiplier)
---             multiplier = multiplier or 1
---             local base = inst.components.locomotor.runspeed
---             local total = inst.components.locomotor:GetRunSpeed()
---             local p = total/base
---             if p>1 then
---                 multiplier = multiplier+(p-1)*Info.Character.wilson.SpeedDmgMod
---             end
---             return CalcDamage(self, target, weapon, multiplier)
---         end
---     end
--- ),
--- skill_grow("wilson", 3),
--- Skill("P3L22", "见习研究员",
---     string.format("自带一本科技"),
---     AssetUtil:MakeImg("researchlab"), 
---     nil,
---     function(inst)
---         inst.components.builder.science_bonus = 1
---     end
--- ),
--- Skill("P3L23", "见习术士",
---     string.format("自带魔法一本科技"),
---     AssetUtil:MakeImg("researchlab4"), 
---     nil,
---     function(inst)
---         inst.components.builder.magic_bonus = 1
---     end
--- ),
--- }
-
--- local wathgrithr_tree = {
--- Skill("skill_btn", "天生的格斗家",
---     "获得技能\"战前准备\"",
---     AssetUtil:MakeImg("wathgrithrhat"), 
---     nil, 
---     function(inst)
---     end
--- ),
--- Skill("P1L3", "装备精良",
---     "解锁专属制造",
---     AssetUtil:MakeImg("spear_wathgrithr"), 
---     nil, 
---     function(inst)
---         if not inst:HasTag("wathgrithr") then
---             inst:AddTag("wathgrithr")
---         end
---     end
--- ),
--- Skill("P1L5", "战斗技艺",
---     string.format("获得%d%%的吸血和%d%%的防御、穿透、命中加成", 
---         Info.Character.wathgrithr.LifeStealRate*100, Info.Character.wathgrithr.Phase1CombatAttrMod*100),
---     AssetUtil:MakeImg("hambat"), 
---     nil, 
---     function(inst)
---         inst.components.combat:AddPenetrateMod("skill", Info.Character.wathgrithr.Phase1CombatAttrMod)
---         inst.components.combat:AddHitRateMod("skill", Info.Character.wathgrithr.Phase1CombatAttrMod)
---         inst.components.combat:AddDefenseMod("skill", Info.Character.wathgrithr.Phase1CombatAttrMod)
---         inst.components.combat:AddLifeStealRateMod("skill", Info.Character.wathgrithr.LifeStealRate)
---     end
--- ),
--- Skill("P1L8", "战神之子",
---     string.format("装带饰品阿瑞斯的加护"),
---     AssetMaster:GetUimg("ak_ornament_festivalevents3"),
---     nil, 
---     function(inst)
---     end,
---     function(inst)
---         inst.components.tp_ornament:TakeOrnament("ak_ornament_festivalevents3")
---         inst.components.tp_ornament:EffectOrnament("ak_ornament_festivalevents3")
---     end
--- ),
--- Skill("P2L11", "成长",
---     string.format("饥饿速度增加%d%%, 增加%d饥饿上限", 
---         Info.Character.wathgrithr.Phase2HungerRate*100,
---         Info.Character.wathgrithr.Phase2HungerMod),
---     AssetUtil:MakeImg("pumpkincookie"), 
---     nil, 
---     function(inst)
---         inst.components.hunger:WgAddMaxHungerModifier("skill", Info.Character.wathgrithr.Phase2HungerMod)
---         EntUtil:add_hunger_mod(inst, "skill", Info.Character.wathgrithr.Phase2HungerRate)
---     end,
---     function(inst)
---         inst.components.hunger:WgAddMaxHungerModifier("skill", Info.Character.wathgrithr.Phase2HungerMod, true)
---         inst.components.tp_ornament:LoseOrnament("ak_ornament_festivalevents3")
---         inst.components.tp_ornament:UneffectOrnament("ak_ornament_festivalevents3")
---     end
--- ),
--- Skill("P2L12", "肉食者",
---     string.format("只能吃肉,增加%d生命上限", 
---         Info.Character.wathgrithr.Phase2HealthMod),
---     AssetUtil:MakeImg("meat"), 
---     nil, 
---     function(inst)
---         inst.components.eater:SetCarnivore(true)
---         inst.components.health:WgAddMaxHealthModifier("skill", Info.Character.wathgrithr.Phase2HealthMod)
---     end,
---     function(inst)
---         inst.components.health:WgAddMaxHealthModifier("skill", Info.Character.wathgrithr.Phase2HealthMod, true) 
---     end
--- ),
--- Skill("P2L13", "战斗渴望",
---     string.format("杀死怪物回复理智和生命"),
---     AssetUtil:MakeImg("guacamole"), 
---     nil, 
---     function(inst)
---         inst:ListenForEvent("entity_death", function(wrld, data) inst.onkill(inst, data) end, GetWorld())
---     end
--- ),
--- skill_grow("wathgrithr", 3),
--- Skill("P3L22", "精致技艺",
---     string.format("防御、穿透、命中加成提升至%d%%", 
---         Info.Character.wathgrithr.Phase3CombatAttrMod*100),
---     AssetUtil:MakeImg("ruins_bat"), 
---     nil, 
---     function(inst)
---         inst.components.combat:AddPenetrateMod("skill", Info.Character.wathgrithr.Phase3CombatAttrMod)
---         inst.components.combat:AddHitRateMod("skill", Info.Character.wathgrithr.Phase3CombatAttrMod)
---         inst.components.combat:AddDefenseMod("skill", Info.Character.wathgrithr.Phase3CombatAttrMod)
---     end
--- ),
--- }
-
--- local wickerbottom_tree = {
--- Skill("skill_btn", "勤劳的管理员",
---     "获得技能\"小帮手\"",
---     AssetUtil:MakeImg("axe"),
---     nil,
---     function(inst)end
--- ),
--- Skill("P1L3", "博览群书",
---     "自带一本科技",
---     AssetUtil:MakeImg("researchlab"),
---     nil,
---     function(inst)
---         inst.components.builder.science_bonus = 1
---     end
--- ),
--- --[[
--- local c = GetPlayer().components.builder.custom_tabs
--- for k, v in pairs(c) do
---     for k2, v2 in pairs(v) do
---         print(k2, v2)
---     end
--- end
--- ]]
--- -- Skill("P1L3", "造纸术",
--- --     "可以使用竹子制造纸",
--- --     AssetUtil:MakeImg("papyrus"),
--- --     nil,
--- --     function(inst, self)
--- --         if not inst:HasTag(self.id) then
--- --             inst:AddTag(self.id)
--- --             local recipe = Recipe("papyrus", {Ingredient("bamboo", 1)}, RECIPETABS.REFINE, TECH.NONE, RECIPE_GAME_TYPE.COMMON, nil, nil, nil, 4)
--- --             recipe.sortkey = 1
--- --         end
--- --     end
--- -- ),
--- Skill("P1L5", "赠书清单",
---     "获得5本书",
---     AssetUtil:MakeImg("book_brimstone"),
---     nil,
---     function(inst)
---     end,
---     function(inst)
---         inst.give_gift(inst, "book_birds", 1)
---         inst.give_gift(inst, "book_gardening", 1)
---         inst.give_gift(inst, "book_sleep", 1)
---         inst.give_gift(inst, "book_brimstone", 1)
---         if SaveGameIndex:IsModeShipwrecked() then
---             inst.give_gift(inst, "book_meteor", 1)
---         else
---             inst.give_gift(inst, "book_tentacles", 1)
---         end
---     end
--- ),
--- Skill("P1L8", "赠书清单2",
---     "获得10本书",
---     AssetUtil:MakeImg("book_sleep"),
---     nil,
---     function(inst)
---     end,
---     function(inst)
---         inst.give_gift(inst, "book_birds", 2)
---         inst.give_gift(inst, "book_gardening", 2)
---         inst.give_gift(inst, "book_sleep", 2)
---         inst.give_gift(inst, "book_brimstone", 2)
---         if SaveGameIndex:IsModeShipwrecked() then
---             inst.give_gift(inst, "book_meteor", 2)
---         else
---             inst.give_gift(inst, "book_tentacles", 2)
---         end
---     end
--- ),
--- skill_grow("wickerbottom", 2),
--- Skill("P2L12", "藏书库",
---     "解锁专属制造",
---     AssetUtil:MakeImg("book_birds"),
---     nil,
---     function(inst, self)
---         if not inst:HasTag("wickerbottom") then
---             inst:AddTag("wickerbottom")
---         end
---     end
--- ),
--- Skill("P2L13", "失眠多梦",
---     string.format("失眠,理智上限提升%d", 
---         Info.Character.wickerbottom.Phase2SanityMod),
---     AssetUtil:MakeImg("bedroll_straw"),
---     nil,
---     function(inst)
---         inst.components.sanity:WgAddMaxSanityModifier("skill", Info.Character.wickerbottom.Phase2SanityMod)
---         if not inst:HasTag("insomniac") then
---             inst:AddTag("insomniac") 
---         end
---     end,
---     function(inst)
---         inst.components.sanity:WgAddMaxSanityModifier("skill", Info.Character.wickerbottom.Phase2SanityMod, true)
---     end
--- ),
--- skill_grow("wickerbottom", 3),
--- Skill("P3L22", "老胃病",
---     string.format("不适应不新鲜的食物,饥饿上限提升%d", 
---         Info.Character.wickerbottom.Phase3HungerMod),
---     AssetUtil:MakeImg("wetgoop"),
---     nil,
---     function(inst)
---         inst.components.sanity:WgAddMaxSanityModifier("skill", Info.Character.wickerbottom.Phase3SanityMod)
---         EntUtil:add_sanity_mod(inst, "skill", Info.Character.wickerbottom.Phase3SanityRate)
---     end,
---     function (inst)
---         inst.components.sanity:WgAddMaxSanityModifier("skill", Info.Character.wickerbottom.Phase3SanityMod, true)
---     end
--- ),
--- }
-
--- local wolfgang_tree = {
--- Skill("skill_btn", "健美选手",
---     "获得技能\"营养餐\"",
---     AssetUtil:MakeImg("carrot"),
---     nil,
---     function(inst)end
--- ),
--- Skill("P1L3", "强健体魄",
---     string.format("获得%d%%额外生命收益", Info.Character.wolfgang.NormalRecoverRate*100),
---     AssetUtil:MakeImg("bandage"),
---     nil,
---     function(inst)
---         inst.components.health:AddRecoverRateMod("skill", Info.Character.wolfgang.NormalRecoverRate)
---     end
--- ),
--- Skill("P1L5", "大力士",
---     string.format("饥饿会影响多项属性(包括生命回复收益，最低%d%%, 最高%d%%)", 
---         Info.Character.wolfgang.WimpyRecoverRate*100, Info.Character.wolfgang.MightyRecoverRate*100),
---     AssetUtil:MakeImg("marble"),
---     nil,
---     function(inst, self)
---         inst.applymightiness(inst)
---         EntUtil:listen_for_event(inst, "hungerdelta", inst.onhungerchange)
---     end
--- ),
--- skill_grow("wolfgang", 2),
--- Skill("P2L12", "胆小",
---     string.format("变得胆小, 增加%d理智上限",
---         Info.Character.wolfgang.Phase2SanityMod),
---     AssetUtil:MakeImg("cactus_meat"),
---     nil,
---     function(inst)
---         inst.components.sanity:WgAddMaxSanityModifier("skill", Info.Character.wolfgang.Phase3SanityMod)
---         inst.components.sanity.night_drain_mult = 1.1
---         inst.components.sanity.neg_aura_mult = 1.1
---     end,
---     function(inst)
---         inst.components.sanity:WgAddMaxSanityModifier("skill", Info.Character.wolfgang.Phase3SanityMod, true)
---     end
--- ),
--- Skill("P2L13", "强健心脏",
---     string.format("获得%d%%额外生命回复, 生命值越低, 提升越高, 最多达到%d%%", 
---         Info.Character.wolfgang.Phase2RecoverRateMin*100,
---         Info.Character.wolfgang.Phase2RecoverRateMax*100
---     ),
---     AssetUtil:MakeImg("butterflymuffin"),
---     nil,
---     function(inst)
---         local fn = EntUtil:listen_for_event(inst, "healthdelta", function(inst, data)
---             local min = Info.Character.wolfgang.Phase2RecoverRateMin
---             local max = Info.Character.wolfgang.Phase2RecoverRateMax
---             local p = inst.components.health:GetPercent()
---             local rate = min+(max-min)*(1-p)
---             inst.components.health:AddRecoverRateMod("P2L13", rate)
---         end)
---     end
--- ),
--- skill_grow("wolfgang", 3),
--- Skill("P3L22", "马力全开",
---     string.format("饥饿速度增加%d%%，获得的额外生命回复提升至%d%%", 
---         Info.Character.wolfgang.Phase3HungerRate*100, 
---         Info.Character.wolfgang.Phase3RecoverRate*100),
---     AssetUtil:MakeImg("cork_bat"),
---     nil,
---     function(inst)
---         EntUtil:add_hunger_mod(inst, "tp_level0", Info.Character.wolfgang.Phase3HungerRate)
---         inst.components.health:AddRecoverRateMod("tp_level2", Info.Character.wolfgang.Phase3RecoverRate)
---     end
--- ),
--- }
 
 local DataManager = require "extension/lib/data_manager"
 local SkillTreeManager = DataManager("SkillTreeManager")
 SkillTreeManager:AddDatas(player_tree, "player")
--- SkillTreeManager:AddDatas(wilson_tree, "wilson")
--- SkillTreeManager:AddDatas(wathgrithr_tree, "wathgrithr")
--- SkillTreeManager:AddDatas(wickerbottom_tree, "wickerbottom")
--- SkillTreeManager:AddDatas(wolfgang_tree, "wolfgang")
+SkillTreeManager:AddDatas(other_tree, "other")
 
 function SkillTreeManager:UnlockSkill(id, inst, skill_data)
     skill_data = skill_data or self:GetDataById(id)
@@ -534,10 +581,10 @@ function SkillTreeManager:TriggerSkill(id, inst, skill_data)
     skill_data:Trigger(inst)
 end
 
-function SkillTreeManager:ForverEffectSkill(id, inst, skill_data)
+function SkillTreeManager:ForeverEffectSkill(id, inst, skill_data)
     skill_data = skill_data or self:GetDataById(id)
     assert(skill_data~=nil, string.format("%s's skill tree don't have skill %s", inst.prefab, id))
-    skill_data:ForverEffect(inst)
+    skill_data:ForeverEffect(inst)
 end
 
 function SkillTreeManager:LoadSkill(id, inst, skill_data)
@@ -574,7 +621,7 @@ function SkillTreeManager:PlayerSkillTree2LevelFn(name)
                 local phase = tonumber(string.sub(id, a1+1, a2-1))
                 local data_level = tonumber(string.sub(id, a2+1, -1))
                 if level==data_level then
-                    v:ForverEffect(inst)
+                    v:ForeverEffect(inst)
                     v:Unlock()
                     inst.components.tp_skill_tree:AddId(id)
                 end

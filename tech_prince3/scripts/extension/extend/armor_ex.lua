@@ -1,5 +1,6 @@
 local Info = Sample.Info
 local Util = require "extension.lib.wg_util"
+local EntUtil = require "extension.lib.ent_util"
 
 -- 添加DoDelta
 local function fn(self)
@@ -37,9 +38,11 @@ local function fn(self)
 				can_resist = 1
 			end
 			if can_resist == 1 then
-				for k, v in pairs(owner.components.inventory.temp_stimuli) do
-					if self.dmg_type_absorb and self.dmg_type_absorb[k] then
-						local absorb_percent = self.dmg_type_absorb[k]
+				local stimuli = owner.components.inventory.temp_stimuli
+				local dmg_type = EntUtil:get_dmg_stimuli(stimuli)
+				if dmg_type then
+					if self.dmg_type_absorb and self.dmg_type_absorb[dmg_type] then
+						local absorb_percent = self.dmg_type_absorb[dmg_type]
 						-- 受到破甲效果后护甲收益减低 HasTag("armor_broken")
 						if owner:HasTag("armor_broken") then
 							absorb_percent = absorb_percent * Info.ArmorBrokenRate
@@ -67,6 +70,15 @@ local function fn(self)
 							if self.inst.components.equippable and self.inst.components.equippable:IsEquipped() and self.inst.components.equippable.equipper then
 								self.inst.components.equippable.equipper.components.sanity:DoDelta(-sanitydamage)
 							end                
+						end
+						-- 降低护甲损失
+						local owner = self.inst.components.equippable and self.inst.components.equippable.owner
+						if owner then
+							owner:PushEvent("armor_absorb", {armor=self.inst, amount = absorbed, stimuli = dmg_type})
+						end
+						if self.inst.components.tp_forge_armor then
+							local level = self.inst.components.tp_forge_armor.level
+							absorbed = absorbed / level
 						end
 						self:SetCondition(self.condition - absorbed)
 						if self.ontakedamage then

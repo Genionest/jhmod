@@ -6,6 +6,7 @@ return Prefab("wg_recyclable_fx", function()
     inst:AddTag("NOCLICK")
     inst:AddTag("NOBLOCK")
     inst.persists = false
+    
     return inst
 end, {
     Asset("ANIM", "anim/the_fx01.zip"),
@@ -29,6 +30,7 @@ end, {
     Asset("ANIM", "anim/the_fx27.zip"),
     Asset("ANIM", "anim/the_fx28.zip"),
     Asset("ANIM", "anim/the_fx29.zip"),
+    Asset("ANIM", "anim/the_fx30.zip"),
     Asset("ANIM", "anim/the_fx31.zip"),
     Asset("ANIM", "anim/the_fx33.zip"),
     Asset("ANIM", "anim/the_fx37.zip"),
@@ -38,6 +40,28 @@ end, {
     Asset("ANIM", "anim/the_fx48.zip"),
     Asset("ANIM", "anim/the_fx50.zip"),
     Asset("ANIM", "anim/the_fx51.zip"),
+    Asset("ANIM", "anim/the_fx54.zip"),
     Asset("ANIM", "anim/the_fx60.zip"),
+    Asset("ANIM", "anim/the_fx146.zip"),
+    Asset("ANIM", "anim/the_fx147.zip"),
     Asset("ANIM", "anim/the_fxa11.zip"),
+    Asset("ANIM", "anim/the_fxc05.zip"),
+    Asset("ANIM", "anim/the_fxc06.zip"),
+    Asset("ANIM", "anim/the_fxc18.zip"),
+    Asset("ANIM", "anim/the_fxc20.zip"),
+    Asset("ANIM", "anim/the_fxc21.zip"),
+    Asset("ANIM", "anim/the_fxc22.zip"),
+    Asset("ANIM", "anim/the_fxc23.zip"),
+    Asset("ANIM", "anim/the_fxc24.zip"),
+    Asset("ANIM", "anim/the_fxc25.zip"),
+    Asset("ANIM", "anim/the_fxc26.zip"),
+    Asset("ANIM", "anim/the_fxc27.zip"),
+    Asset("ANIM", "anim/the_fxc64.zip"),
+    Asset("ANIM", "anim/the_fxc65.zip"),
+    Asset("ANIM", "anim/the_fxc66.zip"),
+    Asset("ANIM", "anim/the_fxh48.zip"),
+    Asset("ANIM", "anim/the_fxr46.zip"),
+    -- Asset("ANIM", "anim/the_fxc0789.zip"),
+    Asset("ANIM", "anim/tp_meteor.zip"),
+    Asset("ANIM", "anim/tp_scroll_shadow_sword.zip"),
 })

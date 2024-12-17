@@ -252,11 +252,23 @@ function AssetMaster:GetDSAssets(name)
     assert(asset_data~=nil, string.format("can't find AssetData named \"%s\"", name))
 	local DSassets = asset_data.DSassets
 	if DSassets then
-		assert(type(DSassets)=="table", string.format("DSassets of AssetData(%s) must be table or nil", name))
+		assert(type(DSassets)=="table", string.format("DSassets of AssetData(%s) must be table or nil, not a %s", name, type(DSassets)))
 	else
 		print(string.format("DSassets of AssetData(%s) is nil", name))
 	end
 	return DSassets
+end
+
+--[[
+判断资源列表是否存在  
+(bool) 返回bool  
+name (string)资源名  
+]]
+function AssetMaster:HasDSAssets(name)
+	local asset_data = self:GetAssetData(name)
+    assert(asset_data~=nil, string.format("can't find AssetData named \"%s\"", name))
+	local DSassets = asset_data.DSassets
+	return DSassets ~= nil
 end
 
 local assets = {
@@ -690,6 +702,14 @@ blueprint = {
 	AssetPack("tp_forest_dragon_bp", nil, nil, nil, nil, nil, "blueprint"),
 },
 scroll = {
+	AssetPack("tp_scroll_template", 
+		Anim("papyrus", "papyrus", "idle", "idle_water"),
+		Img("papyrus"),
+		Symbol("swap_object", "tp_scroll_template", "swap_object"),
+		nil, {
+			Asset("ANIM", "anim/tp_scroll_template.zip"),
+		}
+	),
 	AssetPack("tp_scroll_templar", 
 		Anim("papyrus", "papyrus", "idle", "idle_water"),
 		Img("sam_items", "tp_scroll_templar"),
@@ -762,7 +782,21 @@ scroll = {
 	AssetPack("tp_scroll_ice_atk", nil, nil, nil, nil, nil, "tp_scroll_templar"),
 	AssetPack("tp_scroll_electric_atk", nil, nil, nil, nil, nil, "tp_scroll_templar"),
 	AssetPack("tp_scroll_shadow_atk", nil, nil, nil, nil, nil, "tp_scroll_templar"),
-	AssetPack("tp_scroll_hollow", nil, nil, nil, nil, nil, "tp_scroll_templar"),
+	-- AssetPack("tp_scroll_hollow", 
+	-- 	Anim("blueprint_sketch", "blueprint_sketch", "idle"),
+	-- 	Img("tp_scrolls2", "tp_scroll_hollow"),
+	-- 	Symbol("swap_object", "tp_scroll_template", "swap_object")
+	-- ),
+	-- AssetPack("tp_scroll_hollow2", 
+	-- 	Anim("blueprint_sketch", "blueprint_sketch", "idle"),
+	-- 	Img("tp_scrolls2", "tp_scroll_hollow2"),
+	-- 	Symbol("swap_object", "tp_scroll_template", "swap_object")
+	-- ),
+	-- AssetPack("tp_scroll_hollow3", 
+	-- 	Anim("blueprint_sketch", "blueprint_sketch", "idle"),
+	-- 	Img("tp_scrolls2", "tp_scroll_hollow3"),
+	-- 	Symbol("swap_object", "tp_scroll_template", "swap_object")
+	-- ),
 },
 potion = {
 	AssetPack("tp_potion_vigor",
@@ -1835,6 +1869,13 @@ structure = {
 		Img("tp_items3", "items_1"),
 		nil, nil, nil
 	),
+	AssetPack("tp_cookpot_demon", 
+		Anim("cook_pot", "tp_cookpot_demon", "idle_empty"),
+		Img("tp_icons", "tp_cookpot_demon"),
+		nil, nil, {
+			Asset("ANIM", "anim/tp_cookpot_demon.zip"),
+		}
+	),
 	AssetPack("tp_wilson_table", nil, nil, nil, nil, nil, "ak_work_bench"),
 },
 creature = {
@@ -1896,6 +1937,116 @@ for k, v in pairs(weapon_tbl) do
 	table.insert(assets.weapon, AssetPack(v,
 		Anim(v, v, "idle", "idle_water"),
 		Img("tp_weapons", v),
+		Symbol("swap_object", v, "swap_object"),
+		nil, {
+			Asset("ANIM", "anim/"..v..".zip"),
+		}
+	))
+end
+
+local scroll_tbl2 = {
+	"tp_scroll_hollow",
+	"tp_scroll_hollow2",
+	"tp_scroll_hollow3",
+	"tp_scroll_fire_lunge",
+	"tp_scroll_ice_lunge",
+	"tp_scroll_shadow_lunge",
+	"tp_scroll_double_cyclone",
+}
+for k, v in pairs(scroll_tbl2) do
+	table.insert(assets.scroll, AssetPack(v, 
+		Anim("blueprint_sketch", "blueprint_sketch", "idle"),
+		Img("tp_scrolls2", v),
+		Symbol("swap_object", "tp_scroll_template", "swap_object")
+	))
+end
+for k, v in pairs({
+	"fire", "ice", "shadow", "wind", "blood", "poison", "electric", "holly"
+}) do
+	for k2, v2 in pairs({
+		v.."_bean", v.."_arrow", v.."_ball", v.."1", v.."2", v.."3",
+		v.."_atk", "eatweapon1_"..v, "eatweapon2_"..v, "eatweapon3_"..v
+	}) do
+		table.insert(assets.scroll, AssetPack("tp_scroll_"..v2, 
+			Anim("blueprint_sketch", "blueprint_sketch", "idle"),
+			Img("tp_scrolls2", "tp_scroll_"..v2),
+			Symbol("swap_object", "tp_scroll_template", "swap_object")
+		))
+	end
+end
+
+local weapon_tbl2 = {
+["tp_bat_r1_iron"] = "tp_bat_r1_iron",
+["tp_bat_r1_purplegem"] = "tp_bat_r1_purplegem",
+["tp_bat_r1_yellowgem"] = "tp_bat_r1_yellowgem",
+["tp_bat_r2_greengem"] = "tp_bat_r2_greengem",
+["tp_bat_r2_iron"] = "tp_bat_r2_iron",
+["tp_bat_r2_redgem"] = "tp_bat_r2_redgem",
+["tp_bat_r3_bluegem"] = "tp_bat_r3_bluegem",
+["tp_bat_r3_iron"] = "tp_bat_r3_iron",
+["tp_bat_r3_orangegem"] = "tp_bat_r3_orangegem",
+["tp_big_axe"] = "tp_big_axe",
+["tp_big_axe2"] = "tp_big_axe2",
+["tp_big_hammer"] = "tp_big_hammer",
+["tp_blade"] = "tp_blade",
+["tp_blade2"] = "tp_blade2",
+["tp_blade3"] = "tp_blade3",
+["tp_blade4"] = "tp_blade4",
+["tp_blade5"] = "tp_blade5",
+["tp_blade6"] = "tp_blade6",
+["tp_demon_strike"] = "tp_demon_strike",
+["tp_flower_dark"] = "tp_flower_dark",
+["tp_flower_fire"] = "tp_flower_fire",
+["tp_forest_staff"] = "tp_forest_staff",
+["tp_holly_gun"] = "tp_holly_gun",
+["tp_holly_hammer"] = "tp_holly_hammer",
+["tp_ice_sword"] = "tp_ice_sword",
+["tp_moon_blade"] = "tp_moon_blade",
+["tp_sliver_blade"] = "tp_sliver_blade",
+["tp_sliver_spear"] = "tp_sliver_spear",
+["tp_spear_moon_light"] = "tp_spear1_banana",
+["tp_spear_flow_shine"] = "tp_spear1_feather",
+["tp_spear_fall_light"] = "tp_spear1_iron",
+["tp_spear_vortex"] = "tp_spear1_leafs",
+["tp_spear_overload"] = "tp_spear2_cactus",
+["tp_spear_rebuild"] = "tp_spear2_feather",
+["tp_spear2_iron"] = "tp_spear2_iron",
+["tp_spear2_vest"] = "tp_spear2_vest",
+["tp_spear3_coin"] = "tp_spear3_coin",
+["tp_spear_broken_star"] = "tp_spear3_feather",
+["tp_spear3_iron"] = "tp_spear3_iron",
+["tp_spear3_wyvern"] = "tp_spear3_wyvern",
+["tp_spear4_green"] = "tp_spear4_green",
+["tp_spear4_moon"] = "tp_spear4_moon",
+["tp_spear4_purple"] = "tp_spear4_purple",
+["tp_spear4_red"] = "tp_spear4_red",
+["tp_spear5_iron"] = "tp_spear5_iron",
+["tp_spear5_orchid"] = "tp_spear5_orchid",
+["tp_spear5_rose"] = "tp_spear5_rose",
+["tp_spear5_tulip"] = "tp_spear5_tulip",
+["tp_spear_cactus"] = "tp_spear_cactus",
+["tp_spear_durian"] = "tp_spear_durian",
+["tp_spear_gold"] = "tp_spear_gold",
+["tp_spear_iron"] = "tp_spear_iron",
+["tp_spear_thulecite"] = "tp_spear_thulecite",
+["tp_sword"] = "tp_sword",
+["tp_sword2"] = "tp_sword2",
+["tp_sword3"] = "tp_sword3",
+["tp_sword4"] = "tp_sword4",
+["tp_sword5"] = "tp_sword5",
+["tp_sword6"] = "tp_sword6",
+["tp_sword_n1_heart"] = "tp_sword_n1_heart",
+["tp_sword_n1_magic"] = "tp_sword_n1_magic",
+["tp_sword_n2_magic"] = "tp_sword_n2_magic",
+["tp_sword_n2_ruins"] = "tp_sword_n2_ruins",
+["tp_sword_n3_magic"] = "tp_sword_n3_magic",
+["tp_sword_n3_nightmare"] = "tp_sword_n3_nightmare",
+["tp_scroll_holly_sword"] = "tp_scroll_holly_sword",
+}
+for k, v in pairs(weapon_tbl2) do
+	table.insert(assets.weapon, AssetPack(k,
+		Anim(v, v, "idle", "idle_water"),
+		Img("tp_weapons2", v),
 		Symbol("swap_object", v, "swap_object"),
 		nil, {
 			Asset("ANIM", "anim/"..v..".zip"),

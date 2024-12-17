@@ -23,7 +23,7 @@ function TpValHollow:MakeBadge()
     local Uimg = AssetUtil:MakeImg("tp_icons2", "badge_31")
     local atlas, image = AssetUtil:GetImage(Uimg)
     widget:SetImage(atlas, image)
-    widget:SetString("六目值")
+    widget:SetString("六目")
     widget:SetDescription("玩家释放技能时,消耗的法力减少80%,但会消耗部分无量值")
     widget.id = self.id
     return widget

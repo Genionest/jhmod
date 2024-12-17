@@ -136,7 +136,7 @@ function WgValue:GetMaxMods()
 			max = max + v
 		end
 	end
-	return self.t_max_mod
+	return max
 end
 
 function WgValue:GetCurrent()

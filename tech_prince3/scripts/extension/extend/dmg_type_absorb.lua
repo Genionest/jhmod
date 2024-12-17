@@ -288,6 +288,17 @@ local dmg_type_absorb_tbl = {
         wind = .6,
         blood = .7,
     },
+    leif_sparse = {
+        spike = .8,
+        slash = 1.2,
+        thump = .8,
+        fire = 1.4,
+        ice = .9,
+        electric = .7,
+        poison = .7,
+        wind = .6,
+        blood = .7,
+    },
     warg = {
         spike = .8,
         slash = .8,
@@ -376,28 +387,40 @@ AddPlayerPostInit(function(inst)
     -- inst.components.combat:SetDmgTypeAbsorb("shadow", 1)
     -- 过热/过冷状态下, 增加受到的冰/火属性伤害
     inst:ListenForEvent("temperaturedelta", function(inst, data)
-        if inst.components.temperature:IsFreezing() then
-            inst.components.combat:SetDmgTypeAbsorb("ice", 1.2)
-        else
-            inst.components.combat:SetDmgTypeAbsorb("ice", 1)
+        if data == nil then
+            return
         end
-        if inst.components.temperature:IsOverheating() then
-            inst.components.combat:SetDmgTypeAbsorb("fire", 1.2)
-        else
-            inst.components.combat:SetDmgTypeAbsorb("fire", 1)
+        local overheattemp = inst.components.temperature.overheattemp
+        if data.last <= overheattemp
+        and data.new > overheattemp then
+            inst.components.combat:AddDmgTypeAbsorb("fire", .2)
+        elseif data.last > overheattemp
+        and data.new <= overheattemp then
+            inst.components.combat:AddDmgTypeAbsorb("fire", -.2)
+        end
+        if data.last >= 0
+        and data.new < 0 then
+            inst.components.combat:AddDmgTypeAbsorb("ice", .2)
+        elseif data.last < 0
+        and data.new >= 0 then
+            inst.components.combat:AddDmgTypeAbsorb("ice", -.2)
         end
     end)
     -- 潮湿状态下, 增加受到的雷属性伤害
     inst:ListenForEvent("moisturechange", function(inst, data)
-        if inst.components.moisture:GetMoisturePercent() > 0.7 then
-            inst.components.combat:SetDmgTypeAbsorb("electric", 1.4)
-        elseif inst.components.moisture:GetMoisturePercent() > 0.3 then
-            inst.components.combat:SetDmgTypeAbsorb("electric", 1.3)
-        else
-            inst.components.combat:SetDmgTypeAbsorb("electric", 1.2)
+        if data == nil then
+            return
+        end
+        local max = 100
+        local old_p = data.old/max
+        local new_p = data.new/max
+        if new_p > 0.35 and old_p <= 0.35 then
+            inst.components.combat:AddDmgTypeAbsorb("electric", .3)
+        elseif new_p <= 0.35 and old_p > 0.35 then
+            inst.components.combat:AddDmgTypeAbsorb("electric", -.3)
         end
     end)
-    -- 疯狂状态下, 增加受到的影属性伤害
+    -- 疯狂状态下, 增加受到的暗属性伤害
     inst:ListenForEvent("goinsane", function(inst, data)
         inst.components.combat:AddDmgTypeAbsorb("shadow", .2)
     end)

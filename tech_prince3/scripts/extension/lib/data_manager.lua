@@ -26,6 +26,7 @@ function DataManager:SetName(name)
     self.name = name
 end
 
+
 --[[
 添加数据列表(添加的数据需要有GetId接口)  
 datas (table)数据列表  
@@ -111,6 +112,9 @@ function DataManager:GetDataById(id, kind)
             end
         end
     end
+    if t_kind == nil or id == nil then
+        assert(nil, string.format("DataManager(%s) can't find data that kind=\"%s\" and id=\"%s\".", self.name, tostring(t_kind), tostring(id) ))
+    end
     data = self.dict[t_kind][id]
     assert(data~=nil, string.format("DataManager(%s) can't find data that kind=\"%s\" and id=\"%s\".", self.name, t_kind, id))
 
@@ -143,7 +147,9 @@ end
 kinds (table)类型列表,随机数据会从里面的种类之中选取,为nil则为所有类型
 ]]
 function DataManager:GetRandomData(kinds)
-    assert(type(kinds)=="table", string.format("DataManager(%s): kinds(%s) must be table", self.name, tostring(kinds)))
+    if kinds then
+        assert(type(kinds)=="table", string.format("DataManager(%s): kinds(%s) must be table", self.name, tostring(kinds)))
+    end
     -- 默认从所有data里随机
     kinds = kinds or self.all_kinds
     local kind = kinds[math.random(#kinds)]

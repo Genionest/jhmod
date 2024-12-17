@@ -59,6 +59,9 @@ function FxGroup:CreateFx()
             end
         end
     end)
+    fx:ListenForEvent("entitysleep", function()
+        fx:WgRecycle()
+    end)
     -- 初始化
     local init = self.fx_handler.init
     if init then

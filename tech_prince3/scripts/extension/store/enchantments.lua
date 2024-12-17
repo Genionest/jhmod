@@ -1285,7 +1285,7 @@ local enchant_weapon = {
     --     end,
     --     function(self, inst, cmp, id)
     --         return inst.components.weapon ~= nil
-    --             and inst.compoents.tp_forge_level ~= nil
+    --             and inst.compoents.tp_forge_weapon ~= nil
     --     end,
     --     function(self, inst, cmp, id)
     --         local D = cmp.datas[id]
@@ -1312,7 +1312,7 @@ local enchant_weapon = {
     --     end,
     --     function(self, inst, cmp, id)
     --         return inst.components.weapon ~= nil
-    --             and inst.compoents.tp_forge_level ~= nil
+    --             and inst.compoents.tp_forge_weapon ~= nil
     --     end,
     --     function(self, inst, cmp, id)
     --         local D = cmp.datas[id]
@@ -1339,7 +1339,7 @@ local enchant_weapon = {
     --     end,
     --     function(self, inst, cmp, id)
     --         return inst.components.weapon ~= nil
-    --             and inst.compoents.tp_forge_level ~= nil
+    --             and inst.compoents.tp_forge_weapon ~= nil
     --     end,
     --     function(self, inst, cmp, id)
     --         local D = cmp.datas[id]
@@ -1366,7 +1366,7 @@ local enchant_weapon = {
     --     end,
     --     function(self, inst, cmp, id)
     --         return inst.components.weapon ~= nil
-    --             and inst.compoents.tp_forge_level ~= nil
+    --             and inst.compoents.tp_forge_weapon ~= nil
     --     end,
     --     function(self, inst, cmp, id)
     --         local D = cmp.datas[id]
@@ -1403,7 +1403,7 @@ local enchant_weapon = {
     --     end,
     --     function(self, inst, cmp, id)
     --         return inst.components.weapon ~= nil
-    --             and inst.compoents.tp_forge_level ~= nil
+    --             and inst.compoents.tp_forge_weapon ~= nil
     --     end,
     --     function(self, inst, cmp, id)
     --         local D = cmp.datas[id]

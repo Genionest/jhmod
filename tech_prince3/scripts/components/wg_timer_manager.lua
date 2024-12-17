@@ -32,6 +32,7 @@ function WgTimerManager:CalculateTime(dt)
                     end
                 end
                 cmp:ClearBuff(buff_id)
+                self:ClearBuffTime(pref, buff_id)
             end
         end
     end
@@ -42,6 +43,7 @@ function WgTimerManager:CalculateTime(dt)
             self.smear_mgr[pref][smear_id] = new_time
             if new_time <= 0 then
                 cmp:Clear(smear_id)
+                self:ClearSmearTime(pref, smear_id)
             end
         end
     end
@@ -56,6 +58,12 @@ end
 
 function WgTimerManager:GetBuffTime(pref, buff_id)
     return self.buff_mgr[pref] and self.buff_mgr[pref][buff_id] or 0
+end
+
+function WgTimerManager:ClearBuffTime(pref, buff_id)
+    if self.buff_mgr[pref] then
+        self.buff_mgr[pref][buff_id] = nil
+    end
 end
 
 function WgTimerManager:RemoveBuffTimer(pref)
@@ -73,6 +81,12 @@ end
 
 function WgTimerManager:GetSmearTime(pref, smear_id)
     return self.smear_mgr[pref] and self.smear_mgr[pref][smear_id] or 0
+end
+
+function WgTimerManager:ClearSmearTime(pref, buff_id)
+    if self.smear_mgr[pref] then
+        self.smear_mgr[pref][buff_id] = nil
+    end
 end
 
 function WgTimerManager:RemoveSmearTimer(pref)

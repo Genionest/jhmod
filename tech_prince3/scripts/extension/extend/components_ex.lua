@@ -49,6 +49,20 @@ local function fn(self)
 			DropLoot(self, ...)
 		end
 	end
+	-- 掉落单个战利品
+	function self:DropSingleLoot(pt, loots)
+		local prefabs = loots
+		if prefabs == nil then
+			prefabs = self:GenerateLoot()
+		end
+		if prefabs and #prefabs>0 then
+
+			local loot = prefabs[math.random(#prefabs)]
+			-- if loot ~= "tp_boss_loot" then
+				self:SpawnLootPrefab(loot, pt)
+			-- end
+		end
+	end
 	-- 增加掉落率
 	local GenerateLoot = self.GenerateLoot
 	local chance_fix = GetPlayer().components.tp_player_attr and GetPlayer().components.tp_player_attr:GetLootChance() or 0
@@ -250,3 +264,14 @@ ACTIONS.READMAP.testfn = function(act)
 		return targ.components.book:CanRead(act.doer)
 	end
 end
+
+AddComponentPostInit("inventory", function(self)
+	local GetWaterproofness = self.GetWaterproofness
+	function self:GetWaterproofness(slot)
+		local rate = GetWaterproofness(self, slot)
+		if self.inst:HasTag("hollow_evade") then
+			rate = rate + .8
+		end
+		return rate
+	end
+end)

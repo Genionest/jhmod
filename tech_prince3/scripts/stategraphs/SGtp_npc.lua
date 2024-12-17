@@ -32,6 +32,11 @@ local events =
             inst.sg:GoToState("talk", data.noanim)
         end
     end),
+    EventHandler("start_lunge", function(inst)
+        if inst.components.health and not inst.components.health:IsDead() then
+            inst.sg:GoToState("wg_lunge_pre")
+        end
+    end),
 }
 
 local function get_sound_path(inst)
@@ -349,6 +354,85 @@ local states=
             end ),
         },        
     },   
+
+    State{
+        name = "wg_lunge_pre",
+        tags = {"busy", "not_hit_stunned"},
+        onenter = function(inst)
+            inst.Physics:Stop()
+            local ba = inst:GetBufferedAction()
+            if ba and ba.pos then
+                inst:ForceFacePoint(ba.pos:Get())
+            end
+            inst.AnimState:AddOverrideBuild("player_lunge_wargon")
+            PlayerAnimation(inst, "PlayAnimation", "lunge_pre")
+            inst.SoundEmitter:PlaySound("dontstarve/wilson/boomerang_throw", "wg_lunge_pre")
+        end,
+        timeline =
+        {
+            TimeEvent(12 * FRAMES, function(inst)
+                inst.sg:GoToState('wg_lunge')
+            end),
+        },
+        events =
+        {
+            EventHandler("unequip", function(inst)
+                inst.sg:GoToState("idle")
+            end),
+        },
+    },
+    
+    State{
+        name = "wg_lunge",
+        tags = {"doing", "busy", "canrotate", "not_hit_stunned"},
+        onenter = function(inst)
+            inst.components.locomotor:Stop()
+            inst.SoundEmitter:PlaySound("dontstarve_DLC003/characters/wheeler/slide")
+            inst.components.locomotor:EnableGroundSpeedMultiplier(false)
+            local speed = 28
+            if inst:HasTag("far_lunge") then
+                speed = speed + 10
+            end
+            inst.Physics:SetMotorVelOverride(speed, 0, 0)
+            PlayerAnimation(inst, "PlayAnimation", "lunge_pst")
+            inst:PerformBufferedAction()
+            inst.SoundEmitter:KillSound("wg_lunge_pre")
+            inst.SoundEmitter:PlaySound("dontstarve_DLC003/characters/wheeler/slide")
+            if inst:HasTag("lunge_protect") then
+                inst.components.health:SetInvincible(true, "wg_lunge")
+            end
+            ChangeToGhostPhysics(inst)
+        end,
+        timeline =
+        {
+            TimeEvent(7* FRAMES, function(inst)
+                inst.Physics:ClearMotorVelOverride()
+                inst.components.locomotor:EnableGroundSpeedMultiplier(true)
+            end),
+        },
+        events =
+        {
+            EventHandler("animover", function(inst)
+                inst.AnimState:ClearOverrideBuild("player_lunge_wargon")
+                if inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("idle")
+                end
+            end),
+        },
+        onexit = function(inst)
+            inst.Physics:ClearMotorVelOverride()
+            inst.components.locomotor:EnableGroundSpeedMultiplier(true)
+            if inst:HasTag("lunge_protect") then
+                inst.components.health:SetInvincible(nil, "wg_lunge")
+            end
+            ChangeToCharacterPhysics(inst)
+            local weapon = inst.components.combat:GetWeapon()
+            if weapon then
+                weapon:PushEvent("weapon_stop_lunge", {owner=inst})
+            end
+            inst:PushEvent("stop_lunge", {weapon=weapon})
+        end,
+    },
 }
 
 CommonStates.AddFrozenStates(states)
