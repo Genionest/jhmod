@@ -240,9 +240,12 @@ local function fn(self)
 
 	function self:SetSomeAttr(weight, dmg_type, vigor_cost)
 		self:SetEquipWeight(weight)
-		if dmg_type or vigor_cost then
+		if dmg_type then
 			assert(self.inst.components.weapon, string.format("%s don't have component weapon", tostring(self.inst)))
 			self.inst.components.weapon.dmg_type = dmg_type
+		end
+		if vigor_cost then
+			assert(self.inst.components.weapon, string.format("%s don't have component weapon", tostring(self.inst)))
 			self.inst.components.weapon:SetAttackCostVigor(vigor_cost)
 		end
 	end

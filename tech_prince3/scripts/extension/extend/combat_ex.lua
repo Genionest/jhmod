@@ -82,6 +82,14 @@ local function fn(self)
                 stimuli = EntUtil:add_stimuli(stimuli, dmg_type)
             end
         end
+        -- 伤害相关
+        if attacker.components.combat.recalc_dmg_fns then
+            for k, v in pairs(attacker.components.combat.recalc_dmg_fns) do
+                damage = v(damage, attacker, self.inst, weapon, stimuli)
+                assert(damage~=nil, "recalc_dmg_fns member function return nil value")
+            end
+        end
+
         -- 真实伤害(不受伤害吸收, 防御, 闪避, 暴击影响)
         if not EntUtil:in_stimuli(stimuli, "true") then
             -- 不同类型伤害吸收
@@ -176,7 +184,7 @@ local function fn(self)
         end
         -- 根据伤害类型触发debuff
         if dmg_type then
-            if dmg_type ~= "holly" then
+            if EntUtil:is_element_dmg(dmg_type) and dmg_type ~= "holly" then
                 local rand = math.random()
                 if rand < 0.1 then 
                     BuffManager:AddBuff(self.inst, dmg_type)
@@ -254,6 +262,12 @@ local function fn(self)
             end
             return mod
         end
+    end
+    function self:GetCritRateMod(key)
+        if self.tp_crit_mods then
+            return self.tp_crit_mods[key] or 0
+        end
+        return 0
     end
     -- 增加闪避率
     function self:AddEvadeRateMod(key, mod)
@@ -341,6 +355,12 @@ local function fn(self)
             return mod
         end
     end
+    function self:GetLifeStealRateMod(key)
+        if self.tp_life_steal_mods then
+            return self.tp_life_steal_mods[key] or 0
+        end
+        return 0
+    end
     -- 攻击距离buff
     local GetAttackRange = self.GetAttackRange
     function self:GetAttackRange(...)
@@ -417,7 +437,27 @@ local function fn(self)
             end
         end
     end
-    -- 增加受伤计算函数
+    -- 增加攻击伤害二次计算函数
+    function self:AddRecalcDamageFn(fn)
+        if self.recalc_dmg_fns == nil then
+            self.recalc_dmg_fns = {}
+        end
+        table.insert(self.recalc_dmg_fns, fn)
+        return fn
+    end
+    -- 删除攻击伤害二次计算函数
+    function self:RemoveRecalcDamageFn(fn)
+        local tbl = self.recalc_dmg_fns
+        if tbl then
+            for k, v in pairs(tbl) do
+                if fn == v then
+                    table.remove(tbl, k)
+                    break
+                end
+            end
+        end
+    end
+    -- 增加受伤计算伤害函数
     function self:AddAttackedCalcFn(fn)
         if self.attacked_calc_fns == nil then
             self.attacked_calc_fns = {}
@@ -425,7 +465,7 @@ local function fn(self)
         table.insert(self.attacked_calc_fns, fn)
         return fn
     end
-    -- 删除受伤计算函数
+    -- 删除受伤计算伤害函数
     function self:RemoveAttackedCalcFn(fn)
         local tbl = self.attacked_calc_fns
         if tbl then

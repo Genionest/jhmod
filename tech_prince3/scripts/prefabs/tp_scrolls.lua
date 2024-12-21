@@ -6,9 +6,9 @@ local Sounds = require "extension.datas.sounds"
 local AssetMaster = Sample.AssetMaster
 local BuffManager = Sample.BuffManager
 local FxManager = Sample.FxManager
-local ScrollManager = Sample.ScrollManager
+local ScrollLibrary = Sample.ScrollLibrary
 
-ScrollManager:MakeTempTable()
+ScrollLibrary:MakeTempTable()
 
 local prefs = {}
 
@@ -68,12 +68,12 @@ Util:AddString("tp_scroll_grow", "生长卷轴", "催熟周围的作物")
 Util:AddString("tp_scroll_lightning", "闪电卷轴", "召唤闪电")
 Util:AddString("tp_scroll_tentacle", "触手卷轴", "召唤触手")
 
-ScrollManager:Add("tp_scroll_sleep", "shadow")
-ScrollManager:Add("tp_scroll_grow", "wind")
-ScrollManager:Add("tp_scroll_lightning", "electric")
-ScrollManager:Add("tp_scroll_bird", "nature")
-ScrollManager:Add("tp_scroll_tentacle", "nature")
-ScrollManager:Add("tp_scroll_volcano", "fire")
+ScrollLibrary:Add("tp_scroll_sleep", "shadow")
+ScrollLibrary:Add("tp_scroll_grow", "wind")
+ScrollLibrary:Add("tp_scroll_lightning", "electric")
+ScrollLibrary:Add("tp_scroll_bird", "nature")
+ScrollLibrary:Add("tp_scroll_tentacle", "nature")
+ScrollLibrary:Add("tp_scroll_volcano", "fire")
 
 --[[
 创建卷轴  
@@ -244,7 +244,7 @@ function(inst)
 end)
 table.insert(prefs, scroll_back)
 Util:AddString(scroll_back.name, "《返回》", "传送到最近的一个点燃的无尽营火处")
-ScrollManager:Add(scroll_back.name, "holly")
+ScrollLibrary:Add(scroll_back.name, "holly")
 
 local scroll_fire_atk = MakeScroll("tp_scroll_fire_atk", 
 function(inst, reader)
@@ -272,7 +272,7 @@ function(inst)
 end)
 table.insert(prefs, scroll_fire_atk)
 Util:AddString(scroll_fire_atk.name, "《火焰武器》", "武器攻击附带火属性伤害")
-ScrollManager:Add(scroll_fire_atk.name, "fire")
+ScrollLibrary:Add(scroll_fire_atk.name, "fire")
 
 local scroll_ice_atk = MakeScroll("tp_scroll_ice_atk", 
 function(inst, reader)
@@ -299,7 +299,7 @@ function(inst)
 end)
 table.insert(prefs, scroll_ice_atk)
 Util:AddString(scroll_ice_atk.name, "《寒冰武器》", "武器攻击附带冰属性伤害")
-ScrollManager:Add(scroll_ice_atk.name, "ice")
+ScrollLibrary:Add(scroll_ice_atk.name, "ice")
 
 local scroll_electric_atk = MakeScroll("tp_scroll_electric_atk", 
 function(inst, reader)
@@ -326,7 +326,7 @@ function(inst)
 end)
 table.insert(prefs, scroll_electric_atk)
 Util:AddString(scroll_electric_atk.name, "《雷电武器》", "武器攻击附带雷属性伤害")
-ScrollManager:Add(scroll_electric_atk.name, "electric")
+ScrollLibrary:Add(scroll_electric_atk.name, "electric")
 
 local scroll_shadow_atk = MakeScroll("tp_scroll_shadow_atk", 
 function(inst, reader)
@@ -353,7 +353,7 @@ function(inst)
 end)
 table.insert(prefs, scroll_shadow_atk)
 Util:AddString(scroll_shadow_atk.name, "《黑暗武器》", "武器攻击附带暗属性伤害")
-ScrollManager:Add(scroll_shadow_atk.name, "shadow")
+ScrollLibrary:Add(scroll_shadow_atk.name, "shadow")
 
 for k, v in pairs({
     fire = {40, 60, 90},
@@ -414,7 +414,7 @@ for i = 1, 3 do
         string.format("如果你装备了武器(且拥有耐久),将其摧毁,根据其攻击力和剩余耐久获得数张%s", 
             Util:GetScreenName(item_name)) 
     )
-    ScrollManager:Add(scroll.name, elem)
+    ScrollLibrary:Add(scroll.name, elem)
 end
 
 end
@@ -445,7 +445,7 @@ end
 -- end)
 -- table.insert(prefs, scroll_wake_skill)
 -- Util:AddString(scroll_wake_skill.name, "《激活技能》", "激活穿戴装备的技能")
--- ScrollManager:Add(scroll_wake_skill.name, "wind")
+-- ScrollLibrary:Add(scroll_wake_skill.name, "wind")
 
 local scroll_fire_lunge = MakeScroll("tp_scroll_fire_lunge", 
 function(inst, reader)
@@ -470,7 +470,7 @@ function(inst)
 end)
 table.insert(prefs, scroll_fire_lunge)
 Util:AddString(scroll_fire_lunge.name, "《火焰突刺》", "令你的武器获得火焰突刺")
-ScrollManager:Add(scroll_fire_lunge.name, "fire")
+ScrollLibrary:Add(scroll_fire_lunge.name, "fire")
 
 local scroll_ice_lunge = MakeScroll("tp_scroll_ice_lunge", 
 function(inst, reader)
@@ -495,7 +495,7 @@ function(inst)
 end)
 table.insert(prefs, scroll_ice_lunge)
 Util:AddString(scroll_ice_lunge.name, "《冰霜突刺》", "令你的武器获得冰霜突刺")
-ScrollManager:Add(scroll_ice_lunge.name, "ice")
+ScrollLibrary:Add(scroll_ice_lunge.name, "ice")
 
 local scroll_shadow_lunge = MakeScroll("tp_scroll_shadow_lunge", 
 function(inst, reader)
@@ -520,7 +520,7 @@ function(inst)
 end)
 table.insert(prefs, scroll_shadow_lunge)
 Util:AddString(scroll_shadow_lunge.name, "《幻影突刺》", "令你的武器获得幻影突刺")
-ScrollManager:Add(scroll_shadow_lunge.name, "shadow")
+ScrollLibrary:Add(scroll_shadow_lunge.name, "shadow")
 
 local scroll_double_cyclone = MakeScroll("tp_scroll_double_cyclone", 
 function(inst, reader)
@@ -545,8 +545,8 @@ function(inst)
 end)
 table.insert(prefs, scroll_double_cyclone)
 Util:AddString(scroll_double_cyclone.name, "《双重回旋》", "令你的武器获得双重回旋")
-ScrollManager:Add(scroll_double_cyclone.name, "wind")
+ScrollLibrary:Add(scroll_double_cyclone.name, "wind")
 
-ScrollManager:Submit()
+ScrollLibrary:Submit()
 
 return unpack(prefs)

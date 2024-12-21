@@ -3,7 +3,7 @@ local EntUtil = require "extension/lib/ent_util"
 local Util = require "extension/lib/wg_util"
 local AssetMaster = Sample.AssetMaster
 local Info = Sample.Info
-local ScrollManager = Sample.ScrollManager
+local ScrollLibrary = Sample.ScrollLibrary
 
 local SkillData = Class(function(self, data)
 end)
@@ -189,7 +189,7 @@ local player_tree = {
         inst.components.tp_player_attr:AddAttrMod("attention", 10)
         inst:ListenForEvent("use_scroll", function(inst, data)
             local scroll_name = data.scroll.prefab
-            if ScrollManager:GetDataKindById(scroll_name) == "fire" then
+            if ScrollLibrary:GetDataKindById(scroll_name) == "fire" then
                 local n = cmp[id.."_val"] or 0
                 local scroll_num = self.data[3]
                 if n < scroll_num then
@@ -319,7 +319,7 @@ local other_tree = {
         inst.components.tp_val_mana:AddMaxMod(id, self.data[1])
         inst:ListenForEvent("use_scroll", function(inst, data)
             local scroll_name = data.scroll.prefab
-            if ScrollManager:GetDataKindById(scroll_name) == "fire" then
+            if ScrollLibrary:GetDataKindById(scroll_name) == "fire" then
                 inst.components.sanity:DoDelta(self.data[2])
             end
         end)
@@ -423,8 +423,8 @@ local other_tree = {
         inst.components.tp_val_mana:AddRateMod(id, self.data[1])
         inst:ListenForEvent("use_scroll", function(inst, data)
             local scroll_name = data.scroll.prefab
-            if ScrollManager:GetDataKindById(scroll_name) == "wind" then
-                local scroll_name2 = ScrollManager:GetRandomIds(1)
+            if ScrollLibrary:GetDataKindById(scroll_name) == "wind" then
+                local scroll_name2 = ScrollLibrary:GetRandomIds(1)
                 EntUtil:give_player_item(SpawnPrefab(scroll_name2), inst)
             end
         end)
@@ -443,7 +443,7 @@ local other_tree = {
         inst.components.tp_player_attr:AddAttrMod("stamina", self.data[1])
         inst:ListenForEvent("use_scroll", function(inst, data)
             local scroll_name = data.scroll.prefab
-            if ScrollManager:GetDataKindById(scroll_name) == "wind" then
+            if ScrollLibrary:GetDataKindById(scroll_name) == "wind" then
                 EntUtil:add_speed_mod(inst, self.data[2], self.data[3])
             end
         end)
@@ -499,7 +499,7 @@ local other_tree = {
         inst.components.tp_val_mana:AddMaxMod(id, self.data[1])
         inst:ListenForEvent("use_scroll", function(inst, data)
             local scroll_name = data.scroll.prefab 
-            local kind = ScrollManager:GetDataKindById(scroll_name)
+            local kind = ScrollLibrary:GetDataKindById(scroll_name)
             if kind == "shadow" then
                 cmp:DoDelta(self.data[2])
             end

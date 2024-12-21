@@ -7,7 +7,7 @@ local TpValVigor = Class(WgValue, function(self, inst)
     WgValue._ctor(self, inst)
     self.wg_val_modifier = WgValModifier(self)
     self.rate = -.5
-    self.wg_val_modifier:RegisterAttr("rate")
+    self.wg_val_modifier:RegisterMember("rate")
     self.period = .1
     self:SetMax(10)
     self.event = "val_vigor_delta"

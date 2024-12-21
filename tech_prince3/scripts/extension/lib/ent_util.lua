@@ -52,35 +52,35 @@ end
 
 --[[
 令实体受到攻击，需要事先判断其是否可以被攻击  
-inst (EntityScript)受伤实体  
+victim (EntityScript)受伤实体  
 attacker (EntityScript)伤害来源  
-damage (number/func)伤害数值/伤害函数func(inst,attacker,weapon,reason)  
+damage (number/func)伤害数值/伤害函数func(victim,attacker,weapon,reason,dmg)  
 weapon (EntityScript)武器，可以为nil  
 reason (string)原因，可以为nil  
 calc (bool)为true则会让伤害来源计算伤害并附加damage的伤害  
 mult (number)计算伤害时的倍率，有这个默认calc为true    
 ]]
-function EntUtil:get_attacked(inst, attacker, damage, weapon, reason, calc, mult)
+function EntUtil:get_attacked(victim, attacker, damage, weapon, reason, calc, mult)
     local dmg = 0
     if mult or calc then
-        dmg = attacker.components.combat:CalcDamage(inst, weapon, mult, reason)
+        dmg = attacker.components.combat:CalcDamage(victim, weapon, mult, reason)
     end
 	if type(damage) == "number" then
 		dmg = dmg + damage
 	elseif type(damage) == "function" then
-		dmg = dmg + damage(inst, attacker, weapon, reason)
+		dmg = dmg + damage(victim, attacker, weapon, reason, dmg)
 	end
-    inst.components.combat:GetAttacked(attacker, dmg, weapon, reason)
+    victim.components.combat:GetAttacked(attacker, dmg, weapon, reason)
 end
 
 --[[
 检测目标能否被攻击，
 检测其是否包含非敌人标签，是否为主体的随从，是否可被主体攻击，主体一般是player  
 (bool) 返回bool  
-inst 攻击主体  
+attacker 攻击主体  
 target 攻击目标  
 ]]
-function EntUtil:check_combat_target(inst, target)
+function EntUtil:check_combat_target(attacker, target)
     local can = true
     for k, v in pairs(self.not_enemy_tags) do
         if target:HasTag(v) then
@@ -88,9 +88,9 @@ function EntUtil:check_combat_target(inst, target)
         end
     end
     if can then
-		if not target.components.follower or target.components.follower.leader ~= inst then
-			if inst.components.combat
-			and inst.components.combat:CanTarget(target) then
+		if not target.components.follower or target.components.follower.leader ~= attacker then
+			if attacker.components.combat
+			and attacker.components.combat:CanTarget(target) then
 				return true
 			end
 		end
@@ -101,24 +101,24 @@ end
 检测目标能否被攻击  
 检测其是否包含非实体标签，是否和主体是同类, 是否为主体的随从，是否可被主体攻击，主体一般是非player  
 (bool) 返回bool，  
-inst 攻击主体  
+attacker 攻击主体  
 target 攻击目标  
 ]]
-function EntUtil:check_combat_target2(inst, target)
+function EntUtil:check_combat_target2(attacker, target)
     local can = true
     for k, v in pairs(self.not_entity_tags) do
         if target:HasTag(v) then
             can = false
         end
     end
-	if inst.components.combat.target ~= target 
+	if attacker.components.combat.target ~= target 
 	and self:check_congeneric(target) then
 		can = false
 	end
     if can then
-		if not target.components.follower or target.components.follower.leader ~= inst then
-			if inst.components.combat
-			and inst.components.combat:CanTarget(target) then
+		if not target.components.follower or target.components.follower.leader ~= attacker then
+			if attacker.components.combat
+			and attacker.components.combat:CanTarget(target) then
 				return true
 			end
 		end
@@ -130,10 +130,10 @@ end
 pos (Vector3)中心位置  
 range 攻击范围  
 attacker 攻击主体  
-damage (number/func)伤害数值/伤害函数func(inst,attacker,weapon,reason)  
+damage (number/func)伤害数值/伤害函数func(victim,attacker,weapon,reason)  
 weapon 武器，可以为nil  
 reason 原因，可以为nil  
-data 其他数据 {tags,no_tags,calc(bool),fn(func(v,attacker,weapon)),  test(func(v,attacker,weapon)),mult(number)}  
+data 其他数据 {tags,no_tags,calc(bool),fn(func(v,attacker,weapon)),test(func(v,attacker,weapon)),mult(number),angle(number)}  
 ]]
 function EntUtil:make_area_dmg(pos, range, attacker, damage, weapon, reason, data)
     data = data or {}
@@ -142,8 +142,20 @@ function EntUtil:make_area_dmg(pos, range, attacker, damage, weapon, reason, dat
     for k, v in pairs(ents) do
         if self:check_combat_target(attacker, v)
 		and (not data.test or data.test(v, attacker, weapon)) then
-            self:get_attacked(v, attacker, damage, weapon, reason, data.calc, data.mult)
-            if data.fn then data.fn(v, attacker, weapon) end
+			local can = true
+			-- data.angle表示角度判断, 需要pos是attacker, angle表示在attacker正前面多少角度内
+			if data.angle then
+				local angle = attacker.Transform:GetRotation()
+				angle = angle%360
+				local angle2 = v:GetAngleToPoint(pos:Get())%360
+				if math.abs(angle-angle2)<data.angle/2 then
+					can = false
+				end
+			end
+			if can then
+				self:get_attacked(v, attacker, damage, weapon, reason, data.calc, data.mult)
+				if data.fn then data.fn(v, attacker, weapon) end
+			end
         end
     end
 end
@@ -183,20 +195,26 @@ range (number) 攻击范围
 damage (number) 伤害  
 stimuli (string) 伤害类型  
 data (table) 伤害附加数据  
+over_fn (func) 突刺结束时执行的函数  
 ]]
-function EntUtil:do_lunge(weapon, doer, range, damage, stimuli, data)
+function EntUtil:do_lunge(weapon, doer, range, damage, stimuli, data, over_fn)
 	weapon.enemies = {}
     doer:PushEvent("start_lunge", {weapon=weapon})
 	weapon:PushEvent("weapon_start_lunge", {owner=doer})
-    doer.lunge_task = doer:DoPeriodicTask(.05, function()
-        EntUtil:make_area_dmg(doer, range, doer, damage, weapon, stimuli, data)
-    end)
+    if doer.lunge_task == nil then
+		doer.lunge_task = doer:DoPeriodicTask(.05, function()
+			EntUtil:make_area_dmg(doer, range, doer, damage, weapon, stimuli, data)
+		end)
+	end
     if doer.lunge_event_fn == nil then
         doer.lunge_event_fn = EntUtil:listen_for_event(doer, "stop_lunge", function(weapon, data)
-            if doer.lunge_task then
+			if doer.lunge_task then
                 doer.lunge_task:Cancel()
                 doer.lunge_task = nil
             end
+			if over_fn then
+				over_fn(weapon, doer)
+			end
         end)
     end
 end
@@ -209,13 +227,13 @@ range (number) 攻击范围
 damage (number) 伤害  
 stimuli (string) 伤害类型  
 data (table) 伤害附加数据  
-not_ignore (bool) 推送事件时的参数  
+ignore (bool) 推送事件时的参数  
 ]]
-function EntUtil:do_cyclone_slash(weapon, doer, range, damage, stimuli, data, not_ignore)
+function EntUtil:do_cyclone_slash(weapon, doer, range, damage, stimuli, data, ignore)
     doer.SoundEmitter:PlaySound(Sounds.cyclone_slash)
     EntUtil:make_area_dmg(doer, range, doer, damage, weapon, stimuli, data)
-    doer:PushEvent("cyclone_slash", {weapon=weapon, not_ignore=not_ignore})
-	weapon:PushEvent("weapon_cyclone_slash", {owner=doer, not_ignore=not_ignore})
+    doer:PushEvent("cyclone_slash", {weapon=weapon, ignore=ignore})
+	weapon:PushEvent("weapon_cyclone_slash", {owner=doer, ignore=ignore})
 end
 
 -- local stimuli_part = {
@@ -341,6 +359,10 @@ function EntUtil:get_dmg_stimuli(stimuli)
 		local t = {stimuli=true}
 		stimuli = t
 	end
+	-- print("stimuli:")
+    -- for k, v in pairs(stimuli) do
+    --     print(k,v)
+    -- end
 	for k, v in pairs(STRINGS.TP_DMG_TYPE) do
 		if self:in_stimuli(stimuli, k) then
 			return k

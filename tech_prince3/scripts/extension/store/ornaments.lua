@@ -5,6 +5,7 @@ local AssetMaster = Sample.AssetMaster
 local BuffManager = Sample.BuffManager
 local FxManager = Sample.FxManager
 local Info = Sample.Info
+-- 如果EquipSkillManager这时还不存在,那么这里就只会为nil
 local EquipSkillManager = Sample.EquipSkillManager
 
 
@@ -638,7 +639,7 @@ Ornament("ak_ornament_festivalevents4",
     function(inst, cmp, id, self_data)
         if cmp[id.."_fn"] == nil then
             cmp[id.."_fn"] = EntUtil:listen_for_event(inst, "cyclone_slash", function(inst, data)
-                if not data.not_ignore then
+                if data.ignore then
                     return
                 end
                 local weapons = inst.components.inventory:FindItems(function(item)
@@ -650,6 +651,9 @@ Ornament("ak_ornament_festivalevents4",
                     if item.components.wg_action_tool
                     and item.components.wg_action_tool.skill_id then
                         local skill_id = item.components.wg_action_tool.skill_id
+                        if skill_id == "lunge_cyclone_slash" then
+                            skill_id = "cyclone_slash2"
+                        end
                         local kind = EquipSkillManager:GetDataKindById(skill_id)
                         if kind == "cyclone_slash" then
                             return true
@@ -667,11 +671,14 @@ Ornament("ak_ornament_festivalevents4",
                     inst:DoTaskInTime(0.05*cnt, function()
                         cnt = cnt + 1
                         local item = inst.components.inventory:FindItem(function(item)
-                            return item == name
+                            return item.prefab == name
                         end)
                         if item then
                             -- item:cyclone_slash(inst, true)
                             local skill_id = item.components.wg_action_tool.skill_id
+                            if skill_id == "lunge_cyclone_slash" then
+                                skill_id = "cyclone_slash2"
+                            end
                             local skill_data = EquipSkillManager:GetDataById(skill_id)
                             skill_data:fn(item, item.components.wg_action_tool, skill_id, inst, nil, nil, true)
                         end

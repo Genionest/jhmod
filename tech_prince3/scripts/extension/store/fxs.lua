@@ -1455,7 +1455,7 @@ fxs.frozen_route = {
         inst.work = function(master, child, owner, damage, dmg_mod)
             FxManager:MakeFx("ice_spike", child)
             EntUtil:make_area_dmg(child, 2, owner, damage, 
-                nil, EntUtil:add_stimuli(nil, "ice"), {
+                nil, EntUtil:add_stimuli(nil, "ice", "skill"), {
                     fn = function(v, attacker, weapon)
                         EntUtil:frozen(v)
                         master.enemies[v] = true
@@ -1533,7 +1533,7 @@ fxs.sleep_flame = {
             end, {}, {})
             if ent then
                 EntUtil:get_attacked(ent, data.owner, data.damage, nil, 
-                    EntUtil:add_stimuli(nil, "fire"))
+                    EntUtil:add_stimuli(nil, "fire", "skill"))
                 EntUtil:sleep(ent, 1, 10)
                 inst:WgRecycle()
             end
@@ -1684,7 +1684,7 @@ fxs.blowdart = {
             end, {}, {})
             if ent then
                 EntUtil:get_attacked(ent, data.owner, 0, data.weapon, 
-                    EntUtil:add_stimuli(nil, "spike"), true, 
+                    EntUtil:add_stimuli(nil, "spike", "skill"), true, 
                     data.dmg_mod)
                 local impactfx = SpawnPrefab("impact")
                 if impactfx and data.owner then
@@ -3510,6 +3510,18 @@ fxs.nightsword_fx = {
     end,
 }
 
+fxs.weapon_might_piece = {
+    init = function(inst)
+        make_emitter_physics(inst)
+    end,
+    wake = function(inst, data)
+        do_line_damage(inst, data, 30, 0, 3,
+            EntUtil:add_stimuli(nil, "shadow", "skill"), true, 1 )
+    end,
+    recycle = function(inst)
+    end
+}
+
 fxs.time_bomb = {
     init = function(inst)
         inst.AnimState:SetBank("the_fx17")
@@ -3732,6 +3744,7 @@ local two_faced_fxs = {
     slash_fx = "the_fx02",
     slash_fx2 = "the_fx26",
     slash_fx3 = "the_fx146",
+    slash_fx4 = "the_fx148",
     cyclone_slash = "the_fx27",
     cyclone_slash2 = "the_fx18",
     cyclone_slash3 = "the_fxc26",
@@ -3816,7 +3829,7 @@ local some_fxs = {
     thump_fx2 = "the_fx12",
     thump_fx3 = "the_fx15",
     crow_fx = "the_fx14",
-    weapon_might = "the_fx16",
+    weapon_might_piece = "the_fx16",
     blast = "the_fx19",
     blast2 = "the_fx21",
     blast3 = "the_fx33",

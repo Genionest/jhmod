@@ -222,7 +222,7 @@ Smear("shadow_lunge", 100,
                 fighter.Transform:SetPosition(data.owner:GetPosition())
                 fighter.Transform:SetRotation(data.owner.Transform:GetRotation())
                 fighter:PushEvent("start_lunge")
-                data.owenr.components.leader:AddFollower(fighter)
+                data.owner.components.leader:AddFollower(fighter)
                 BuffManager:AddBuff(fighter, "summon", 20)
             end)
         end

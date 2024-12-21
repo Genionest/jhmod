@@ -3,7 +3,7 @@ local EntUtil = require "extension.lib.ent_util"
 local Sounds = require "extension.datas.sounds"
 local BuffManager = Sample.BuffManager
 local Info = Sample.Info
-local ScrollManager = Sample.ScrollManager
+local ScrollLibrary = Sample.ScrollLibrary
 
 local TpForgeScroll = Class(function(self, inst)
     self.inst = inst

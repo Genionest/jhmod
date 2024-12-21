@@ -87,6 +87,8 @@ local level_attrs = {
     LevelAttr("faith"),
     LevelAttr("intelligence"),
     LevelAttr("lucky"),
+    LevelAttr("turth"),
+    LevelAttr("chaos"),
 }
 
 local shelfs = WgShelf("升级", 20)

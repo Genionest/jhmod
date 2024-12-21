@@ -3,7 +3,7 @@ local AssetUtil = require "extension/lib/asset_util"
 local EntUtil = require "extension/lib/ent_util"
 local AssetMaster = Sample.AssetMaster
 local BuffManager = Sample.BuffManager
-local ScrollManager = Sample.ScrollManager
+local ScrollLibrary = Sample.ScrollLibrary
 
 local SkillButtonData = Class(function(self)
 end)
@@ -108,7 +108,7 @@ SkillButton("wilson2", "才思涌现",
                     n = n + damage
                     if n >= 200 then
                         n = 0
-                        local scroll_name = ScrollManager:GetRandomIds(1)
+                        local scroll_name = ScrollLibrary:GetRandomIds(1)
                         EntUtil:give_player_item(SpawnPrefab(scroll_name), inst)
                     end
                     cmp[id.."_val"] = n
@@ -177,7 +177,7 @@ SkillButton("waxwell2", "暗术共鸣",
         if cmp[id.."_fn"] == nil then
             cmp[id.."_fn"] = EntUtil:listen_for_event(inst, "use_scroll", function(inst, data)
                 local scroll_name = data.scroll.prefab 
-                local kind = ScrollManager:GetDataKindById(scroll_name)
+                local kind = ScrollLibrary:GetDataKindById(scroll_name)
                 if kind == "shadow" then
                     cmp:DoDelta(40)
                 end

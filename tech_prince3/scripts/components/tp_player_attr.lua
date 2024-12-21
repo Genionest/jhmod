@@ -44,6 +44,10 @@ local TpPlayerAttr = Class(function(self, inst)
         intelligence = 0,
         -- 幸运值, 提高掉落率, 暴击伤害
         lucky = 0,
+        -- 真理值, 提高圣伤害, 暴击率, 混乱会降低收益
+        turth = 0,
+        -- 混乱值, 提高暗伤害, 吸血率, 真理会降低收益
+        chaos = 0,
     }
     self.attr_mods = {}
     self.attr_buff = {}
@@ -57,16 +61,19 @@ local TpPlayerAttr = Class(function(self, inst)
         faith = 0,
         intelligence = 0,
         lucky = 0,
+        turth = 0,
+        chaos = 0,
     }
     self.attr_rate = {}
+    -- 强壮加攻击力
     self.power = 0
-    self.inst.components.combat:WgAddCalcDamageFn(function(damage, inst, target, weapon)
+    self.inst.components.combat:WgAddCalcDamageFn(function(damage, inst, target, weapon)        
         return damage + self.power
     end)
     -- 负重
     self.load_weight = Info.Attr.BaseLoadWeight
     self.wg_val_modifier = WgValModifier(self)
-    self.wg_val_modifier:RegisterAttr("load_weight")
+    self.wg_val_modifier:RegisterMember("load_weight")
     -- self.load_weight_mods = {}
     -- self.load_weight_buff = 0
     
@@ -77,6 +84,18 @@ local TpPlayerAttr = Class(function(self, inst)
     
     self.loot_chance = 0
     self.crit_dmg_mod = 0
+    -- 真理加圣伤,混乱加暗伤
+    self.holly_dmg_mult = 0
+    self.shadow_dmg_mult = 0
+    self.inst.components.combat:AddRecalcDamageFn(function(damage, owner, target, weapon, stimuli)
+        if EntUtil:in_stimuli(stimuli, "holly") then
+            damage = damage * (1 + self.holly_dmg_mult)
+        elseif EntUtil:in_stimuli(stimuli, "shadow") then
+            damage = damage * (1 + self.shadow_dmg_mult)
+        end
+        return damage
+    end)
+
     -- 升级相关
     self.buffer = {}
     self.essence = 0
@@ -288,6 +307,48 @@ function TpPlayerAttr:GetAttrArgs(attr, attr_val)
 
         return chance_loot, crit, factor
     end
+
+    if attr == "turth" then
+        -- turth
+        attr_val = math.min(0, attr_val - self:GetAttr("chaos")*.35)
+        local rate = self:GetAttrRate("turth")
+
+        -- 圣伤害
+        local holly_dmg_mult = math.min(attr_val, 40) * .05 * rate  -- 20%
+        holly_dmg_mult = holly_dmg_mult + math.max(0, attr_val-40) * .03 * rate
+
+        -- 暴击率
+        local crit_rate = math.min(attr_val, 40) * .05 * rate  -- 20%
+        crit_rate = crit_rate + math.max(0, attr_val-40) * .03 * rate
+
+        -- turth factor
+        local factor = math.min(attr_val, 60) * 1  -- 60
+        factor = factor + math.min(0, math.max(0, attr_val-60)) * .5 * rate
+        factor = factor + math.max(0, attr_val-80) * .3 * rate
+
+        return holly_dmg_mult, crit_rate, factor
+    end
+
+    if attr == "chaos" then
+        -- chaos
+        attr_val = math.min(0, attr_val - self:GetAttr("turth")*.35)
+        local rate = self:GetAttrRate("chaos")
+
+        -- 暗伤害
+        local shadow_dmg_mult = math.min(attr_val, 40) * .05 * rate  -- 20%
+        shadow_dmg_mult = shadow_dmg_mult + math.max(0, attr_val-40) * .03 * rate
+
+        -- 吸血率
+        local life_steal = math.min(attr_val, 40) * .05 * rate  -- 20%
+        life_steal = life_steal + math.max(0, attr_val-40) * .03 * rate
+
+        -- chaos factor
+        local factor = math.min(attr_val, 60) * 1  -- 60
+        factor = factor + math.min(0, math.max(0, attr_val-60)) * .5 * rate
+        factor = factor + math.max(0, attr_val-80) * .3 * rate
+
+        return shadow_dmg_mult, life_steal, factor
+    end
 end
 
 function TpPlayerAttr:Review(attr, val)
@@ -354,6 +415,21 @@ function TpPlayerAttr:Review(attr, val)
         return string.format("%s:%d\n掉落率:%.1f%%\n暴击增伤:%.1f%%",
             Info.Attr.PlayerAttrStr[attr], val, chance_loot*100, crit*100)
     end
+
+    if attr == "turth" then
+        -- turth
+        local holly_dmg_mult, crit_rate = self:GetAttrArgs("turth", val)
+        return string.format("%s:%d\n圣伤害倍率:%.1f%%\n暴击率:%.1f%%\n混乱值会降低此收益",
+            Info.Attr.PlayerAttrStr[attr], val, holly_dmg_mult*100, crit_rate*100)
+    end
+
+    if attr == "chaos" then
+        -- chaos
+        local shadow_dmg_mult, life_steal = self:GetAttrArgs("chaos", val)
+        return string.format("%s:%d\n暗伤害倍率:%.1f%%\n吸血率:%.1f%%\n真理值会降低此收益",
+            Info.Attr.PlayerAttrStr[attr], val, shadow_dmg_mult*100, life_steal*100)     
+    end
+
 end
 
 function TpPlayerAttr:UpdateAttr()
@@ -436,7 +512,7 @@ function TpPlayerAttr:UpdateAttr()
     -- self.inst.components.tp_val_mana:SetRate(-(1+mana_rate2)*(1+mana_rate))
     -- self.mana_rate = mana_rate + mana_rate2
     -- self.inst.components.tp_val_mana:SetRate(-1*(1+mana_rate))
-    self.inst.components.tp_val_mana:SetRateMult(1+mana_rate)
+    self.inst.components.tp_val_mana:AddRateMult(1+mana_rate)
     self.mana_rate = mana_rate
     -- 理智抗性
     self.inst.components.sanity:WgAddNegativeModifier("level", -san_resist)  
@@ -452,6 +528,24 @@ function TpPlayerAttr:UpdateAttr()
     self.crit_dmg_mod = crit
     -- 系数
     self.factors.lucky = factor
+
+    -- turth
+    local holly_dmg_mult, crit_rate, factor = self:GetAttrArgs("turth", self:GetAttr("turth"))
+    -- 圣伤害倍率
+    self.holly_dmg_mult = holly_dmg_mult
+    -- 暴击率
+    self.inst.components.combat:AddCritRateMod("level", crit_rate)
+    -- 系数
+    self.factors.turth = factor
+
+    -- chaos
+    local shadow_dmg_mult, life_steal, factor = self:GetAttrArgs("chaos", self:GetAttr("chaos"))
+    -- 暗伤害倍率
+    self.shadow_dmg_mult = shadow_dmg_mult
+    -- 吸血率
+    self.inst.components.combat:AddLifeStealRateMod("level", life_steal)
+    -- 系数
+    self.factors.chaos = factor
 
     self.inst:PushEvent("player_attr_update")
 end
@@ -523,6 +617,12 @@ function TpPlayerAttr:GetScreenData()
         string.format("%s:%d(掉落率:%.1f%%,暴击加伤:%.1f%%)", 
             Info.Attr.PlayerAttrStr.lucky, self:GetAttr("lucky"), 
             self.chance_loot*100, self.crit_dmg_mod*100),
+        string.format("%s:%d(圣伤害倍率:%.1f%%,暴击率:%.1f%%)", 
+            Info.Attr.PlayerAttrStr.turth, self:GetAttr("turth"), 
+            self.holly_dmg_mult*100, self.inst.components.combat:GetCritRateMod("level")*100),
+        string.format("%s:%d(暗伤害倍率:%.1f%%,吸血率:%.1f%%)", 
+            Info.Attr.PlayerAttrStr.chaos, self:GetAttr("chaos"), 
+            self.shadow_dmg_mult*100, self.inst.components.combat:GetLifeStealRateMod("level")*100),
     })
     table.insert(strs, {
         "属性系数",
@@ -531,6 +631,8 @@ function TpPlayerAttr:GetScreenData()
         string.format("%s:%d", Info.Attr.PlayerAttrStr.faith, self.factors.faith),
         string.format("%s:%d", Info.Attr.PlayerAttrStr.intelligence, self.factors.intelligence),
         string.format("%s:%d", Info.Attr.PlayerAttrStr.lucky, self.factors.lucky),
+        string.format("%s:%d", Info.Attr.PlayerAttrStr.turth, self.factors.turth),
+        string.format("%s:%d", Info.Attr.PlayerAttrStr.chaos, self.factors.chaos),
     })
     local recover = self.inst.components.health.tp_recover or 0
     table.insert(strs, {

@@ -9,15 +9,26 @@ local BuffManager = Sample.BuffManager
 local Info = Sample.Info
 local FxManager = Sample.FxManager
 local EnchantmentManager = Sample.EnchantmentManager
-local ScrollManager = Sample.ScrollManager
+local ScrollLibrary = Sample.ScrollLibrary
 
-ScrollManager:MakeTempTable()
+ScrollLibrary:MakeTempTable()
 
 local prefs = {}
 
+local SCROLL_SMALL_MANA1 = 5
+local SCROLL_SMALL_MANA2 = 10
+local SCROLL_SMALL_MANA3 = 15
 local SCROLL_MED_MANA1 = 20
 local SCROLL_MED_MANA2 = 25
 local SCROLL_LARGE_MANA = 40
+local SCROLL_MANA_LIST = {
+    _bean = SCROLL_SMALL_MANA1,
+    _arrow = SCROLL_SMALL_MANA2,
+    _bolt = SCROLL_SMALL_MANA3,
+    ["1"] = SCROLL_MED_MANA1,
+    ["2"] = SCROLL_MED_MANA2,
+    ["3"] = SCROLL_LARGE_MANA,
+}
 
 --[[
 创建卷轴预制物  
@@ -69,63 +80,15 @@ end
 
 --[[
 创建武器卷轴预制物  
-需要自己写属性收益,指示物,施法消耗,施法效果  
+需要自己写施法消耗,施法效果  
 (Prefab) 返回预制物  
 name (string)名字  
-is_select_target (bool)是否需要选择目标  
 fn (func)自定以函数，可以为nil  
 ]]
-local function MakeScrollWeapon(name, is_select_target, fn)
+local function MakeScrollWeapon(name, fn)
     return MakeScroll(name, nil, nil, function(inst)
-        inst:AddComponent("tp_forge_scroll")
-        -- inst.components.tp_forge_scroll:SetAttrFactor("intelligence", 1.2)
-        inst:AddComponent("wg_recharge")
-        inst:AddComponent("wg_reticule")
-        -- inst.components.wg_reticule.reticule_prefab = "wg_reticulearc"
         inst:AddComponent("wg_action_tool")
-        inst:AddTag("wg_equip_skill")
-        inst.components.wg_action_tool:SetDescription()
-        inst.components.wg_action_tool:SetSkillType()
-        -- inst.components.wg_action_tool:RegisterSkillInfo({
-        --     mana = 10,
-        --     vigor = 1,
-        --     -- cd = 10,
-        -- })
-        
-        if is_select_target then
-            -- inst.components.wg_action_tool.test = function(inst, doer)
-            --     --检测
-            -- end
-            inst.components.wg_action_tool.get_action_fn = function(inst, data)
-                -- 装备后可以收集到的动作 data={doer=doer, pos=pos, target=target}
-                if data.pos or data.target then
-                    return ACTIONS.TP_SCROLL_WEAPON
-                end
-            end
-            inst.components.wg_action_tool.click_no_action = true
-            inst.components.wg_action_tool.click_fn = function(inst, doer)
-                -- 技能栏里释放技能会触发的效果，默认会出发get_action_fn的动作
-                inst.components.wg_reticule:Toggle()
-            end
-            -- inst.components.wg_action_tool.effect_fn = function(inst, doer, target, pos)
-            -- end
-        else
-            -- inst.components.wg_action_tool.test = function(inst, doer)
-            --     --检测
-            -- end
-            inst.components.wg_action_tool.get_action_fn = function(inst, data)
-                -- 装备后可以收集到的动作 data={doer=doer, pos=pos, target=target}
-                return ACTIONS.TP_SCROLL_WEAPON
-            end
-            -- inst.components.wg_action_tool.click_no_action = true
-            inst.components.wg_action_tool.no_catch_action = true
-            inst.components.wg_action_tool:SetDefaultClickFn()
-            -- inst.components.wg_action_tool.click_fn = function(inst, doer)
-                -- -- 技能栏里释放技能会触发的效果，默认会出发get_action_fn的动作
-            -- end
-            -- inst.components.wg_action_tool.effect_fn = function(inst, doer, target, pos)
-            -- end
-        end
+        inst.components.wg_action_tool:SetSkillId(name)
         if fn then
             fn(inst)
         end
@@ -133,89 +96,24 @@ local function MakeScrollWeapon(name, is_select_target, fn)
 end
 
 local scroll_template = MakeScroll("tp_scroll_template", nil, nil, function(inst)
-    inst:AddComponent("tp_forge_scroll")
-    inst.components.tp_forge_scroll:SetAttrFactor("intelligence", 1.2)
-    inst.components.tp_forge_scroll:SetAttrFactor("faith", .8)
-    inst:AddComponent("wg_recharge")
-    inst:AddComponent("wg_reticule")
-    inst.components.wg_reticule.reticule_prefab = "wg_reticulearc"
-    inst:AddComponent("wg_action_tool")
-    inst:AddTag("wg_equip_skill")
-    inst.components.wg_action_tool:SetDescription()
-    inst.components.wg_action_tool:SetSkillType()
-    inst.components.wg_action_tool:RegisterSkillInfo({
-        mana = 10,
-        vigor = 1,
-        -- cd = 10,
-    })
-    -- inst.components.wg_action_tool.test = function(inst, doer)
-    --     --检测
-    -- end
-    inst.components.wg_action_tool.get_action_fn = function(inst, data)
-        -- 装备后可以收集到的动作 data={doer=doer, pos=pos, target=target}
-        if data.pos or data.target then
-            return ACTIONS.TP_ATTACK_PROP
-        end
-    end
-    inst.components.wg_action_tool.click_no_action = true
-    inst.components.wg_action_tool.click_fn = function(inst, doer)
-        -- 技能栏里释放技能会触发的效果，默认会出发get_action_fn的动作
-        inst.components.wg_reticule:Toggle()
-    end
-    inst.components.wg_action_tool.effect_fn = function(inst, doer, target, pos)
-        -- 动作触发时会到达的效果
-        FxManager:MakeFx("shadow_magic", doer)
-        doer.SoundEmitter:PlaySound(Sounds.magic_scroll)
-        if target then
-            pos = target:GetPosition()
-        end
-        local damage = 300 + inst.components.tp_forge_scroll:GetAttrIncome()
-        -- damage = 10
-        local fx = FxManager:MakeFx("shadow_sword", doer, {owner=doer,damage=damage})
-    end
+    -- inst:AddComponent("wg_action_tool")
+    -- inst.components.wg_action_tool:SetSkillId("")
+    -- inst.components.wg_action_tool:RegisterSkillInfo({
+    --     mana = 10,
+    --     vigor = 1,
+    --     -- cd = 10,
+    -- })
 end)
 PrefabUtil:SetPrefabAssets(scroll_template, AssetMaster:GetDSAssets(scroll_template.name))
 table.insert(prefs, scroll_template)
 Util:AddString(scroll_template.name, "《模板》", "这是一个模板")
 
-local scroll_hollow = MakeScroll("tp_scroll_hollow", nil, nil, function(inst)
-    inst:AddComponent("tp_forge_scroll")
-    inst.components.tp_forge_scroll:SetAttrFactor("intelligence", .2)
-    inst:AddComponent("wg_reticule")
-    inst:AddComponent("wg_recharge")
-    inst:AddComponent("wg_action_tool")
-    inst:AddTag("wg_equip_skill")
-    inst.components.wg_action_tool:SetDescription()
-    inst.components.wg_action_tool:SetSkillType()
+local scroll_hollow = MakeScrollWeapon("tp_scroll_hollow", function(inst)
     inst.components.wg_action_tool:RegisterSkillInfo({
         mana = 100,
         vigor = 2,
         -- cd = 10,
     })
-    -- inst.components.wg_action_tool.test = function(inst, doer)
-    --     --检测
-    -- end
-    inst.components.wg_action_tool.get_action_fn = function(inst, data)
-        -- 装备后可以收集到的动作 data={doer=doer, pos=pos, target=target}
-        if data.pos or data.target then
-            return ACTIONS.TP_SCROLL_WEAPON
-        end
-    end
-    inst.components.wg_action_tool.click_no_action = true
-    inst.components.wg_action_tool.click_fn = function(inst, doer)
-        -- 技能栏里释放技能会触发的效果，默认会出发get_action_fn的动作
-        inst.components.wg_reticule:Toggle()
-    end
-    inst.components.wg_action_tool.effect_fn = function(inst, doer, target, pos)
-        -- 动作触发时会到达的效果
-        FxManager:MakeFx("electric_magic", doer)
-        doer.SoundEmitter:PlaySound(Sounds.staff)
-        if target then
-            pos = target:GetPosition()
-        end
-        local damage = inst.components.tp_forge_scroll:GetAttrIncome()
-        local fx = FxManager:MakeFx("hollow_bean", doer, {pos=pos,owner=doer,damage=damage})
-    end
     local GetRequire = inst.components.wg_action_tool.GetRequire
     function inst.components.wg_action_tool:GetRequire(attr, doer)
         local val = GetRequire(self, attr, doer)
@@ -227,65 +125,33 @@ local scroll_hollow = MakeScroll("tp_scroll_hollow", nil, nil, function(inst)
 end)
 table.insert(prefs, scroll_hollow)
 Util:AddString(scroll_hollow.name, "《顺时针法术·苍蓝》", "发射一个能量球,飞行一段距离后会停止,能量球会造成伤害,停止后造成的伤害更高;与赫碰撞会发生大爆炸")
-ScrollManager:Add(scroll_hollow.name, "electric")
+ScrollLibrary:Add(scroll_hollow.name, "electric")
 
-local scroll_hollow2 = deepcopy(scroll_hollow)
-PrefabUtil:SetPrefabName(scroll_hollow2, "tp_scroll_hollow2")
-PrefabUtil:HookPrefabFn(scroll_hollow2, function(inst)
-    inst.components.tp_forge_scroll:SetAttrFactor("intelligence", .4)
-    inst.components.inventoryitem:ChangeImageName("tp_scroll_hollow2")
-    inst.components.wg_action_tool.effect_fn = function(inst, doer, target, pos)
-        -- 动作触发时会到达的效果
-        FxManager:MakeFx("electric_magic", doer)
-        doer.SoundEmitter:PlaySound(Sounds.staff)
-        if target then
-            pos = target:GetPosition()
+local scroll_hollow2 = MakeScrollWeapon("tp_scroll_hollow2", function(inst)
+    inst.components.wg_action_tool:RegisterSkillInfo({
+        mana = 100,
+        vigor = 2,
+        -- cd = 10,
+    })
+    local GetRequire = inst.components.wg_action_tool.GetRequire
+    function inst.components.wg_action_tool:GetRequire(attr, doer)
+        local val = GetRequire(self, attr, doer)
+        if attr == "mana" and doer:HasTag("hollow_evade") then
+            val = val * .2
         end
-        local damage = inst.components.tp_forge_scroll:GetAttrIncome()
-        local fx = FxManager:MakeFx("hollow_bean2", doer, {pos=pos,owner=doer,damage=damage})
+        return val
     end
 end)
 table.insert(prefs, scroll_hollow2)
 Util:AddString(scroll_hollow2.name, "《逆时针法术·红赫》", "发射一个能量球,飞行一段距离后会停止,能量球会造成伤害,飞行时造成的伤害更高;与苍碰撞会发生大爆炸")
-ScrollManager:Add(scroll_hollow2.name, "electric")
+ScrollLibrary:Add(scroll_hollow2.name, "electric")
 
-local scroll_hollow3 = MakeScroll("tp_scroll_hollow3", nil, nil,
-function(inst)
-    inst:AddComponent("tp_forge_scroll")
-    inst.components.tp_forge_scroll:SetAttrFactor("intelligence", .5)
-    inst:AddComponent("wg_recharge")
-    inst:AddComponent("wg_action_tool")
-    inst:AddTag("wg_equip_skill")
-    inst.components.wg_action_tool:SetDescription()
-    inst.components.wg_action_tool:SetSkillType()
+local scroll_hollow3 = MakeScrollWeapon("tp_scroll_hollow3", function(inst)
     inst.components.wg_action_tool:RegisterSkillInfo({
         mana = 80,
         vigor = 2,
         -- cd = 8,
     })
-    inst.components.wg_action_tool.test = function(inst, doer)
-        --检测
-        if doer.components.tp_val_hollow then
-            return true
-        end
-    end
-    inst.components.wg_action_tool.get_action_fn = function(inst, data)
-        -- 装备后可以收集到的动作 data={doer=doer, pos=pos, target=target}
-        return ACTIONS.TP_SCROLL_WEAPON
-    end
-    -- inst.components.wg_action_tool.click_no_action = true
-    inst.components.wg_action_tool.no_catch_action = true
-    inst.components.wg_action_tool:SetDefaultClickFn()
-    -- inst.components.wg_action_tool.click_fn = function(inst, doer)
-        -- -- 技能栏里释放技能会触发的效果，默认会出发get_action_fn的动作
-    -- end
-    inst.components.wg_action_tool.effect_fn = function(inst, doer, target, pos)
-        -- 动作触发时会到达的效果
-        FxManager:MakeFx("electric_magic", doer)
-        doer.SoundEmitter:PlaySound(Sounds.staff)
-        local amt = 50 + inst.components.tp_forge_scroll:GetAttrIncome()
-        doer.components.tp_val_hollow:DoDelta(amt)
-    end
     local GetRequire = inst.components.wg_action_tool.GetRequire
     function inst.components.wg_action_tool:GetRequire(attr, doer)
         local val = GetRequire(self, attr, doer)
@@ -297,7 +163,7 @@ function(inst)
 end)
 table.insert(prefs, scroll_hollow3)
 Util:AddString(scroll_hollow3.name, "《反转有下限法术》", "回复六目能量")
-ScrollManager:Add(scroll_hollow3.name, "electric")
+ScrollLibrary:Add(scroll_hollow3.name, "electric")
 
 -- 基础的三个法术
 for elem, data in pairs({
@@ -514,9 +380,9 @@ for elem, data in pairs({
         string.format("发射%s箭", elemName))
     Util:AddString(scroll_ball.name, string.format("《%s波》", elemName), 
         string.format("发射%s波", elemName))
-    ScrollManager:Add(scroll_bean.name, elem)
-    ScrollManager:Add(scroll_arrow.name, elem)
-    ScrollManager:Add(scroll_ball.name, elem)
+    ScrollLibrary:Add(scroll_bean.name, elem)
+    ScrollLibrary:Add(scroll_arrow.name, elem)
+    ScrollLibrary:Add(scroll_ball.name, elem)
 end
 
 local scroll_fire1 = MakeScroll("tp_scroll_fire1", nil, nil, function(inst)
@@ -561,7 +427,7 @@ local scroll_fire1 = MakeScroll("tp_scroll_fire1", nil, nil, function(inst)
 end)
 table.insert(prefs, scroll_fire1)
 Util:AddString(scroll_fire1.name, "《火焰脉冲》", "发射火焰脉冲对路径上的敌人造成伤害")
-ScrollManager:Add(scroll_fire1.name, "fire")
+ScrollLibrary:Add(scroll_fire1.name, "fire")
 
 local scroll_fire2 = MakeScroll("tp_scroll_fire2", nil, nil, function(inst)
     inst:AddComponent("tp_forge_scroll")
@@ -575,7 +441,7 @@ local scroll_fire2 = MakeScroll("tp_scroll_fire2", nil, nil, function(inst)
     inst.components.wg_action_tool:SetDescription()
     inst.components.wg_action_tool:SetSkillType()
     inst.components.wg_action_tool:RegisterSkillInfo({
-        mana = 30,
+        mana = SCROLL_MED_MANA2,
         vigor = 1,
         -- cd = 5,
     })
@@ -613,7 +479,7 @@ local scroll_fire2 = MakeScroll("tp_scroll_fire2", nil, nil, function(inst)
 end)
 table.insert(prefs, scroll_fire2)
 Util:AddString(scroll_fire2.name, "《火焰三尖枪》", "发射3道火焰脉冲对路径上的敌人造成伤害")
-ScrollManager:Add(scroll_fire2.name, "fire")
+ScrollLibrary:Add(scroll_fire2.name, "fire")
 
 local scroll_fire3 = MakeScroll("tp_scroll_fire3", nil, nil, 
 function(inst)
@@ -659,7 +525,7 @@ function(inst)
 end)
 table.insert(prefs, scroll_fire3)
 Util:AddString(scroll_fire3.name, "《太阳碎片》", "朝着目标方向引爆能量造成大范围伤害")
-ScrollManager:Add(scroll_fire3.name, "fire")
+ScrollLibrary:Add(scroll_fire3.name, "fire")
 
 local scroll_ice1 = MakeScroll("tp_scroll_ice1", nil, nil, function(inst)
     inst:AddComponent("tp_forge_scroll")
@@ -702,7 +568,7 @@ local scroll_ice1 = MakeScroll("tp_scroll_ice1", nil, nil, function(inst)
 end)
 table.insert(prefs, scroll_ice1)
 Util:AddString(scroll_ice1.name, "《寒冰散华》", "发射一个超级寒冰波,超级寒冰波会不断发射寒冰拳或寒冰箭")
-ScrollManager:Add(scroll_ice1.name, "ice")
+ScrollLibrary:Add(scroll_ice1.name, "ice")
 
 local scroll_ice2 = MakeScroll("tp_scroll_ice2", nil, nil, function(inst)
     inst:AddComponent("tp_forge_scroll")
@@ -744,7 +610,7 @@ local scroll_ice2 = MakeScroll("tp_scroll_ice2", nil, nil, function(inst)
 end)
 table.insert(prefs, scroll_ice2)
 Util:AddString(scroll_ice2.name, "《寒冰新星》", "朝周围释放冰柱,造成伤害并冰冻周围敌人")
-ScrollManager:Add(scroll_ice2.name, "ice")
+ScrollLibrary:Add(scroll_ice2.name, "ice")
 
 local scroll_ice3 = MakeScroll("tp_scroll_ice3", nil, nil, function(inst)
     inst:AddComponent("tp_forge_scroll")
@@ -791,7 +657,7 @@ local scroll_ice3 = MakeScroll("tp_scroll_ice3", nil, nil, function(inst)
 end)
 table.insert(prefs, scroll_ice3)
 Util:AddString(scroll_ice3.name, "《冰冻彗星》", "在指定区域召唤一阵冰冻彗星")
-ScrollManager:Add(scroll_ice3.name, "ice")
+ScrollLibrary:Add(scroll_ice3.name, "ice")
 
 local scroll_shadow1 = MakeScroll("tp_scroll_shadow1", nil, nil, function(inst)
     inst:AddComponent("tp_forge_scroll")
@@ -841,7 +707,7 @@ local scroll_shadow1 = MakeScroll("tp_scroll_shadow1", nil, nil, function(inst)
 end)
 table.insert(prefs, scroll_shadow1)
 Util:AddString(scroll_shadow1.name, "《暗影迸发》", "发射多个暗影波朝目标地点移动")
-ScrollManager:Add(scroll_shadow1.name, "shadow")
+ScrollLibrary:Add(scroll_shadow1.name, "shadow")
 
 local scroll_shadow2 = MakeScroll("tp_scroll_shadow2", nil, nil, function(inst)
     inst:AddComponent("tp_forge_scroll")
@@ -892,7 +758,7 @@ local scroll_shadow2 = MakeScroll("tp_scroll_shadow2", nil, nil, function(inst)
 end)
 table.insert(prefs, scroll_shadow2)
 Util:AddString(scroll_shadow2.name, "《暗影连射》", "发射多发暗影拳")
-ScrollManager:Add(scroll_shadow2.name, "shadow")
+ScrollLibrary:Add(scroll_shadow2.name, "shadow")
 
 local scroll_shadow3 = MakeScroll("tp_scroll_shadow3", nil, nil, function(inst)
     inst:AddComponent("tp_forge_scroll")
@@ -937,7 +803,7 @@ local scroll_shadow3 = MakeScroll("tp_scroll_shadow3", nil, nil, function(inst)
 end)
 table.insert(prefs, scroll_shadow3)
 Util:AddString(scroll_shadow3.name, "《冥王之剑》", "用魔法形成挥动的巨剑攻击目标")
-ScrollManager:Add(scroll_shadow3.name, "shadow")
+ScrollLibrary:Add(scroll_shadow3.name, "shadow")
 
 local scroll_wind1 = MakeScroll("tp_scroll_wind1", nil, nil, function(inst)
     inst:AddComponent("tp_forge_scroll")
@@ -984,7 +850,7 @@ local scroll_wind1 = MakeScroll("tp_scroll_wind1", nil, nil, function(inst)
 end)
 table.insert(prefs, scroll_wind1)
 Util:AddString(scroll_wind1.name, "《巡回之风》", "召唤3个来回的旋风")
-ScrollManager:Add(scroll_wind1.name, "wind")
+ScrollLibrary:Add(scroll_wind1.name, "wind")
 
 local scroll_wind2 = MakeScroll("tp_scroll_wind2", nil, nil, function(inst)
     inst:AddComponent("tp_forge_scroll")
@@ -1026,7 +892,7 @@ local scroll_wind2 = MakeScroll("tp_scroll_wind2", nil, nil, function(inst)
 end)
 table.insert(prefs, scroll_wind2)
 Util:AddString(scroll_wind2.name, "《林地之风》", "召唤一阵强风围绕自身旋转并造对敌人造成伤害")
-ScrollManager:Add(scroll_wind2.name, "wind")
+ScrollLibrary:Add(scroll_wind2.name, "wind")
 
 local scroll_wind3 = MakeScroll("tp_scroll_wind3", nil, nil, function(inst)
     inst:AddComponent("tp_forge_scroll")
@@ -1070,7 +936,7 @@ local scroll_wind3 = MakeScroll("tp_scroll_wind3", nil, nil, function(inst)
 end)
 table.insert(prefs, scroll_wind3)
 Util:AddString(scroll_wind3.name, "《8级大狂风》", "召唤1个强力龙卷风,龙卷风会不断加速和变大攻击范围")
-ScrollManager:Add(scroll_wind3.name, "wind")
+ScrollLibrary:Add(scroll_wind3.name, "wind")
 
 local scroll_blood1 = MakeScrollWeapon("tp_scroll_blood1", true, function(inst)
     inst.components.tp_forge_scroll:SetAttrFactor("faith", .4)
@@ -1097,7 +963,7 @@ local scroll_blood1 = MakeScrollWeapon("tp_scroll_blood1", true, function(inst)
 end)
 table.insert(prefs, scroll_blood1)
 Util:AddString(scroll_blood1.name, "《血肉之咒》", "造成伤害并诅咒一名敌人,其受到血属性伤害时会失去生命以治疗攻击者")
-ScrollManager:Add(scroll_blood1.name, "blood")
+ScrollLibrary:Add(scroll_blood1.name, "blood")
 
 local scroll_blood2 = MakeScrollWeapon("tp_scroll_blood2", true, function(inst)
     inst.components.tp_forge_scroll:SetAttrFactor("faith", .4)
@@ -1119,7 +985,7 @@ local scroll_blood2 = MakeScrollWeapon("tp_scroll_blood2", true, function(inst)
 end)
 table.insert(prefs, scroll_blood2)
 Util:AddString(scroll_blood2.name, "《血之飞轮》", "发射1个会返回的飞轮,对敌人造成伤害")
-ScrollManager:Add(scroll_blood2.name, "blood")
+ScrollLibrary:Add(scroll_blood2.name, "blood")
 
 local scroll_blood3 = MakeScrollWeapon("tp_scroll_blood3", nil, function(inst)
     inst.components.equippable:WgAddEquipFn(function(inst, owner)
@@ -1157,7 +1023,7 @@ local scroll_blood3 = MakeScrollWeapon("tp_scroll_blood3", nil, function(inst)
 end)
 table.insert(prefs, scroll_blood3)
 Util:AddString(scroll_blood3.name, "《鲜血征收》", "对周围的敌人造成伤害,伤害由所有受伤敌人分摊,并附带吸血效果")
-ScrollManager:Add(scroll_blood3.name, "blood")
+ScrollLibrary:Add(scroll_blood3.name, "blood")
 
 local scroll_poison1 = MakeScrollWeapon("tp_scroll_poison1", true, function(inst)
     inst.components.tp_forge_scroll:SetAttrFactor("intelligence", .4)
@@ -1180,7 +1046,7 @@ local scroll_poison1 = MakeScrollWeapon("tp_scroll_poison1", true, function(inst
 end)
 table.insert(prefs, scroll_poison1)
 Util:AddString(scroll_poison1.name, "《喷洒毒雾》", "朝前方喷洒毒雾,毒雾会造成伤害并令敌人进入毒害状态")
-ScrollManager:Add(scroll_poison1.name, "poison")
+ScrollLibrary:Add(scroll_poison1.name, "poison")
 
 local scroll_poison2 = MakeScrollWeapon("tp_scroll_poison2", true, function(inst)
     inst.components.tp_forge_scroll:SetAttrFactor("intelligence", .5)
@@ -1202,7 +1068,7 @@ local scroll_poison2 = MakeScrollWeapon("tp_scroll_poison2", true, function(inst
 end)
 table.insert(prefs, scroll_poison2)
 Util:AddString(scroll_poison2.name, "《剧毒箭》", "发射剧毒箭,如果带毒或中毒的目标造成更高伤害")
-ScrollManager:Add(scroll_poison2.name, "poison")
+ScrollLibrary:Add(scroll_poison2.name, "poison")
 
 local scroll_poison3 = MakeScrollWeapon("tp_scroll_poison3", nil, function(inst)
     inst.components.tp_forge_scroll:SetAttrFactor("intelligence", .9)
@@ -1221,7 +1087,7 @@ local scroll_poison3 = MakeScrollWeapon("tp_scroll_poison3", nil, function(inst)
 end)
 table.insert(prefs, scroll_poison3)
 Util:AddString(scroll_poison3.name, "《毒性发作》", "对周围中毒的敌人造成伤害,并结束其中毒状态")
-ScrollManager:Add(scroll_poison3.name, "poison")
+ScrollLibrary:Add(scroll_poison3.name, "poison")
 
 local scroll_electric1 = MakeScrollWeapon("tp_scroll_electric1", true, function(inst)
     inst.components.tp_forge_scroll:SetAttrFactor("faith", .5)
@@ -1244,7 +1110,7 @@ local scroll_electric1 = MakeScrollWeapon("tp_scroll_electric1", true, function(
 end)
 table.insert(prefs, scroll_electric1)
 Util:AddString(scroll_electric1.name, "《电能之柱》", "召唤一个持续造成伤害的雷柱")
-ScrollManager:Add(scroll_electric1.name, "electric")
+ScrollLibrary:Add(scroll_electric1.name, "electric")
 
 local scroll_electric2 = MakeScrollWeapon("tp_scroll_electric2", nil, function(inst)
     inst.components.tp_forge_scroll:SetAttrFactor("faith", .3)
@@ -1266,7 +1132,7 @@ local scroll_electric2 = MakeScrollWeapon("tp_scroll_electric2", nil, function(i
 end)
 table.insert(prefs, scroll_electric2)
 Util:AddString(scroll_electric2.name, "《电能环绕》", "装备后获得雷属性伤害")
-ScrollManager:Add(scroll_electric2.name, "electric")
+ScrollLibrary:Add(scroll_electric2.name, "electric")
 
 local scroll_electric3 = MakeScrollWeapon("tp_scroll_electric3", true, function(inst)
     inst.components.tp_forge_scroll:SetAttrFactor("faith", 1.4)
@@ -1288,7 +1154,7 @@ local scroll_electric3 = MakeScrollWeapon("tp_scroll_electric3", true, function(
 end)
 table.insert(prefs, scroll_electric3)
 Util:AddString(scroll_electric3.name, "《雷霆震荡》", "引下天雷,对敌人造成伤害")
-ScrollManager:Add(scroll_electric3.name, "electric")
+ScrollLibrary:Add(scroll_electric3.name, "electric")
 
 local scroll_holly1 = MakeScrollWeapon("tp_scroll_holly1", true, function(inst)
     inst.components.tp_forge_scroll:SetAttrFactor("faith", .5)
@@ -1299,15 +1165,12 @@ local scroll_holly1 = MakeScrollWeapon("tp_scroll_holly1", true, function(inst)
     })
     inst.components.wg_action_tool.get_action_fn = function(inst, data)
         if data.target then
-            print("a001", data.target)
             if EntUtil:is_alive(data.target) then
-                print("a002")
                 if data.target.components.health:GetPercent() < 1 then
-                    print("a003", data.target.components.health:GetPercent())
+                    return ACTIONS.TP_SCROLL_WEAPON
                 end
             end
         end
-        return ACTIONS.TP_SCROLL_WEAPON
     end
     inst.components.wg_action_tool.effect_fn = function(inst, doer, target, pos)
         FxManager:MakeFx("holly_magic", doer)
@@ -1331,7 +1194,7 @@ local scroll_holly1 = MakeScrollWeapon("tp_scroll_holly1", true, function(inst)
 end)
 table.insert(prefs, scroll_holly1)
 Util:AddString(scroll_holly1.name, "《圣光疗愈》", "选中一个受伤的单位,为其治疗;如果没有有效的单位,为自己治疗")
-ScrollManager:Add(scroll_holly1.name, "holly")
+ScrollLibrary:Add(scroll_holly1.name, "holly")
 
 local scroll_holly2 = MakeScrollWeapon("tp_scroll_holly2", nil, function(inst)
     inst.components.tp_forge_scroll:SetAttrFactor("faith", .5)
@@ -1354,7 +1217,7 @@ local scroll_holly2 = MakeScrollWeapon("tp_scroll_holly2", nil, function(inst)
 end)
 table.insert(prefs, scroll_holly2)
 Util:AddString(scroll_holly2.name, "《光之守护剑》", "获得一把光之守护剑")
-ScrollManager:Add(scroll_holly2.name, "holly")
+ScrollLibrary:Add(scroll_holly2.name, "holly")
 
 local scroll_holly3 = MakeScrollWeapon("tp_scroll_holly3", true, function(inst)
     inst.components.tp_forge_scroll:SetAttrFactor("faith", 1.5)
@@ -1377,9 +1240,26 @@ local scroll_holly3 = MakeScrollWeapon("tp_scroll_holly3", true, function(inst)
 end)
 table.insert(prefs, scroll_holly3)
 Util:AddString(scroll_holly3.name, "《神圣流星》", "召唤一个神圣流星,神圣流行爆炸后会分裂出能量束")
-ScrollManager:Add(scroll_holly3.name, "holly")
+ScrollLibrary:Add(scroll_holly3.name, "holly")
 
+for k, v in pairs({
+	"fire", "ice", "shadow", "wind", "blood", "poison", "electric", "holly"
+}) do
+	for k2, v2 in pairs({
+		"_bean", "_arrow", "_ball", "1", "2", "3",
+	}) do
+        local name = string.format("tp_scroll_%s%s", v, v2)
+        local scroll = MakeScrollWeapon(name, function(inst)
+            inst.components.wg_action_tool:RegisterSkillInfo({
+                mana = SCROLL_MANA_LIST[v2],
+                vigor = 1,
+            })
+        end)
+        table.insert(prefs, scroll)
+        ScrollLibrary:Add(scroll.name, v)
+    end
+end
 
-ScrollManager:Submit()
+ScrollLibrary:Submit()
 
 return unpack(prefs)

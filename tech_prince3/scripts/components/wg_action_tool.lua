@@ -1,4 +1,5 @@
 local Util = require "extension.lib.wg_util"
+local EquipSkillManager = Sample.EquipSkillManager
 
 local WgActionTool = Class(function(self, inst)
     self.inst = inst
@@ -16,6 +17,14 @@ local WgActionTool = Class(function(self, inst)
 
     self.skill_id = nil
 end)
+
+function WgActionTool:SetSkillId(id)
+    if self.skill_id ~= id then
+        self.skill_id = id
+        local skill_data = EquipSkillManager:GetDataById(id)
+        skill_data:InitEquipSkill(self.inst)
+    end
+end
 
 function WgActionTool:SetRawSkillFn(fn)
     self.raw_skill_fn = fn
@@ -98,6 +107,9 @@ function WgActionTool:RegisterSkillInfo(data)
     end
     if data.cd then
         self.cd = data.cd
+        if self.inst.components.wg_recharge == nil then
+            self.inst:AddComponent("wg_recharge")
+        end
     end
     if data.mana then
         self.mana = data.mana

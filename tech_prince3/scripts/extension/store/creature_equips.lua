@@ -52,21 +52,23 @@ end
 local function get_attr_desc(data, inst)
     local s = ""
     if data.hp then
-        if inst:HasTag("epic") then
-            s = s..string.format("生命+%d,", data.hp*Info.MonsterStrengthen.EpicEquipHpRate)
-        else
-            s = s..string.format("生命+%d,", data.hp)
-        end
+        -- if inst:HasTag("epic") then
+        --     s = s..string.format("生命+%d,", data.hp*Info.MonsterStrengthen.EpicEquipHpRate)
+        -- else
+        --     s = s..string.format("生命+%d,", data.hp)
+        -- end
+        s = s..string.format("生命+%d,", data.hp)
     end
     if data.absorb then
         s = s..string.format("防御+%d,", data.absorb)
     end
     if data.dmg then
-        if inst:HasTag("epic") then
-            s = s..string.format("攻击+%d,", data.dmg*Info.MonsterStrengthen.EpicEquipDmgRate)
-        else
-            s = s..string.format("攻击+%d,", data.dmg)
-        end
+        -- if inst:HasTag("epic") then
+        --     s = s..string.format("攻击+%d,", data.dmg*Info.MonsterStrengthen.EpicEquipDmgRate)
+        -- else
+        --     s = s..string.format("攻击+%d,", data.dmg)
+        -- end
+        s = s..string.format("攻击+%d,", data.dmg)
     end
     if data.attack_speed then
         s = s..string.format("攻速+%d%%,", -data.attack_speed*100)

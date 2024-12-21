@@ -12,7 +12,7 @@ local TpValMana = Class(WgValue, function(self, inst)
     -- self.rate_buff = 0
     -- self.rate_mult = 1
     self.wg_val_modifier = WgValModifier(self)
-    self.wg_val_modifier:RegisterAttr("rate")
+    self.wg_val_modifier:RegisterMember("rate")
     self:Start()
 end)
 
