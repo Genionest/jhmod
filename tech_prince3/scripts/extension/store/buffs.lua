@@ -184,6 +184,64 @@ local buffs = {
             return string.format("不会掉落战利品")
         end, nil, nil, true
     ),
+    Buff("lantern", 100, {
+        on_add = function(self, inst, cmp, id)
+            if cmp[id.."_fx"] == nil then
+                cmp[id.."_fx"] = FxManager:MakeFx("lantern", Vector3(0, 0, 0))
+                inst:AddChild(cmp[id.."_fx"])
+            end
+        end, 
+        on_rm = function(self, inst, cmp, id)
+            if cmp[id.."_fx"] then
+                cmp[id.."_fx"]:WgRecycle()
+                cmp[id.."_fx"] = nil
+            end
+        end,
+    }, AssetUtil:MakeImg("lantern"),
+        function(self, inst, cmp, id)
+            return string.format("发光")
+        end, {}, nil, true
+    ),
+    Buff("fire_immune", 10, {
+        on_add = function(self, inst, cmp, id)
+            inst:AddTag("tp_not_fire_damage")
+            inst:AddTag("tp_not_burnable")
+        end, 
+        on_rm = function(self, inst, cmp, id)
+            inst:RemoveTag("tp_not_fire_damage")
+            inst:RemoveTag("tp_not_burnable")
+        end,
+    }, AssetUtil:MakeImg("armordragonfly"),
+        function(self, inst, cmp, id)
+            return string.format("免疫燃烧")
+        end
+    ),
+    Buff("poison_immune", 10, {
+        on_add = function(self, inst, cmp, id)
+            inst:AddTag("tp_not_poison_damage")
+            inst:AddTag("tp_not_poisonable")
+        end, 
+        on_rm = function(self, inst, cmp, id)
+            inst:RemoveTag("tp_not_poison_damage")
+            inst:RemoveTag("tp_not_poisonable")
+        end,
+    }, AssetUtil:MakeImg("oxhat"),
+        function(self, inst, cmp, id)
+            return string.format("免疫中毒")
+        end
+    ),
+    Buff("frozen_immune", 10, {
+        on_add = function(self, inst, cmp, id)
+            inst:AddTag("tp_not_freezable")
+        end, 
+        on_rm = function(self, inst, cmp, id)
+            inst:RemoveTag("tp_not_freezable")
+        end,
+    }, AssetUtil:MakeImg("blueamulet"),
+        function(self, inst, cmp, id)
+            return string.format("免疫冰冻")
+        end
+    ),
     Buff("attack_speed_up", 10, {
         on_add = function(self, inst, cmp, id, data)
             EntUtil:add_attack_speed_mod(inst, id, data)
@@ -204,6 +262,32 @@ local buffs = {
     ),
     Buff("damage_up", 10, {
         on_add = function(self, inst, cmp, id, data)
+            cmp[id.."_data"] = data
+            if cmp[id.."_fn"] == nil then
+                cmp[id.."_fn"] = inst.components.combat:WgAddCalcDamageFn(function(damage, owner, target, weapon, stimuli)
+                    return damage + cmp[id.."_data"]
+                end)
+            end
+        end, 
+        on_repeat = function(self, inst, cmp, id, data)
+            if data > cmp[id.."_data"] then
+                cmp[id.."_data"] = data
+            end
+        end,
+        on_rm = function(self, inst, cmp, id)
+            if cmp[id.."_fn"] then
+                inst.components.combat:WgRemoveCalcDamageFn(cmp[id.."_fn"])
+                cmp[id.."_fn"] = nil
+            end
+            cmp[id.."_data"] = nil
+        end,
+    }, AssetUtil:MakeImg("tp_icons", "badge_68"),
+        function(self, inst, cmp, id, data)
+            return string.format("提高%d攻击", data)
+        end, {}
+    ),
+    Buff("dmg_mult_up", 10, {
+        on_add = function(self, inst, cmp, id, data)
             EntUtil:add_damage_mod(inst, id, data)
         end, 
         on_repeat = function(self, inst, cmp, id, data)
@@ -221,6 +305,33 @@ local buffs = {
         end, {}
     ),
     Buff("speed_up", 6, {
+        on_add = function(self, inst, cmp, id, data)
+            -- EntUtil:add_speed_mod(inst, id, data)
+            if inst.components.locomotor then
+                inst.components.locomotor:AddSpeedModifier_Additive(id, data)
+            end
+        end, 
+        on_repeat = function(self, inst, cmp, id, data)
+            local n = inst.components.locomotor.speed_modifiers_add[id] or 0
+            if data > n then
+                -- EntUtil:add_speed_mod(inst, id, data)
+                if inst.components.locomotor then
+                    inst.components.locomotor:AddSpeedModifier_Additive(id, data)
+                end
+            end
+        end,
+        on_rm = function(self, inst, cmp, id)
+            -- EntUtil:rm_speed_mod(inst, id)
+            if inst.components.locomotor then
+                inst.components.locomotor:RemoveSpeedModifier_Additive(id)
+            end
+        end,
+    }, AssetUtil:MakeImg("tp_icons", "badge_70"),
+        function(self, inst, cmp, id, data)
+            return string.format("提高%d移速", data)
+        end, {}
+    ),
+    Buff("speed_mult_up", 6, {
         on_add = function(self, inst, cmp, id, data)
             EntUtil:add_speed_mod(inst, id, data)
         end, 
@@ -437,18 +548,6 @@ local buffs = {
             local n = cmp[id .. "_data"] or 0
             return string.format("提升%d生命", n)
         end
-    ),
-    Buff("dmg_up", 20, {
-        on_add = function(self, inst, cmp, id)
-            EntUtil:add_damage_mod(inst, id, self.data[1])
-        end, 
-        on_rm = function(self, inst, cmp, id)
-            EntUtil:rm_damage_mod(inst, id)
-        end,
-    }, AssetUtil:MakeImg("tp_icons2", "badge_67"),
-        function(self, inst, cmp, id)
-            return string.format("提升%d%%攻击力", self.data[1])
-        end, {.15}
     ),
     -- lol
     Buff("tp_spear_jarvaniv", 1, {
@@ -1034,6 +1133,8 @@ local buffs = {
                         end
                     )
                 end
+                local fx = FxManager:MakeFx("guardian", Vector3(0, 0, 0))
+                inst:AddChild(fx)
             end,
             on_rm = function(self, inst, cmp, id)
                 cmp[id .. "_data"] = nil
@@ -1956,6 +2057,32 @@ local debuffs = {
     ),
     Buff("damage_down", 10, {
         on_add = function(self, inst, cmp, id, data)
+            cmp[id.."_data"] = data
+            if cmp[id.."_fn"] == nil then
+                cmp[id.."_fn"] = inst.components.combat:WgAddCalcDamageFn(function(damage, owner, target, weapon, stimuli)
+                    return damage - cmp[id.."_data"]
+                end)
+            end
+        end, 
+        on_repeat = function(self, inst, cmp, id, data)
+            if data > cmp[id.."_data"] then
+                cmp[id.."_data"] = data
+            end
+        end,
+        on_rm = function(self, inst, cmp, id)
+            if cmp[id.."_fn"] then
+                inst.components.combat:WgRemoveCalcDamageFn(cmp[id.."_fn"])
+                cmp[id.."_fn"] = nil
+            end
+            cmp[id.."_data"] = nil
+        end,
+    }, AssetUtil:MakeImg("tp_icons", "badge_68"),
+        function(self, inst, cmp, id, data)
+            return string.format("降低%d攻击", data)
+        end, {}
+    ),
+    Buff("dmg_mult_down", 10, {
+        on_add = function(self, inst, cmp, id, data)
             EntUtil:add_damage_mod(inst, id, -data)
         end, 
         on_repeat = function(self, inst, cmp, id, data)
@@ -1973,6 +2100,31 @@ local debuffs = {
         end, {}, true
     ),
     Buff("speed_down", 6, {
+        on_add = function(self, inst, cmp, id, data)
+            if inst.components.locomotor then
+                inst.components.locomotor:AddSpeedModifier_Additive(id, -data)
+            end
+        end, 
+        on_repeat = function(self, inst, cmp, id, data)
+            local n = inst.components.locomotor.speed_modifiers_add[id] or 0
+            if data > n then
+                -- EntUtil:add_speed_mod(inst, id, data)
+                if inst.components.locomotor then
+                    inst.components.locomotor:AddSpeedModifier_Additive(id, -data)
+                end
+            end
+        end,
+        on_rm = function(self, inst, cmp, id)
+            if inst.components.locomotor then
+                inst.components.locomotor:RemoveSpeedModifier_Additive(id)
+            end
+        end,
+    }, AssetUtil:MakeImg("tp_icons", "badge_70"),
+        function(self, inst, cmp, id, data)
+            return string.format("降低%d移速", data)
+        end, {}, true
+    ),
+    Buff("speed_mult_down", 6, {
         on_add = function(self, inst, cmp, id, data)
             EntUtil:add_speed_mod(inst, id, -data)
         end, 
@@ -2168,6 +2320,10 @@ local debuffs = {
     ),
     Buff("ice", 20, {
             on_add = function(self, inst, cmp, id)
+                if inst.components.freezable
+                and inst.components.freezable.coldness < 1 then
+                    EntUtil:frozen(inst)
+                end
                 EntUtil:add_speed_mod(inst, id, self.data[1])
                 EntUtil:add_attack_speed_mod(inst, id, self.data[2])
             end,
@@ -2177,7 +2333,7 @@ local debuffs = {
             end,
         }, AssetUtil:MakeImg("tp_icons2", "ice_debuff"),
         function(self, inst, cmp, id)
-            return string.format("寒冷:移动速度%d%%,攻击速度%d%%", self.data[1] * 100, self.data[2] * 100)
+            return string.format("寒冷:移动速度%d%%,攻击速度%d%%,若未受到冰冻效果,施加1层冰冻效果", self.data[1] * 100, self.data[2] * 100)
         end, { -.15, -.15 }, true
     ),
     Buff("fire", 20, {
@@ -2253,28 +2409,31 @@ local debuffs = {
     ),
     Buff("electric", 20, {
         on_add = function(self, inst, cmp, id)
-            inst:AddTag("electric")
-            if not inst:HasTag("player") and cmp[id .. "_fn"] == nil then
-                cmp[id .. "_fn"] = inst.components.combat:AddAttackedCalcFn(function(damage, attacker, inst, weapon,
-                                                                                        stimuli)
-                    if EntUtil:in_stimuli(stimuli, "electric") then
-                        BuffManager:AddBuff(inst, "electric")
-                        local owner = attacker
-                        local proj = SpawnPrefab("tp_electric_proj")
-                        proj.components.weapon:SetDamage(damage * self.data[1])
-                        proj.Transform:SetPosition(owner:GetPosition():Get())
-                        proj.max_enemy = 10
-                        table.insert(proj.enemies, inst)
-                        proj.owner = owner
-                        local new_target = proj:find_target()
-                        if new_target then
-                            proj.components.wg_projectile:Throw(owner, new_target, owner)
-                        else
-                            proj:Remove()
+            if not inst:HasTag("player") then
+                inst:AddTag("electric")
+                if cmp[id .. "_fn"] == nil then
+                    cmp[id .. "_fn"] = inst.components.combat:AddAttackedCalcFn(function(damage, attacker, inst, weapon, stimuli)
+                        if EntUtil:in_stimuli(stimuli, "electric") then
+                            BuffManager:AddBuff(inst, "electric")
+                            local owner = attacker
+                            local proj = SpawnPrefab("tp_electric_proj")
+                            proj.components.weapon:SetDamage(damage * self.data[1])
+                            proj.Transform:SetPosition(owner:GetPosition():Get())
+                            proj.max_enemy = 10
+                            table.insert(proj.enemies, inst)
+                            proj.owner = owner
+                            local new_target = proj:find_target()
+                            if new_target then
+                                proj.components.wg_projectile:Throw(owner, new_target, owner)
+                            else
+                                proj:Remove()
+                            end
                         end
-                    end
-                    return damage
-                end)
+                        return damage
+                    end)
+                end
+            else
+                inst.components.combat:AddDmgTypeAbsorb("electric", .2)
             end
             if cmp[id .. "_fx"] == nil then
                 cmp[id .. "_fx"] = FxManager:MakeFx("conductive", Vector3(0, 0, 0))
@@ -2282,9 +2441,13 @@ local debuffs = {
             end
         end,
         on_rm = function(self, inst, cmp, id)
-            inst:RemoveTag("electric")
-            if cmp[id .. "_fn"] then
-                inst.components.combat:RemoveAttackedCalcFn(cmp[id .. "_fn"])
+            if inst:HasTag("player") then
+                inst.components.combat:AddDmgTypeAbsorb("electric", -.2)
+            else
+                inst:RemoveTag("electric")
+                if cmp[id .. "_fn"] then
+                    inst.components.combat:RemoveAttackedCalcFn(cmp[id .. "_fn"])
+                end
             end
             if cmp[id .. "_fx"] then
                 cmp[id .. "_fx"]:WgRecycle()
@@ -2293,9 +2456,13 @@ local debuffs = {
         end,
     }, AssetUtil:MakeImg("ak_icons", "ak_over_load"),
         function(self, inst, cmp, id)
-            return string.format("导电:受到电属性伤害会发射电磁炮攻击周围处于导电的目标,造成%d%%的伤害", 
-                self.data[1] * 100)
-        end, { .2 }, true
+            if inst:HasTag("player") then
+                return string.format("导电:增加%d%%受到的电属性伤害", self.data[2]*100)
+            else
+                return string.format("导电:受到电属性伤害会发射电磁炮攻击周围处于导电的目标,造成%d%%的伤害", 
+                    self.data[1] * 100)
+            end
+        end, { .2, .2 }, true
     ),
     Buff("shadow", 20, {
         on_add = function(self, inst, cmp, id)
@@ -2412,6 +2579,30 @@ local debuffs = {
             return string.format("虚无:受到的物理伤害降低%d%%,受到的元素伤害提高%d%%,攻击额外造成%d暗属性伤害",
                 self.data[1] * 100, self.data[2] * 100, self.data[3])
         end, { .2, .3, 25 }, true
+    ),
+    Buff("conductive_ice", 20, {
+        on_add = function(self, inst, cmp, id)
+            inst:AddTag(id)
+        end, 
+        on_rm = function(self, inst, cmp, id)
+            inst:RemoveTag(id)
+        end,
+    }, AssetUtil:MakeImg("ak_icons", "ak_over_load"),
+        function(self, inst, cmp, id)
+            return string.format("被感电电磁炮攻击会进入寒冷状态")
+        end, {}, true
+    ),
+    Buff("conductive_fire", 20, {
+        on_add = function(self, inst, cmp, id)
+            inst:AddTag(id)
+        end, 
+        on_rm = function(self, inst, cmp, id)
+            inst:RemoveTag(id)
+        end,
+    }, AssetUtil:MakeImg("ak_icons", "ak_over_load"),
+        function(self, inst, cmp, id)
+            return string.format("被感电电磁炮攻击会进入灼烧状态")
+        end, {}, true
     ),
     Buff("armor_broken", 5, {
             on_add = function(self, inst, cmp, id)

@@ -596,6 +596,156 @@ AddStategraphState("wilson", State{
     end,
 })
 
+AddStategraphState("wilson", State{
+    name = "tp_lunge_gungnir_pre",
+    tags = {"busy", "not_hit_stunned"},
+    onenter = function(inst)
+        inst.Physics:Stop()
+        local ba = inst:GetBufferedAction()
+        if ba and ba.pos then
+            inst:ForceFacePoint(ba.pos:Get())
+        end
+        inst.AnimState:AddOverrideBuild("player_lunge_wargon")
+        PlayerAnimation(inst, "PlayAnimation", "lunge_pre")
+        inst.SoundEmitter:PlaySound("dontstarve/wilson/boomerang_throw", "wg_lunge_pre")
+    end,
+    timeline =
+    {
+        TimeEvent(12 * FRAMES, function(inst)
+            inst.sg:GoToState('tp_lunge_gungnir')
+        end),
+    },
+    events =
+    {
+        EventHandler("unequip", function(inst)
+            inst.sg:GoToState("idle")
+        end),
+    },
+})
+AddStategraphState("wilson", State{
+    name = "tp_lunge_gungnir",
+    tags = {"doing", "busy", "canrotate", "not_hit_stunned"},
+    onenter = function(inst)
+        inst.components.locomotor:Stop()
+        inst.SoundEmitter:PlaySound("dontstarve_DLC003/characters/wheeler/slide")
+        inst.components.locomotor:EnableGroundSpeedMultiplier(false)
+        local speed = 28
+        if inst:HasTag("far_lunge") then
+            speed = speed + 10
+        end
+        inst.Physics:SetMotorVelOverride(speed, 0, 0)
+        PlayerAnimation(inst, "PlayAnimation", "lunge_pst")
+        inst:PerformBufferedAction()
+        inst.SoundEmitter:KillSound("wg_lunge_pre")
+        inst.SoundEmitter:PlaySound("dontstarve_DLC003/characters/wheeler/slide")
+        if inst:HasTag("lunge_protect") then
+            inst.components.health:SetInvincible(true, "wg_lunge")
+        end
+        ChangeToGhostPhysics(inst)
+    end,
+    timeline =
+    {
+        TimeEvent(7* FRAMES, function(inst)
+            inst.Physics:ClearMotorVelOverride()
+            inst.components.locomotor:EnableGroundSpeedMultiplier(true)
+        end),
+    },
+    events =
+    {
+        EventHandler("animover", function(inst)
+            -- inst.AnimState:ClearOverrideBuild("player_lunge_wargon")
+            if inst.AnimState:AnimDone() then
+                inst.sg:GoToState("tp_lunge_gungnir_next")
+            end
+        end),
+    },
+    onexit = function(inst)
+        inst.Physics:ClearMotorVelOverride()
+        inst.components.locomotor:EnableGroundSpeedMultiplier(true)
+        if inst:HasTag("lunge_protect") then
+            inst.components.health:SetInvincible(nil, "wg_lunge")
+        end
+        ChangeToCharacterPhysics(inst)
+        local weapon = inst.components.combat:GetWeapon()
+        if weapon then
+            weapon:PushEvent("weapon_stop_lunge", {owner=inst})
+        end
+        inst:PushEvent("stop_lunge", {weapon=weapon})
+    end,
+})
+AddStategraphState("wilson", State{
+    name = "tp_lunge_gungnir_next",
+    tags = {"doing", "busy", "canrotate", "not_hit_stunned"},
+    onenter = function(inst)
+        local weapon = inst.components.combat:GetWeapon()
+        if weapon then
+            weapon:next_lunge()
+        else
+            inst.sg:GoToState("idle")
+        end
+
+        inst.components.locomotor:Stop()
+        inst.SoundEmitter:PlaySound("dontstarve_DLC003/characters/wheeler/slide")
+        inst.components.locomotor:EnableGroundSpeedMultiplier(false)
+        local speed = 28
+        if inst:HasTag("far_lunge") then
+            speed = speed + 10
+        end
+        inst.Physics:SetMotorVelOverride(speed, 0, 0)
+        PlayerAnimation(inst, "PlayAnimation", "lunge_pst")
+        -- inst:PerformBufferedAction()
+
+        inst.SoundEmitter:KillSound("wg_lunge_pre")
+        inst.SoundEmitter:PlaySound("dontstarve_DLC003/characters/wheeler/slide")
+        if inst:HasTag("lunge_protect") then
+            inst.components.health:SetInvincible(true, "wg_lunge")
+        end
+        ChangeToGhostPhysics(inst)
+    end,
+    timeline =
+    {
+        TimeEvent(7* FRAMES, function(inst)
+            inst.Physics:ClearMotorVelOverride()
+            inst.components.locomotor:EnableGroundSpeedMultiplier(true)
+        end),
+    },
+    events =
+    {
+        EventHandler("animover", function(inst)
+            local weapon = inst.components.combat:GetWeapon()
+            if weapon and weapon:can_next_lunge() then
+                inst.sg:GoToState('tp_lunge_gungnir_next')
+            else
+                inst.AnimState:ClearOverrideBuild("player_lunge_wargon")
+                if inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("idle")
+                end
+            end
+        end),
+    },
+    onexit = function(inst)
+        inst.Physics:ClearMotorVelOverride()
+        inst.components.locomotor:EnableGroundSpeedMultiplier(true)
+        if inst:HasTag("lunge_protect") then
+            inst.components.health:SetInvincible(nil, "wg_lunge")
+        end
+        ChangeToCharacterPhysics(inst)
+        local weapon = inst.components.combat:GetWeapon()
+        if weapon then
+            weapon:PushEvent("weapon_stop_lunge", {owner=inst})
+        end
+        inst:PushEvent("stop_lunge", {weapon=weapon})
+    end,
+})
+local tp_lunge_gungnir = Action({}, 0, false, true, 20, nil, true)
+tp_lunge_gungnir.id = string.upper("tp_lunge_gungnir")
+tp_lunge_gungnir.str = "释放技能"
+tp_lunge_gungnir.fn = action_tool_fn
+AddAction(tp_lunge_gungnir)
+AddStategraphActionHandler("wilson", ActionHandler(tp_lunge_gungnir, "tp_lunge_gungnir_pre"))
+-- AddStategraphActionHandler("wilsonboating", ActionHandler(tp_lunge_gungnir, ""))
+
+
 local helm_jarvaniv = Action({})
 helm_jarvaniv.id = "TP_HELM_JARVANIV"
 helm_jarvaniv.str = "释放技能"
@@ -1108,7 +1258,7 @@ AddAction(tp_recover_bottle)
 AddStategraphActionHandler("wilson", ActionHandler(tp_recover_bottle, "tp_recover_bottle"))
 -- AddStategraphActionHandler("wilsonboating", ActionHandler(tp_recover_bottle, state))
 
-local tmp_state = State{
+add_player_sg(State{
     name = "tp_recover_bottle",
     tags = {"doing", "busy"},       
     onenter = function(inst)
@@ -1139,9 +1289,7 @@ local tmp_state = State{
             inst.sg:GoToState("idle") 
         end ),
     },
-}
-AddStategraphState("wilson", tmp_state)
-AddStategraphState("wilsonboating", tmp_state)
+})
 
 local tp_read_scroll = Action({})
 tp_read_scroll.id = string.upper("tp_read_scroll")
@@ -1534,152 +1682,63 @@ AddAction(tp_attack_leap)
 AddStategraphActionHandler("wilson", ActionHandler(tp_attack_leap, "tp_attack_leap_pre"))
 -- AddStategraphActionHandler("wilsonboating", ActionHandler(tp_attack_leap, "tp_attack_leap_pre"))
 
+add_player_sg(State{
+    name = "tp_cast_spell",
+    tags = {"doing", "busy", "canrotate", "spell"},
 
-AddStategraphState("wilson", State{
-    name = "tp_lunge_gungnir_pre",
-    tags = {"busy", "not_hit_stunned"},
     onenter = function(inst)
-        inst.Physics:Stop()
-        local ba = inst:GetBufferedAction()
-        if ba and ba.pos then
-            inst:ForceFacePoint(ba.pos:Get())
+        inst.AnimState:PlayAnimation("staff") 
+        local colourizefx = function(staff)
+            return {1,1,1}
         end
-        inst.AnimState:AddOverrideBuild("player_lunge_wargon")
-        PlayerAnimation(inst, "PlayAnimation", "lunge_pre")
-        inst.SoundEmitter:PlaySound("dontstarve/wilson/boomerang_throw", "wg_lunge_pre")
-    end,
-    timeline =
-    {
-        TimeEvent(12 * FRAMES, function(inst)
-            inst.sg:GoToState('tp_lunge_gungnir')
-        end),
-    },
-    events =
-    {
-        EventHandler("unequip", function(inst)
-            inst.sg:GoToState("idle")
-        end),
-    },
-})
-AddStategraphState("wilson", State{
-    name = "tp_lunge_gungnir",
-    tags = {"doing", "busy", "canrotate", "not_hit_stunned"},
-    onenter = function(inst)
         inst.components.locomotor:Stop()
-        inst.SoundEmitter:PlaySound("dontstarve_DLC003/characters/wheeler/slide")
-        inst.components.locomotor:EnableGroundSpeedMultiplier(false)
-        local speed = 28
-        if inst:HasTag("far_lunge") then
-            speed = speed + 10
-        end
-        inst.Physics:SetMotorVelOverride(speed, 0, 0)
-        PlayerAnimation(inst, "PlayAnimation", "lunge_pst")
-        inst:PerformBufferedAction()
-        inst.SoundEmitter:KillSound("wg_lunge_pre")
-        inst.SoundEmitter:PlaySound("dontstarve_DLC003/characters/wheeler/slide")
-        if inst:HasTag("lunge_protect") then
-            inst.components.health:SetInvincible(true, "wg_lunge")
-        end
-        ChangeToGhostPhysics(inst)
-    end,
-    timeline =
-    {
-        TimeEvent(7* FRAMES, function(inst)
-            inst.Physics:ClearMotorVelOverride()
-            inst.components.locomotor:EnableGroundSpeedMultiplier(true)
-        end),
-    },
-    events =
-    {
-        EventHandler("animover", function(inst)
-            -- inst.AnimState:ClearOverrideBuild("player_lunge_wargon")
-            if inst.AnimState:AnimDone() then
-                inst.sg:GoToState("tp_lunge_gungnir_next")
-            end
-        end),
-    },
-    onexit = function(inst)
-        inst.Physics:ClearMotorVelOverride()
-        inst.components.locomotor:EnableGroundSpeedMultiplier(true)
-        if inst:HasTag("lunge_protect") then
-            inst.components.health:SetInvincible(nil, "wg_lunge")
-        end
-        ChangeToCharacterPhysics(inst)
-        local weapon = inst.components.combat:GetWeapon()
-        if weapon then
-            weapon:PushEvent("weapon_stop_lunge", {owner=inst})
-        end
-        inst:PushEvent("stop_lunge", {weapon=weapon})
-    end,
-})
-AddStategraphState("wilson", State{
-    name = "tp_lunge_gungnir_next",
-    tags = {"doing", "busy", "canrotate", "not_hit_stunned"},
-    onenter = function(inst)
-        local weapon = inst.components.combat:GetWeapon()
-        if weapon then
-            weapon:next_lunge()
-        else
-            inst.sg:GoToState("idle")
-        end
+        --Spawn an effect on the player's location
+        inst.stafffx = SpawnPrefab("staffcastfx")            
 
-        inst.components.locomotor:Stop()
-        inst.SoundEmitter:PlaySound("dontstarve_DLC003/characters/wheeler/slide")
-        inst.components.locomotor:EnableGroundSpeedMultiplier(false)
-        local speed = 28
-        if inst:HasTag("far_lunge") then
-            speed = speed + 10
-        end
-        inst.Physics:SetMotorVelOverride(speed, 0, 0)
-        PlayerAnimation(inst, "PlayAnimation", "lunge_pst")
-        -- inst:PerformBufferedAction()
+        local pos = inst:GetPosition()
+        inst.stafffx.Transform:SetPosition(pos.x, pos.y, pos.z)
+        local colour = colourizefx()
 
-        inst.SoundEmitter:KillSound("wg_lunge_pre")
-        inst.SoundEmitter:PlaySound("dontstarve_DLC003/characters/wheeler/slide")
-        if inst:HasTag("lunge_protect") then
-            inst.components.health:SetInvincible(true, "wg_lunge")
-        end
-        ChangeToGhostPhysics(inst)
+        inst.stafffx.Transform:SetRotation(inst.Transform:GetRotation())
+        inst.stafffx.AnimState:SetMultColour(colour[1], colour[2], colour[3], 1)
+        -- inst.components.health:SetInvincible(true, "castspell")
     end,
-    timeline =
-    {
-        TimeEvent(7* FRAMES, function(inst)
-            inst.Physics:ClearMotorVelOverride()
-            inst.components.locomotor:EnableGroundSpeedMultiplier(true)
-        end),
-    },
-    events =
-    {
-        EventHandler("animover", function(inst)
-            local weapon = inst.components.combat:GetWeapon()
-            if weapon and weapon:can_next_lunge() then
-                inst.sg:GoToState('tp_lunge_gungnir_next')
-            else
-                inst.AnimState:ClearOverrideBuild("player_lunge_wargon")
-                if inst.AnimState:AnimDone() then
-                    inst.sg:GoToState("idle")
-                end
-            end
-        end),
-    },
+
     onexit = function(inst)
-        inst.Physics:ClearMotorVelOverride()
-        inst.components.locomotor:EnableGroundSpeedMultiplier(true)
-        if inst:HasTag("lunge_protect") then
-            inst.components.health:SetInvincible(nil, "wg_lunge")
+        -- inst.components.health:SetInvincible(nil, "castspell")
+        if inst.stafffx then
+            inst.stafffx:Remove()
         end
-        ChangeToCharacterPhysics(inst)
-        local weapon = inst.components.combat:GetWeapon()
-        if weapon then
-            weapon:PushEvent("weapon_stop_lunge", {owner=inst})
-        end
-        inst:PushEvent("stop_lunge", {weapon=weapon})
     end,
+
+    timeline = 
+    {
+        TimeEvent(13*FRAMES, function(inst)
+            inst.SoundEmitter:PlaySound("dontstarve/wilson/use_gemstaff") 
+            inst:PerformBufferedAction()
+        end),
+        TimeEvent(0*FRAMES, function(inst)
+            inst.stafflight = SpawnPrefab("staff_castinglight")
+            local pos = inst:GetPosition()
+            local colour = {1,1,1}
+            inst.stafflight.Transform:SetPosition(pos.x, pos.y, pos.z)
+            inst.stafflight.setupfn(inst.stafflight, colour, 1.9, .33)                
+        end),
+        TimeEvent(53*FRAMES, function(inst)  
+        end),
+        TimeEvent(60*FRAMES, function(inst) 
+        end),            
+    },
+    events = {
+        EventHandler("animover", function(inst)
+            inst.sg:GoToState("idle") 
+        end ),
+    },
 })
-local tp_lunge_gungnir = Action({}, 0, false, true, 20, nil, true)
-tp_lunge_gungnir.id = string.upper("tp_lunge_gungnir")
-tp_lunge_gungnir.str = "释放技能"
-tp_lunge_gungnir.fn = action_tool_fn
-AddAction(tp_lunge_gungnir)
-AddStategraphActionHandler("wilson", ActionHandler(tp_lunge_gungnir, "tp_lunge_gungnir_pre"))
--- AddStategraphActionHandler("wilsonboating", ActionHandler(tp_lunge_gungnir, ""))
+local tp_cast_spell = Action({}, 3, nil, nil, 20)
+tp_cast_spell.id = string.upper("tp_cast_spell")
+tp_cast_spell.str = "释放技能"
+tp_cast_spell.fn = action_tool_fn
+AddAction(tp_cast_spell)
+AddStategraphActionHandler("wilson", ActionHandler(tp_cast_spell, "tp_cast_spell"))
+AddStategraphActionHandler("wilsonboating", ActionHandler(tp_cast_spell, "tp_cast_spell"))

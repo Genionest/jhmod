@@ -68,12 +68,12 @@ Util:AddString("tp_scroll_grow", "生长卷轴", "催熟周围的作物")
 Util:AddString("tp_scroll_lightning", "闪电卷轴", "召唤闪电")
 Util:AddString("tp_scroll_tentacle", "触手卷轴", "召唤触手")
 
-ScrollLibrary:Add("tp_scroll_sleep", "shadow")
-ScrollLibrary:Add("tp_scroll_grow", "wind")
-ScrollLibrary:Add("tp_scroll_lightning", "electric")
+ScrollLibrary:Add("tp_scroll_sleep", "nature")
+ScrollLibrary:Add("tp_scroll_grow", "nature")
+ScrollLibrary:Add("tp_scroll_lightning", "nature")
 ScrollLibrary:Add("tp_scroll_bird", "nature")
 ScrollLibrary:Add("tp_scroll_tentacle", "nature")
-ScrollLibrary:Add("tp_scroll_volcano", "fire")
+ScrollLibrary:Add("tp_scroll_volcano", "nature")
 
 --[[
 创建卷轴  
@@ -123,93 +123,93 @@ local function MakeScroll(name, read_fn, read_test, fn)
     end, AssetMaster:GetDSAssets(name))
 end
 
-local ScrollTemplarConst = {50}
-local scroll_templar = MakeScroll("tp_scroll_templar", 
-function(inst, reader)
-    reader.components.sanity:DoDelta(-ScrollTemplarConst[1])
-    if inst.components.stackable then
-        inst = inst.components.stackable:Get()
-    end
-    inst:Remove()
-    BuffManager:AddBuff(reader, "tp_scroll_templar")
-    return true
-end, 
-function(inst, reader)
-    if reader.components.sanity 
-    and reader.components.sanity.current>ScrollTemplarConst[1] then
-        return true
-    end
-end)
-table.insert(prefs, scroll_templar)
-local buff = BuffManager:GetDataById("tp_scroll_templar")
-Util:AddString(scroll_templar.name, "《圣堂武士威尔逊》", 
-string.format("阅读消耗%d点理智，获得buff(%s)", ScrollTemplarConst[1], buff:desc()))
+-- local ScrollTemplarConst = {50}
+-- local scroll_templar = MakeScroll("tp_scroll_templar", 
+-- function(inst, reader)
+--     reader.components.sanity:DoDelta(-ScrollTemplarConst[1])
+--     if inst.components.stackable then
+--         inst = inst.components.stackable:Get()
+--     end
+--     inst:Remove()
+--     BuffManager:AddBuff(reader, "tp_scroll_templar")
+--     return true
+-- end, 
+-- function(inst, reader)
+--     if reader.components.sanity 
+--     and reader.components.sanity.current>ScrollTemplarConst[1] then
+--         return true
+--     end
+-- end)
+-- table.insert(prefs, scroll_templar)
+-- local buff = BuffManager:GetDataById("tp_scroll_templar")
+-- Util:AddString(scroll_templar.name, "《圣堂武士威尔逊》", 
+-- string.format("阅读消耗%d点理智，获得buff(%s)", ScrollTemplarConst[1], buff:desc()))
 
-local ScrollRiderConst = {50}
-local scroll_rider = MakeScroll("tp_scroll_rider", 
-function(inst, reader)
-    reader.components.sanity:DoDelta(-ScrollRiderConst[1])
-    if inst.components.stackable then
-        inst = inst.components.stackable:Get()
-    end
-    local pos = Kit:find_walk_pos(inst, math.random(3, 5))
-    if pos then
-        local beef = SpawnPrefab("beefalo") 
-        beef.components.domesticatable:DeltaDomestication(1) 
-        beef.components.domesticatable:DeltaObedience(1) 
-        beef.components.domesticatable:DeltaTendency("ORNERY", 1) 
-        beef:SetTendency() 
-        beef.components.domesticatable:BecomeDomesticated() 
-        beef.components.hunger:SetPercent(1) 
-        beef.components.rideable:SetSaddle(nil, SpawnPrefab("saddle_war")) 
-        beef.Transform:SetPosition(pos:Get())
-        beef.components.tp_creature_equip.level = 30
-        beef.components.tp_creature_equip:SetEquipByIds({
-            "warmog_armor", math.random()<.5 and "frozen_heart" or "sun_fire_cape",
-        })
-        inst:Remove()
-        return true
-    end
-end, 
-function(inst, reader)
-    if reader.components.sanity 
-    and reader.components.sanity.current>ScrollRiderConst[1] then
-        return true
-    end
-end)
-table.insert(prefs, scroll_rider)
-Util:AddString(scroll_rider.name, "《骑行的女武神》", 
-string.format("阅读消耗%d点理智，召唤一头驯服的战牛", ScrollRiderConst[1]))
+-- local ScrollRiderConst = {50}
+-- local scroll_rider = MakeScroll("tp_scroll_rider", 
+-- function(inst, reader)
+--     reader.components.sanity:DoDelta(-ScrollRiderConst[1])
+--     if inst.components.stackable then
+--         inst = inst.components.stackable:Get()
+--     end
+--     local pos = Kit:find_walk_pos(inst, math.random(3, 5))
+--     if pos then
+--         local beef = SpawnPrefab("beefalo") 
+--         beef.components.domesticatable:DeltaDomestication(1) 
+--         beef.components.domesticatable:DeltaObedience(1) 
+--         beef.components.domesticatable:DeltaTendency("ORNERY", 1) 
+--         beef:SetTendency() 
+--         beef.components.domesticatable:BecomeDomesticated() 
+--         beef.components.hunger:SetPercent(1) 
+--         beef.components.rideable:SetSaddle(nil, SpawnPrefab("saddle_war")) 
+--         beef.Transform:SetPosition(pos:Get())
+--         beef.components.tp_creature_equip.level = 30
+--         beef.components.tp_creature_equip:SetEquipByIds({
+--             "warmog_armor", math.random()<.5 and "frozen_heart" or "sun_fire_cape",
+--         })
+--         inst:Remove()
+--         return true
+--     end
+-- end, 
+-- function(inst, reader)
+--     if reader.components.sanity 
+--     and reader.components.sanity.current>ScrollRiderConst[1] then
+--         return true
+--     end
+-- end)
+-- table.insert(prefs, scroll_rider)
+-- Util:AddString(scroll_rider.name, "《骑行的女武神》", 
+-- string.format("阅读消耗%d点理智，召唤一头驯服的战牛", ScrollRiderConst[1]))
 
-local ScrollHarvestConst = {30}
-local scroll_harvest = MakeScroll("tp_scroll_harvest", 
-function(inst, reader)
-    local x, y, z = inst:GetPosition():Get()
-    local ents = TheSim:FindEntities(x, y, z, 15)
-	for k, v in pairs(ents) do
-		if v.components.pickable and v.prefab ~= "flower" then
-			v.components.pickable:Pick(reader, v:GetPosition())
-		end
-		if v.components.crop then
-			v.components.crop:Harvest(reader, v:GetPosition())
-		end
-	end    
-    reader.components.sanity:DoDelta(-ScrollHarvestConst[1])
-    if inst.components.stackable then
-        inst = inst.components.stackable:Get()
-    end
-    inst:Remove()
-    return true
-end, 
-function(inst, reader)
-    if reader.components.sanity 
-    and reader.components.sanity.current>ScrollHarvestConst[1] then
-        return true
-    end
-end)
-table.insert(prefs, scroll_harvest)
-Util:AddString(scroll_harvest.name, "《收获者薇克巴顿》", 
-string.format("阅读消耗%d点理智，收获周围的作物", ScrollHarvestConst[1]))
+-- local ScrollHarvestConst = {30}
+-- local scroll_harvest = MakeScroll("tp_scroll_harvest", 
+-- function(inst, reader)
+--     local x, y, z = inst:GetPosition():Get()
+--     local ents = TheSim:FindEntities(x, y, z, 15)
+-- 	for k, v in pairs(ents) do
+-- 		if v.components.pickable and v.prefab ~= "flower" then
+-- 			v.components.pickable:Pick(reader, v:GetPosition())
+-- 		end
+-- 		if v.components.crop then
+-- 			v.components.crop:Harvest(reader, v:GetPosition())
+-- 		end
+-- 	end    
+--     reader.components.sanity:DoDelta(-ScrollHarvestConst[1])
+--     if inst.components.stackable then
+--         inst = inst.components.stackable:Get()
+--     end
+--     inst:Remove()
+--     return true
+-- end, 
+-- function(inst, reader)
+--     if reader.components.sanity 
+--     and reader.components.sanity.current>ScrollHarvestConst[1] then
+--         return true
+--     end
+-- end)
+-- table.insert(prefs, scroll_harvest)
+-- Util:AddString(scroll_harvest.name, "《收获者薇克巴顿》", 
+-- string.format("阅读消耗%d点理智，收获周围的作物", ScrollHarvestConst[1]))
 
 local scroll_back = MakeScroll("tp_scroll_back", 
 function(inst, reader)
@@ -234,10 +234,10 @@ end,
 nil,
 function(inst)
     inst.components.book.test_data = {
-        attr = {
-            faith = 5,
-            intelligence = 5,
-        },
+        -- attr = {
+        --     faith = 5,
+        --     intelligence = 5,
+        -- },
         san = 20,
         mana = 20,
     }
@@ -262,10 +262,10 @@ end,
 nil,
 function(inst)
     inst.components.book.test_data = {
-        attr = {
-            faith = 5,
-            intelligence = 5,
-        },
+        -- attr = {
+        --     faith = 5,
+        --     intelligence = 5,
+        -- },
         san = 20,
         mana = 20,
     }
@@ -290,9 +290,9 @@ end,
 nil,
 function(inst)
     inst.components.book.test_data = {
-        attr = {
-            intelligence = 8,
-        },
+        -- attr = {
+        --     intelligence = 8,
+        -- },
         san = 20,
         mana = 20,
     }
@@ -317,9 +317,9 @@ end,
 nil,
 function(inst)
     inst.components.book.test_data = {
-        attr = {
-            faith = 10,
-        },
+        -- attr = {
+        --     faith = 10,
+        -- },
         san = 30,
         mana = 30,
     }
@@ -344,9 +344,9 @@ end,
 nil,
 function(inst)
     inst.components.book.test_data = {
-        attr = {
-            intelligence = 10,
-        },
+        -- attr = {
+        --     intelligence = 10,
+        -- },
         san = 30,
         mana = 30,
     }

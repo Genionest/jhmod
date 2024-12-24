@@ -5,6 +5,7 @@ PrefabFiles = {
     "wg_reticule_arc",
     "tp_items",
     "tp_weapons",
+    "tp_weapons2",
     "tp_armors",
     "tp_helms",
     "tp_projectiles",
@@ -24,12 +25,15 @@ PrefabFiles = {
     "tp_soul_student",
     "tp_combat_lord",
     "tp_plantable",
+    "tp_scrolls2",
     "tp_scrolls",
     "tp_potions",
     "tp_warg",
     "tp_puppet",
     "tp_campfire",
     "tp_campfire_fire",
+    "wg_reticule_other",
+    "tp_hell_guard",
     -- "tp_fire_fx",
     -- 需要其他物品先AddString
     "tp_blueprint",
@@ -39,6 +43,7 @@ Assets = {
     Asset("ANIM", "anim/ak_structures_b.zip"),
     Asset("ANIM", "anim/ak_structures_c.zip"),
     Asset("ANIM", "anim/ak_structures_d.zip"),
+    Asset("ANIM", "anim/tp_structures2.zip"),
     Asset("ANIM", "anim/lavaarena_hammer_attack_fx.zip"),
     Asset("ANIM", "anim/recharge_meter_wargon.zip"),
     Asset("ANIM", "anim/ak_items.zip"),
@@ -120,9 +125,18 @@ Assets = {
     Asset("ANIM", "anim/tp_items3.zip"),
     Asset("ATLAS", "images/inventoryimages/tp_items3.xml"),
     Asset("IMAGE", "images/inventoryimages/tp_items3.tex"),
+    
+    Asset("ATLAS", "images/inventoryimages/tp_weapons2.xml"),
+    Asset("IMAGE", "images/inventoryimages/tp_weapons2.tex"),
+    
+    Asset("ANIM", "anim/blueprint_sketch.zip"),
+    Asset("ATLAS", "images/inventoryimages/tp_scrolls2.xml"),
+    Asset("IMAGE", "images/inventoryimages/tp_scrolls2.tex"),
 
     Asset("ATLAS", "images/inventoryimages/tp_icons2.xml"),
     Asset("IMAGE", "images/inventoryimages/tp_icons2.tex"),
+    Asset("ATLAS", "images/inventoryimages/tp_icons3.xml"),
+    Asset("IMAGE", "images/inventoryimages/tp_icons3.tex"),
     -- 
     Asset("ANIM", "anim/tp_health_bar.zip"),
     Asset("ANIM", "anim/tp_badge.zip"),
@@ -155,6 +169,7 @@ GLOBAL.Sample.RcpEnv = {
     TECH = TECH,
     RECIPE_GAME_TYPE = RECIPE_GAME_TYPE,
 }
+modimport("scripts/extension/extend/config.lua")
 -- 需要调用Info
 modimport("scripts/extension/store/assets.lua")
 -- 需要调用AssetMaster
@@ -168,6 +183,8 @@ modimport("scripts/extension/store/creature_equips.lua")
 -- 
 modimport("scripts/extension/store/enchantments.lua")
 modimport("scripts/extension/store/smear_datas.lua")
+modimport("scripts/extension/store/equip_skill_datas.lua")
+modimport("scripts/extension/store/ornaments.lua")
 -- 
 -- modimport("scripts/extension/store/ornaments.lua")
 modimport("scripts/extension/store/food_effects.lua")
@@ -198,6 +215,7 @@ modimport("scripts/extension/extend/weapon_ex.lua")
 -- 需要equip_ex和weapon_ex先定义组件的函数
 modimport("scripts/extension/extend/dmg_type_absorb.lua")
 modimport("scripts/extension/extend/dmg_type_attack.lua")
+modimport("scripts/extension/extend/creature_kind.lua")
 modimport("scripts/extension/extend/equip_other_attr.lua")
 modimport("scripts/extension/extend/for_boss_room.lua")
 modimport("scripts/extension/extend/components_ex.lua")
@@ -219,3 +237,4 @@ modimport("scripts/extension/extend/difficulty.lua")
 modimport("scripts/extension/extend/other_attack_sg.lua")
 modimport("scripts/extension/extend/more_container_button.lua")
 modimport("scripts/extension/extend/item_skills.lua")
+modimport("scripts/extension/extend/scroll_lib.lua")

@@ -162,6 +162,59 @@ local function fn(self)
 				-- self.wg_not_fix_attr = nil
 			end
 		end
+		
+		if owner.components.combat then
+			-- 战斗属性
+			local data = self.combat_data
+			if data then
+				local k = "equipslot_"..self.equipslot
+				if data.defense then
+					owner.components.combat:AddDefenseMod(k, data.defense)	
+				end
+				if data.evade then
+					owner.components.combat:AddEvadeRateMod(k, data.evade)
+				end
+				if data.penetrate then
+					owner.components.combat:AddPenetrateMod(k, data.penetrate)
+				end
+				if data.hit_rate then
+					owner.components.combat:AddHitRateMod(k, data.hit_rate)
+				end
+				if data.dmg_mult then
+					owner.components.combat:AddDamageModifier(k, data.dmg_mult)
+				end
+				if data.crit then
+					owner.components.combat:AddCritRateMod(k, data.crit)
+				end
+				if data.attack_speed then
+					owner.components.combat:AddPeriodModifier(k, data.attack_speed)
+				end
+				if data.recover_rate then
+					owner.components.combat:AddRecoverRateMod(k, data.recover_rate)
+				end
+				if data.add_speed then
+					owner.components.locomotor:AddSpeedModifier_Additive(k, data.add_speed)
+				end
+			end
+			-- 各类型伤害吸收
+			local data = self.dmg_resist
+			if data then
+				-- local k = "equipslot_"..self.equipslot
+				for k2, v2 in pairs(data) do
+					owner.components.combat:AddDmgTypeAbsorb(k2, v2)
+				end
+			end
+		end
+		-- 人物属性
+		if owner.components.tp_player_attr then
+			local data = self.attr_data
+			if data then
+				local k = "equipslot_"..self.equipslot
+				for k2, v2 in pairs(data) do
+					owner.components.tp_player_attr:AddAttrMod(k, k2, v2)
+				end
+			end
+		end
 		if self.wg_equip_fns then
 			for k, v in pairs(self.wg_equip_fns) do
 				v(self.inst, owner)
@@ -187,6 +240,59 @@ local function fn(self)
 		if owner.components.hunger then
 			local k = "equipslot_"..self.equipslot
 			owner.components.hunger:WgRemoveMaxHungerModifier(k, true, true)
+		end
+
+		if owner.components.combat then
+			-- 战斗属性
+			local data = self.combat_data
+			if data then
+				local k = "equipslot_"..self.equipslot
+				if data.defense then
+					owner.components.combat:RmDefenseMod(k)	
+				end
+				if data.evade then
+					owner.components.combat:RmEvadeRateMod(k)
+				end
+				if data.penetrate then
+					owner.components.combat:RmPenetrateMod(k)
+				end
+				if data.hit_rate then
+					owner.components.combat:RmHitRateMod(k)
+				end
+				if data.dmg_mult then
+					owner.components.combat:RemoveDamageModifier(k)
+				end
+				if data.crit then
+					owner.components.combat:RmCritRateMod(k)
+				end
+				if data.attack_speed then
+					owner.components.combat:RemovePeriodModifier(k)
+				end
+				if data.recover_rate then
+					owner.components.combat:RmRecoverRateMod(k)
+				end
+				if data.add_speed then
+					owner.components.locomotor:RemoveSpeedModifier_Additive(k)
+				end
+			end
+			-- 各类型伤害吸收
+			local data = self.dmg_resist
+			if data then
+				-- local k = "equipslot_"..self.equipslot
+				for k2, v2 in pairs(data) do
+					owner.components.combat:AddDmgTypeAbsorb(k2, -v2)
+				end
+			end
+		end
+		-- 人物属性
+		if owner.components.tp_player_attr then
+			local data = self.attr_data
+			if data then
+				local k = "equipslot_"..self.equipslot
+				for k2, v2 in pairs(data) do
+					owner.components.tp_player_attr:RmAttrMod(k, k2)
+				end
+			end
 		end
 		if self.wg_unequip_fns then
 			for k, v in pairs(self.wg_unequip_fns) do
@@ -286,12 +392,14 @@ local function fn(self)
 	local ApplyDamage = self.ApplyDamage
 	-- 检测是否有受到攻击时触发的函数
 	function self:ApplyDamage(damage, attacker, weapon)	
+		local stimuli = self.temp_stimuli
 		-- 添加附加
 		for k,v in pairs(self.equipslots) do
 			if v.components.equippable.wg_attacked_fns then
 				for k2, v2 in pairs(v.components.equippable.wg_attacked_fns) do
 					-- local data = {damage=damage, attacker=attacker, weapon=weapon, owner=self.inst, item=v}
-					damage = v2(damage, attacker, weapon, self.inst, v) or damage
+					damage = v2(damage, attacker, weapon, self.inst, v, stimuli)
+					assert(type(damage) == "number", string.format("equip_attacked_fn[%s] return value must be number, but got %s", tostring(v), type(damage)))
 					-- damage = v2(data) or damage
 				end
 			end

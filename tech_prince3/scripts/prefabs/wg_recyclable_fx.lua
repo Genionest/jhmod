@@ -41,6 +41,7 @@ end, {
     Asset("ANIM", "anim/the_fx50.zip"),
     Asset("ANIM", "anim/the_fx51.zip"),
     Asset("ANIM", "anim/the_fx54.zip"),
+    Asset("ANIM", "anim/the_fx58.zip"),
     Asset("ANIM", "anim/the_fx60.zip"),
     Asset("ANIM", "anim/the_fx146.zip"),
     Asset("ANIM", "anim/the_fx147.zip"),

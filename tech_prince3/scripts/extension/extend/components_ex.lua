@@ -275,3 +275,27 @@ AddComponentPostInit("inventory", function(self)
 		return rate
 	end
 end)
+
+AddComponentPostInit("finiteuses", function(self)
+	local OnSave = self.OnSave
+	function self:OnSave()
+		local data = OnSave(self)
+		data.max_modifier = self.max_modifier
+		return data
+	end
+	local OnLoad = self.OnLoad
+	function self:OnLoad(data)
+		if data.max_modifier then
+			self.max_modifier = data.max_modifier
+			self.total = self.total + data.max_modifier
+		end
+		OnLoad(self, data)
+	end
+	function self:AddMaxModifier(v)
+		if self.max_modifier == nil then
+			self.max_modifier = 0
+		end
+		self.max_modifier = self.max_modifier + v
+		self.total = self.total + v
+	end
+end)

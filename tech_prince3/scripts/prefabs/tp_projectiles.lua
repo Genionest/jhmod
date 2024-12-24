@@ -239,6 +239,12 @@ local electric_proj = Prefab("tp_electric_proj", function()
 	inst.components.wg_projectile:SetOnHitFn(function(inst, owner, target)
 		inst.SoundEmitter:PlaySound("dontstarve/creatures/bishop/shotexplo")
 		BuffManager:AddBuff(target, "electric")
+		if target:HasBuff("conductive_ice") then
+			BuffManager:AddBuff(target, "ice")
+		end
+		if target:HasBuff("conductive_fire") then
+			BuffManager:AddBuff(target, "fire")
+		end
 		table.insert(inst.enemies, target)
 		local new_target = inst:find_target()
 		if new_target then

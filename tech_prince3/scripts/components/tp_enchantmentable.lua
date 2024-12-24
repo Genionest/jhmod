@@ -32,20 +32,25 @@ function TpEnchantmentable:SetId(id)
                     Data.init(Data, self.inst, self, id)
                 end
             end
+            Data:Init(self.inst, self, id)
             if Data.fn then
                 Data.fn(Data, self.inst, self, id)
             end
+            if self.quality == nil then
+                self.quality = 0
+            end
+            self.quality = self.quality + Data.quality
         end
     end
 end
 
 function TpEnchantmentable:Enchantment(item)
-    self:SetQuality(item.quality)
+    -- self:SetQuality(item.quality)
     self:SetIds(item.ids)
 end
 
 function TpEnchantmentable:SetQuality(quality)
-    self.quality = quality
+    -- self.quality = quality
 end
 
 function TpEnchantmentable:SetIds(ids)
@@ -61,7 +66,7 @@ end
 function TpEnchantmentable:OnSave()
     return {
         ids = self.ids,
-        quality = self.quality,
+        -- quality = self.quality,
         datas = self.datas,
         init = self.init,
     }
@@ -69,7 +74,7 @@ end
 
 function TpEnchantmentable:OnLoad(data)
     if data then
-        self.quality = data.quality
+        -- self.quality = data.quality
         self.datas = data.datas
         self.init = data.init
         if data.ids then
@@ -86,7 +91,7 @@ function TpEnchantmentable:GetWargonString()
         local s = string.format("品质:%d", self.quality)
         for _, id in pairs(self.ids) do
             local data = EnchantmentManager:GetDataById(id)
-            s = s..string.format("\n%s", data:desc(self.inst, self, id))
+            s = s..string.format("\n%s", data:GetDescription(self.inst, self, id))
         end
         s = Util:SplitSentence(s, 17, true)
         return s
@@ -104,7 +109,13 @@ local colours = {
     {255/255, 215/255, 0, 1},
 }
 function TpEnchantmentable:GetWargonStringColour()
-    return colours[self.quality or 1]
+    if self.quality then
+        for k, v in pairs({18, 12, 6, 3, 1}) do
+            if self.quality >= v then
+                return colours[5-k+1]
+            end
+        end
+    end
 end
 
 return TpEnchantmentable

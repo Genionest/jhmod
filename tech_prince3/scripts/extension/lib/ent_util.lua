@@ -698,6 +698,28 @@ function EntUtil:rm_speed_mod(inst, ...)
 end
 
 --[[
+添加移速增量  
+inst 操作主体  
+... key键, mod增量, time时间  
+]]
+function EntUtil:add_speed_amt(inst, ...)
+	if inst.components.locomotor then
+		inst.components.locomotor:AddSpeedModifier_Additive(...)
+	end
+end
+
+--[[
+移除移速增量  
+inst 操作主体  
+... key键  
+]]
+function EntUtil:rm_speed_amt(inst, ...)
+	if inst.components.locomotor then
+		inst.components.locomotor:RemoveSpeedModifier_Additive(...)
+	end
+end
+
+--[[
 增加伤害倍率  
 inst 操作主体  
 key 变化率对应的键  

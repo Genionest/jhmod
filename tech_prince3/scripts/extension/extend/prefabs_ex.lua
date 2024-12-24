@@ -103,6 +103,7 @@ AddPrefabPostInitAny(fn)
 --     end)
 -- end)
 
+-- 敲洞穴入口会招来影子
 AddPrefabPostInit("cave_entrance", function(inst)
     inst.components.workable:SetWorkLeft(20)
     inst:ListenForEvent("worked", function(inst, data)
@@ -133,6 +134,7 @@ AddPrefabPostInit("cave_entrance", function(inst)
     end
 end)
 
+-- 火雨不会伤害其tp_owner
 AddPrefabPostInit("firerain", function(inst)
     table.insert(inst.components.groundpounder.noTags, "tp_fire_power")
     local CanHitTarget = inst.components.combat.CanHitTarget
@@ -172,11 +174,54 @@ end)
 --     end
 -- end)
 
+-- 给飓风添加攻击组件, 让其能够成为攻击来源
 AddPrefabPostInit("tornado", function(inst)
     inst:AddComponent("combat")
     inst.components.combat:SetDefaultDamage(TUNING.TORNADO_DAMAGE)
 end)
 
+-- 防止根箱的本体被破坏
 AddPrefabPostInit("roottrunk", function(inst)
     inst:RemoveComponent("workable")
 end)
+
+-- 战车不会直接撞死拥有生物装备的生物
+local function fn(inst)
+    inst.Physics:SetCollisionCallback(function(inst, other) 
+        local v1 = Vector3(inst.Physics:GetVelocity())
+        if other == GetPlayer() then
+            return
+        end
+        if v1:LengthSq() < 42 then return end
+    
+        TheCamera:Shake("SIDE", 0.5, 0.05, 0.1)
+        
+        inst:DoTaskInTime(2*FRAMES, function()   
+            if  (other and other:HasTag("smashable") 
+            and other.components.tp_creature_equip==nil) then
+                --other.Physics:SetCollides(false)
+                other.components.health:Kill()
+            elseif other and other.components.workable and other.components.workable.workleft > 0 then
+                SpawnPrefab("collapse_small").Transform:SetPosition(other:GetPosition():Get())
+                other.components.workable:Destroy(inst)
+            elseif other and other.components.health and other.components.health:GetPercent() >= 0 then
+                if not inst.recentlycharged then
+                    inst.recentlycharged = {}
+                end
+            
+                for k,v in pairs(inst.recentlycharged) do
+                    if v == other then
+                        --You've already done damage to this by charging it recently.
+                        return
+                    end
+                end
+                inst.recentlycharged[other] = other
+                inst:DoTaskInTime(3, function() inst.recentlycharged[other] = nil end)
+                inst.components.combat:DoAttack(other, inst.weapon)
+                inst.SoundEmitter:PlaySound("dontstarve/creatures/rook/explo") 
+            end
+        end)
+    end)
+end
+AddPrefabPostInit("rook", fn)
+AddPrefabPostInit("rook_nightmare", fn)

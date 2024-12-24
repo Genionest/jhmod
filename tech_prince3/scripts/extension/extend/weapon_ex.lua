@@ -46,6 +46,9 @@ local function fn(self)
 	local GetDamage = self.GetDamage
 	function self:GetDamage()
 		local dmg = GetDamage(self)
+		if self.weapon_dmg_buff then
+			dmg = dmg + self.weapon_dmg_buff
+		end
 		if self.wg_damage_fns then
 			for k, v in pairs(self.wg_damage_fns) do
 				dmg = v(self.inst, dmg)
@@ -58,6 +61,33 @@ local function fn(self)
 			self.wg_damage_fns = {}
 		end
 		table.insert(self.wg_damage_fns, fn)
+	end
+	-- 攻击力修改
+	function self:AddWeaponDmgMod(key, val)
+		if self.weapon_dmg_mod == nil then
+			self.weapon_dmg_mod = {}
+		end
+		self.weapon_dmg_mod[key] = val
+		self.weapon_dmg_buff = self:GetWeaponDmgMod()
+	end
+	function self:RmWeaponDmgMod(key)
+		if self.weapon_dmg_mod then
+			self.weapon_dmg_mod[key] = nil
+			self.weapon_dmg_buff = self:GetWeaponDmgMod()
+			if self.weapon_dmg_buff == 0 then
+				self.weapon_dmg_mod = nil
+				self.weapon_dmg_buff = nil
+			end
+		end
+	end
+	function self:GetWeaponDmgMod()
+		local val = 0
+		if self.weapon_dmg_mod then
+			for k, v in pairs(self.weapon_dmg_mod) do
+				val = val + v
+			end
+		end
+		return val
 	end
 	-- 伤害类型
 	self.dmg_type = nil
@@ -72,8 +102,12 @@ local function fn(self)
 	
 	function self:GetWargonString()
 		local dmg = self:GetDamage()
-		local s = string.format("攻击:%d(%s)", 
-			dmg, STRINGS.TP_DMG_TYPE[self.dmg_type] or "无")
+		local s = string.format("攻击:%d", dmg)
+		if self.weapon_dmg_buff then
+			s = s .. string.format("{%+d}", self.weapon_dmg_buff)
+		end
+		s = s..string.format("(%s)", 
+			STRINGS.TP_DMG_TYPE[self.dmg_type] or "无")
 		if self.cost_vigor then
 			s = s .. string.format("耗精:%.1f,", self.cost_vigor)
 		end

@@ -130,6 +130,33 @@ Smear("easy_atk_weapon", 180,
         return string.format("武器攻击消耗的精力降低")
     end
 ),
+Smear("drop_smallmeat", 30,
+    function(self, inst, cmp, id)
+        if cmp[id.."_fn"] == nil then
+            cmp[id.."_fn"] = inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
+                local max = target.components.health:GetMaxHealth()
+                local n = math.max(0, max-100)
+                local rate = (1-500/(500+n))/3
+                if math.random() < rate then
+                    local meat = SpawnPrefab("smallmeat")
+                    Kit:throw_item(meat, owner)
+                end
+            end)
+        end
+    end,
+    function(self, inst, cmp, id)
+        if cmp[id.."_fn"] then
+            inst.components.weapon:WgRemoveWeaponAttackFn(cmp[id.."_fn"])
+            cmp[id.."_fn"] = nil
+        end
+    end,
+    function(self, inst, cmp, id)
+        return inst.components.weapon ~= nil
+    end,
+    function(self, inst, cmp, id)
+        return "攻击有几率掉落小肉,生命越高的单位掉率越高"
+    end
+),
 Smear("skill_wake", 180, 
     function(self, inst, cmp, id)
         inst:AddTag(id)
@@ -246,9 +273,18 @@ Smear("double_cyclone", 100,
                 end
                 inst:DoTaskInTime(0.15, function()
                     local item = data.owner.components.combat:GetWeapon()
-                    if item == inst and item.cyclone_slash then
-                        item:cyclone_slash(inst, true)
+                    local skill_id = item.components.wg_action_tool.skill_id
+                    if skill_id == "lunge_cyclone_slash" then
+                        skill_id = "cyclone_slash2"
                     end
+                    local EquipSkillManager = Sample.EquipSkillManager
+                    if EquipSkillManager:GetDataKindById(skill_id) == "cyclone_slash" then
+                        local skill_data = EquipSkillManager:GetDataById(skill_id)
+                        skill_data:fn(item, item.components.wg_action_tool, skill_id, data.owner, nil, nil, true)
+                    end
+                    -- if item == inst and item.cyclone_slash then
+                    --     item:cyclone_slash(inst, true)
+                    -- end
                 end)
             end)
         end

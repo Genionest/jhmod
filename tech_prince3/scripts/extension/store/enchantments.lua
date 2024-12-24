@@ -2,6 +2,7 @@ local EntUtil = require "extension.lib.ent_util"
 local Kit = require "extension.lib.wargon"
 local FxManager = Sample.FxManager
 local BuffManager = Sample.BuffManager
+local Info = Sample.Info
 
 local EnchantmentData = Class(function(self)
 end)
@@ -14,14 +15,17 @@ init (func) 初始函数
 fn (func) 执行函数  
 test (func) 条件函数  
 desc (func) 描述函数  
+quality (int) 附魔等级
 ]]
-local function Enchantment(id, init, fn, test, desc)
+local function Enchantment(id, init, fn, test, desc, data, quality)
     local self = EnchantmentData()
     self.id = id
     self.init = init
     self.fn = fn
     self.test = test
     self.desc = desc
+    self.data = data
+    self.quality = quality or 1
     return self
 end
 
@@ -29,2351 +33,1623 @@ function EnchantmentData:GetId()
     return self.id
 end
 
+function EnchantmentData:Init(inst, cmp, id)
+    if self.data then
+        if self.data.hp then
+            inst.components.equippable:WgAddEquipMaxHealthModifier(id, self.data.hp)
+        end
+        if self.data.san then
+            inst.components.equippable:WgAddEquipMaxSanityModifier(id, self.data.san)
+        end
+        if self.data.hg then
+            inst.components.equippable:WgAddEquipMaxHungerModifier(id, self.data.hg)
+        end
+        if self.data.wp_dmg then
+            if inst.components.weapon then
+                inst.components.weapon:AddWeaponDmgMod(id, self.data.wp_dmg)
+            end
+        end
+        if self.data.finite then
+            if inst.components.finiteuses then 
+                inst.components.finiteuses:AddMaxModifier(self.data.finite)
+            end
+        end
+        if self.data.armor then
+            if inst.components.armor then
+                inst.components.armor:AddMaxModifier(self.data.armor)
+            end
+        end
+        if self.data.dapper then
+            local n = inst.components.equippable.dapperness
+            inst.components.equippable.dapperness = n + self.data.dapper
+        end
+        if self.data.winter then
+            if inst.components.insulator == nil then
+                inst:AddComponent("insulator")
+            end
+            local n = inst.components.insulator.winter_insulation
+            inst.components.insulator.winter_insulation = n + self.data.winter
+        end
+        if self.data.summer then
+            if inst.components.insulator == nil then
+                inst:AddComponent("insulator")
+            end
+            local n = inst.components.insulator.summer_insulation
+            inst.components.insulator.summer_insulation = n + self.data.summer
+        end
+        if self.data.rain then
+            if inst.components.waterproofer == nil then
+                inst:AddComponent("waterproofer")
+            end
+            local n = inst.components.waterproofer.effectiveness
+            inst.components.waterproofer.effectiveness = n + self.data.rain
+        end
+        inst.components.equippable:WgAddEquipFn(function(inst, owner)
+            if self.data.spd then
+                EntUtil:add_speed_amt(owner, id, self.data.spd)
+            end
+            if self.data.def then
+                owner.components.combat:AddDefenseMod(id, self.data.def)
+            end
+            if self.data.evade then
+                owner.components.combat:AddEvadeRateMod(id, self.data.evade)
+            end
+            if self.data.pentrt then
+                owner.components.combat:AddPenetrateMod(id, self.data.pentrt)
+            end
+            if self.data.hit_rate then
+                owner.components.combat:AddHitRateMod(id, self.data.hit_rate)
+            end
+            if self.data.atk_spd then
+                EntUtil:add_attack_speed_mod(owner, id, self.data.atk_spd)
+            end
+            if self.data.crit then
+                owner.components.combat:AddCritRateMod(id, self.data.crit)
+            end
+            if self.data.life_steal then
+                owner.components.combat:AddLifeStealRateMod(id, self.data.life_steal)
+            end
+            if self.data.recover then
+                owner.components.health:AddRecoverRateMod(id, self.data.recover)
+            end
+            if self.data.san_rate then
+                EntUtil:add_sanity_mod(owner, id, self.data.san_rate)
+            end
+            if self.data.san_resist then
+                owner.components.sanity:WgAddNegativeModifier(id, self.data.san_resist)
+            end
+            if self.data.hg_rate then
+                EntUtil:add_hunger_mod(owner, id, self.data.hg_rate)
+            end
+            if self.data.attrs then
+                if owner.components.tp_player_attr then
+                    for attr, val in pairs(self.data.attrs) do
+                        owner.components.tp_player_attr:AddAttrMod(attr, id, val)
+                    end
+                end
+            end
+            if self.dmg_resist then
+                for dmg_type, val in pairs(self.data.dmg_resist) do
+                    owner.components.combat:AddDmgTypeAbsorb(dmg_type, val)
+                end
+            end
+        end)
+        inst.components.equippable:WgRemoveEquipFn(function(inst, owner)
+            if self.data.spd then
+                EntUtil:rm_speed_amt(owner, id)
+            end
+            if self.data.def then
+                owner.components.combat:RmDefenseMod(id)
+            end
+            if self.data.evade then
+                owner.components.combat:RmEvadeRateMod(id)
+            end
+            if self.data.pentrt then
+                owner.components.combat:RmPenetrateMod(id)
+            end
+            if self.data.hit_rate then
+                owner.components.combat:RmHitRateMod(id)
+            end
+            if self.data.atk_spd then
+                EntUtil:rm_attack_speed_mod(owner, id)
+            end
+            if self.data.crit then
+                owner.components.combat:RmCritRateMod(id)
+            end
+            if self.data.life_steal then
+                owner.components.combat:RmLifeStealRateMod(id)
+            end
+            if self.data.recover then
+                owner.components.health:RmRecoverRateMod(id)
+            end
+            if self.data.san_rate then
+                EntUtil:rm_sanity_mod(owner, id)
+            end
+            if self.data.san_resist then
+                owner.components.sanity:WgRemoveNegativeModifier(id)
+            end
+            if self.data.hg_rate then
+                EntUtil:rm_hunger_mod(owner, id)
+            end 
+            if self.data.attrs then
+                if owner.components.tp_player_attr then
+                    for attr, val in pairs(self.data.attrs) do
+                        owner.components.tp_player_attr:RmAttrMod(attr, id)
+                    end
+                end
+            end
+            if self.dmg_resist then
+                for dmg_type, val in pairs(self.data.dmg_resist) do
+                    owner.components.combat:AddDmgTypeAbsorb(dmg_type, -val)
+                end
+            end
+        end)
+    end
+end
+
+function EnchantmentData:GetDescription(inst, cmp, id)
+    local s = ""
+    if self.data then
+        if self.data.hp then
+            s = s..string.format("生命%+d,", self.data.hp)
+        end
+        if self.data.san then
+            s = s..string.format("理智%+d,", self.data.san)
+        end
+        if self.data.hg then
+            s = s..string.format("饥饿%+d,", self.data.hg)
+        end
+        if self.data.wp_dmg then
+            s = s..string.format("攻击%+d,", self.data.wp_dmg)
+        end
+        if self.data.spd then
+            s = s..string.format("速度%+d,", self.data.spd)
+        end
+        if self.data.def then
+            s = s..string.format("防御%+d,", self.data.def)
+        end
+        if self.data.evade then
+            s = s..string.format("闪避%+d,", self.data.evade)
+        end
+        if self.data.pentrt then
+            s = s..string.format("穿透%+d,", self.data.pentrt)
+        end
+        if self.data.hit_rate then
+            s = s..string.format("命中%+d,", self.data.hit_rate)
+        end
+        if self.data.atk_spd then
+            s = s..string.format("攻速%+d%%,", self.data.atk_spd*100)
+        end
+        if self.data.crit then
+            s = s..string.format("暴击%+d%%,", self.data.crit*100)
+        end
+        if self.data.life_steal then
+            s = s..string.format("吸血%+d%%,", self.data.life_steal*100)
+        end
+        if self.data.recover then
+            s = s..string.format("生命恢复%+d%%,", self.data.recover*100)
+        end
+        if self.data.san_rate then
+            s = s..string.format("理智缓降%+d%%,", self.data.san_rate*100)
+        end
+        if self.data.san_resist then
+            s = s..string.format("理智抗性%+d%%,", self.data.san_resist*100)
+        end
+        if self.data.hg_rate then
+            s = s..string.format("饥饿抗性%+d%%,", self.data.hg_rate*100)
+        end
+        if self.data.finite then
+            s = s..string.format("耐久%+d,", self.data.finite)
+        end
+        if self.data.armor then
+            s = s..string.format("护甲%+d,", self.data.armor)
+        end
+        if self.data.dapper then
+            s = s..string.format("理智恢复%+.3f,", self.data.dapper)
+        end
+        if self.data.winter then
+            s = s..string.format("耐寒%+d,", self.data.winter)
+        end
+        if self.data.summer then
+            s = s..string.format("耐暑%+d,", self.data.summer)
+        end
+        if self.data.rain then
+            s = s..string.format("防雨%+d%%,", self.data.rain*100)
+        end
+        if self.data.attrs then
+            for attr, val in pairs(self.data.attrs) do
+                s = s..string.format("%s%+d,", Info.Attr.PlayerAttrStr[attr], val)
+            end
+        end
+        if self.dmg_resist then
+            for dmg_type, val in pairs(self.data.dmg_resist) do
+                s = s..string.format("%s抗%+d%%,", STRINGS.TP_DMG_TYPE[dmg_type], -val*100)
+            end
+        end
+    end
+    s = s..self:desc(inst, cmp, id)
+    return s
+end
+
 function EnchantmentData:__tostring()
     return string.format("EnchantmentData(%s)", self.id)
 end
 
 local enchant_weapon = {
-    Enchantment(
-        "giant_chop",
-        function(self, inst, cmp, id)
-            cmp.datas[id] = { 6, 5 * cmp.quality, 1.3, 30, 8 }
-        end,
-        function(self, inst, cmp, id)
-            if inst.components.wg_recharge == nil then
-                inst:AddComponent("wg_recharge")
-                inst.components.wg_recharge:SetCommon(id)
-            end
-            inst:AddComponent("wg_action_tool")
-            inst.components.wg_action_tool:RegisterSkillInfo({
-                desc = string.format("巨人劈砍:消耗%d魔法,增大体型,对敌人造成%d+%d%%自身攻击力的伤害,对小型单位额外造成%d点伤害",
-                    cmp.datas[id][5], cmp.datas[id][2], cmp.datas[id][3] * 100, cmp.datas[id][4])
-            })
-            inst.components.wg_action_tool.test = function(inst, doer)
-                --检测
-                if inst.components.wg_recharge:IsRecharged() then
-                    if doer.components.tp_mana
-                        and doer.components.tp_mana.current >= cmp.datas[id][5] then
-                        return true
-                    end
-                end
-            end
-            -- inst.components.wg_action_tool.get_action_fn = function(inst, data)
-            --     -- 装备后可以收集到的动作 data={doer=doer, pos=pos, target=target}
-            -- end
-            inst.components.wg_action_tool.click_fn = function(inst, doer)
-                -- 技能栏里释放技能会触发的效果，默认会出发get_action_fn的动作
-                local data = inst.components.wg_action_tool:GetActionData()
-                if data.pos or data.target then
-                    local ba = BufferedAction(data.doer, data.target, ACTIONS.TP_CHOP, inst, data.pos)
-                    doer:PushBufferedAction(ba)
-                    doer.components.tp_body_size:AddSizeMod(id, .2)
-                end
-            end
-            inst.components.wg_action_tool.effect_fn = function(inst, doer, target, pos)
-                -- 动作触发时会到达的效果
-                doer.components.tp_mana:DoDelta(-cmp.datas[id][5])
-                EntUtil:make_area_dmg(doer, 4, doer, cmp.datas[id][2],
-                    inst, EntUtil:add_stimuli(nil, "pure"), {
-                        calc = true,
-                        mult = cmp.datas[id][3],
-                        fn = function(v, attacker, weapon)
-                            if v:HasTag("smallcreature") then
-                                EntUtil:get_attacked(v, attacker, cmp.datas[id][4], nil,
-                                    EntUtil:add_stimuli(nil, "pure", "not_evade"))
-                            end
-                        end,
-                    })
-                inst.components.wg_recharge:SetRechargeTime(cmp.datas[id][1], id)
-                inst:DoTaskInTime(.5, function()
-                    doer.components.tp_body_size:RmSizeMod(id)
-                end)
-            end
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.weapon ~= nil
-                and inst.components.wg_action_tool == nil
-        end,
-        function(self, inst, cmp, id)
-            return string.format("[要求:无技能武器]获得技能巨人劈砍")
+Enchantment("ice_weapon",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
+        if math.random() < self.data.rate then
+            BuffManager:AddBuff(target, "ice")
         end
-    ),
-    Enchantment(
-        "frozen_route",
-        function(self, inst, cmp, id)
-            cmp.datas[id] = { 10 - cmp.quality, cmp.quality * 30, 15 }
-        end,
-        function(self, inst, cmp, id)
-            if inst.components.wg_recharge == nil then
-                inst:AddComponent("wg_recharge")
-                inst.components.wg_recharge:SetCommon(id)
-            end
-            inst:AddComponent("wg_reticule")
-            inst.components.wg_reticule.reticule_prefab = "wg_reticulearc"
-            inst:AddComponent("wg_action_tool")
-            inst.components.wg_action_tool:RegisterSkillInfo({
-                desc = string.format("霜冻路径:消耗%d魔法,释放一段扇形的前进的冰锥,对经过的敌人造成%d的伤害并施加1层冰冻效果",
-                    cmp.datas[id][3], cmp.datas[id][2])
-            })
-            inst.components.wg_action_tool.test = function(inst, doer)
-                --检测
-                if inst.components.wg_recharge:IsRecharged() then
-                    if doer.components.tp_mana
-                        and doer.components.tp_mana.current >= cmp.datas[id][3] then
-                        return true
-                    end
-                end
-            end
-            inst.components.wg_action_tool.get_action_fn = function(inst, data)
-                -- 装备后可以收集到的动作 data={doer=doer, pos=pos, target=target}
-                if inst.components.wg_reticule:IsShown() then
-                    if data.pos or data.target then
-                        return ACTIONS.TP_SHOVEL
-                    end
-                end
-            end
-            inst.components.wg_action_tool.click_fn = function(inst, doer)
-                -- 技能栏里释放技能会触发的效果，默认会出发get_action_fn的动作
-                inst.components.wg_reticule:Toggle()
-            end
-            inst.components.wg_action_tool.effect_fn = function(inst, doer, target, pos)
-                -- 动作触发时会到达的效果
-                doer.components.tp_mana:DoDelta(-cmp.datas[id][3])
-                inst.components.wg_recharge:SetRechargeTime(cmp.datas[id][1], id)
-                if target then
-                    pos = target:GetPosition()
-                end
-                FxManager:MakeFx("frozen_route", doer, {
-                    pos = pos, owner = doer, damage = cmp.datas[id][2]
-                })
-            end
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.weapon ~= nil
-                and inst.components.wg_action_tool == nil
-            -- and cmp.quality and cmp.quality>=3
-        end,
-        function(self, inst, cmp, id)
-            return string.format("[要求:无技能武器]获得技能霜冻路径")
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("攻击有%d%%几率令敌人进入寒冷状态",
+        self.data.rate * 100)
+end,
+{hp=25,san=10,hg=25,rate=.2}, 1),
+Enchantment("fire_weapon",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
+        if math.random() < self.data.rate then
+            BuffManager:AddBuff(target, "fire")
         end
-    ),
-    Enchantment(
-        "sleep_fire",
-        function(self, inst, cmp, id)
-            cmp.datas[id] = { 7, cmp.quality * 15, 12 }
-        end,
-        function(self, inst, cmp, id)
-            if inst.components.wg_recharge == nil then
-                inst:AddComponent("wg_recharge")
-                inst.components.wg_recharge:SetCommon(id)
-            end
-            inst:AddComponent("wg_reticule")
-            inst.components.wg_reticule.reticule_prefab = "wg_reticulearc"
-            inst:AddComponent("wg_action_tool")
-            inst.components.wg_action_tool:RegisterSkillInfo({
-                desc = string.format("催眠火焰:消耗%d魔法,释放多个火焰,催眠命中的敌人,并造成%d点伤害",
-                    cmp.datas[id][3], cmp.datas[id][2])
-            })
-            inst.components.wg_action_tool.test = function(inst, doer)
-                --检测
-                if inst.components.wg_recharge:IsRecharged() then
-                    if doer.components.tp_mana
-                        and doer.components.tp_mana.current >= cmp.datas[id][3] then
-                        return true
-                    end
-                end
-            end
-            inst.components.wg_action_tool.get_action_fn = function(inst, data)
-                -- 装备后可以收集到的动作 data={doer=doer, pos=pos, target=target}
-                if inst.components.wg_reticule:IsShown() then
-                    if data.pos or data.target then
-                        return ACTIONS.TP_ATTACK_PROP
-                    end
-                end
-            end
-            inst.components.wg_action_tool.click_fn = function(inst, doer)
-                -- 技能栏里释放技能会触发的效果，默认会出发get_action_fn的动作
-                inst.components.wg_reticule:Toggle()
-            end
-            inst.components.wg_action_tool.effect_fn = function(inst, doer, target, pos)
-                -- 动作触发时会到达的效果
-                doer.components.tp_mana:DoDelta(-cmp.datas[id][3])
-                inst.components.wg_recharge:SetRechargeTime(cmp.datas[id][1], id)
-                if target then
-                    pos = target:GetPosition()
-                end
-                FxManager:MakeFx("sleep_fire", doer, {
-                    pos = pos, owner = doer, damage = cmp.datas[id][2]
-                })
-            end
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.weapon ~= nil
-                and inst.components.wg_action_tool == nil
-            -- and cmp.quality and cmp.quality>=3
-        end,
-        function(self, inst, cmp, id)
-            return string.format("[要求:无技能武器]获得技能催眠火焰")
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("攻击有%d%%几率令敌人进入灼烧状态",
+        self.data.rate * 100)
+end,
+{hp=35,san=25,hg=35,rate=.2}, 1),
+Enchantment("thunder_weapon",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
+        if math.random() < self.data.rate then
+            BuffManager:AddBuff(target, "electric")
         end
-    ),
-    Enchantment(
-        "thunder_rain",
-        function(self, inst, cmp, id)
-            cmp.datas[id] = { 15, cmp.quality * 10, .75, 15 }
-        end,
-        function(self, inst, cmp, id)
-            if inst.components.wg_recharge == nil then
-                inst:AddComponent("wg_recharge")
-                inst.components.wg_recharge:SetCommon(id)
-            end
-            inst:AddComponent("wg_action_tool")
-            inst.components.wg_action_tool:RegisterSkillInfo({
-                desc = string.format("雷霆之雨:消耗%d魔法,召唤闪电攻击周围的敌人(最多8名),造成%d+%d%%自身攻击力的伤害",
-                    cmp.datas[id][4], cmp.datas[id][2], cmp.datas[id][3] * 100)
-            })
-            inst.components.wg_action_tool.test = function(inst, doer)
-                --检测
-                if inst.components.wg_recharge:IsRecharged() then
-                    if doer.components.tp_mana
-                        and doer.components.tp_mana.current >= cmp.datas[id][4] then
-                        return true
-                    end
-                end
-            end
-            inst.components.wg_action_tool.click_get_action_fn = function(inst, data)
-                -- 装备后可以收集到的动作 data={doer=doer, pos=pos, target=target}
-                if data.pos or data.target then
-                    return ACTIONS.TP_SAIL
-                end
-            end
-            -- inst.components.wg_action_tool.click_fn = function(inst, doer)
-            --     -- 技能栏里释放技能会触发的效果，默认会出发get_action_fn的动作
-            -- end
-            inst.components.wg_action_tool.effect_fn = function(inst, doer, target, pos)
-                -- 动作触发时会到达的效果
-                doer.components.tp_mana:DoDelta(-cmp.datas[id][4])
-                inst.components.wg_recharge:SetRechargeTime(cmp.datas[id][1], id)
-                local n = 0
-                EntUtil:make_area_dmg(doer, 8, doer, cmp.datas[id][2], inst,
-                    EntUtil:add_stimuli(nil, "pure"), {
-                        calc = true,
-                        mult = cmp.datas[id][3],
-                        fn = function(v, attacker, weapon)
-                            FxManager:MakeFx("lightning", v)
-                            n = n + 1
-                        end,
-                        test = function(v, attacker, weapon)
-                            return n < 8
-                        end,
-                    })
-            end
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.weapon ~= nil
-                and inst.components.wg_action_tool == nil
-        end,
-        function(self, inst, cmp, id)
-            return string.format("[要求:无技能武器]获得技能雷霆之雨")
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("攻击有%d%%几率令敌人进入感电状态",
+        self.data.rate * 100)
+end, 
+{hp=15,san=15,hg=15,rate=.3}, 1),
+Enchantment("poison_weapon",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
+        if math.random() < self.data.rate then
+            BuffManager:AddBuff(target, "poison")
         end
-    ),
-    Enchantment(
-        "broken_heavy_attack",
-        function(self, inst, cmp, id)
-            cmp.datas[id] = { 8, cmp.quality * 10, 1.35, 10 }
-        end,
-        function(self, inst, cmp, id)
-            if inst.components.wg_recharge == nil then
-                inst:AddComponent("wg_recharge")
-                inst.components.wg_recharge:SetCommon(id)
-            end
-            inst:AddComponent("wg_action_tool")
-            inst.components.wg_action_tool:RegisterSkillInfo({
-                desc = string.format("破碎重击:消耗%d魔法,对周围的敌人造成%d%%自身攻击力的伤害,并降低其防御",
-                    cmp.datas[id][4], cmp.datas[id][3] * 100)
-            })
-            inst.components.wg_action_tool.test = function(inst, doer)
-                --检测
-                if inst.components.wg_recharge:IsRecharged() then
-                    if doer.components.tp_mana
-                        and doer.components.tp_mana.current >= cmp.datas[id][4] then
-                        return true
-                    end
-                end
-            end
-            -- inst.components.wg_action_tool.get_action_fn = function(inst, data)
-            --     -- 装备后可以收集到的动作 data={doer=doer, pos=pos, target=target}
-            -- end
-            inst.components.wg_action_tool.click_fn = function(inst, doer)
-                -- 技能栏里释放技能会触发的效果，默认会出发get_action_fn的动作
-                local data = inst.components.wg_action_tool:GetActionData()
-                if data.pos or data.target then
-                    local ba = BufferedAction(data.doer, data.target, ACTIONS.TP_MINE, inst, data.pos)
-                    doer:PushBufferedAction(ba)
-                end
-            end
-            inst.components.wg_action_tool.effect_fn = function(inst, doer, target, pos)
-                -- 动作触发时会到达的效果
-                doer.components.tp_mana:DoDelta(-cmp.datas[id][4])
-                EntUtil:make_area_dmg(doer, 3, doer, 0,
-                    inst, EntUtil:add_stimuli(nil, "pure"), {
-                        calc = true,
-                        mult = cmp.datas[id][3],
-                        fn = function(v, attacker, weapon)
-                            BuffManager:AddBuff(v, id .. "_debuff", nil, cmp.datas[id][2])
-                        end,
-                    })
-                inst.components.wg_recharge:SetRechargeTime(cmp.datas[id][1], id)
-            end
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.weapon ~= nil
-                and inst.components.wg_action_tool == nil
-        end,
-        function(self, inst, cmp, id)
-            return string.format("[要求:无技能武器]获得技能破碎重击")
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("攻击有%d%%几率令敌人进入毒害状态",
+        self.data.rate * 100)
+end, 
+{hp=50,san=50,hg=50,rate=.2},2),
+Enchantment("life_steal_weapon",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    return true
+end,
+function(self, inst, cmp, id)
+    return ""
+end, 
+{hp=55,life_steal=.2}, 2),
+Enchantment("with_wind_weapon",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
+        local n = cmp.datas[id] or 0
+        n = n + 1
+        if n >= 3 then
+            n = 0
+            EntUtil:get_attacked(target, owner, self.data.dmg, inst, 
+                EntUtil:add_stimuli(nil, "wind")
+            )
+            FxManager:MakeFx("leaf", target)
         end
-    ),
-    Enchantment(
-        "lunge",
-        function(self, inst, cmp, id)
-            cmp.datas[id] = { 6, 1 + .1 * cmp.quality, 4 }
-        end,
-        function(self, inst, cmp, id)
-            if inst.components.wg_recharge == nil then
-                inst:AddComponent("wg_recharge")
-                inst.components.wg_recharge:SetCommon(id)
-            end
-            inst:AddComponent("wg_reticule")
-            inst.components.wg_reticule.reticule_prefab = "wg_reticuleline"
-            inst:AddComponent("wg_action_tool")
-            inst.components.wg_action_tool:RegisterSkillInfo({
-                desc = string.format("突刺:消耗%d魔法,向前突刺,对沿途敌人造成%d%%自身攻击力的伤害",
-                    cmp.datas[id][3], cmp.datas[id][2] * 100)
-            })
-            inst.components.wg_action_tool.test = function(inst, doer)
-                --检测
-                if inst.components.wg_recharge:IsRecharged() then
-                    if doer.components.tp_mana
-                        and doer.components.tp_mana.current >= cmp.datas[id][3] then
-                        return true
-                    end
-                end
-            end
-            inst.components.wg_action_tool.get_action_fn = function(inst, data)
-                -- 装备后可以收集到的动作 data={doer=doer, pos=pos, target=target}
-                if inst.components.wg_reticule:IsShown() then
-                    if data.pos or data.target then
-                        return ACTIONS.TP_LUNGE
-                    end
-                end
-            end
-            inst.components.wg_action_tool.click_fn = function(inst, doer)
-                -- 技能栏里释放技能会触发的效果，默认会出发get_action_fn的动作
-                inst.components.wg_reticule:Toggle()
-            end
-            inst.components.wg_action_tool.effect_fn = function(inst, doer, target, pos)
-                -- 动作触发时会到达的效果
-                doer.components.tp_mana:DoDelta(-cmp.datas[id][3])
-                inst.components.wg_recharge:SetRechargeTime(cmp.datas[id][1], id)
-                local enemies = {}
-                for i = 1, 3 do
-                    doer:DoTaskInTime(.1 * i, function()
-                        EntUtil:make_area_dmg(doer, 3, doer, 0, inst,
-                            EntUtil:add_stimuli(nil, "pure"), {
-                                calc = true,
-                                mult = cmp.datas[id][2],
-                                fn = function(v, attacker, weapon)
-                                    enemies[v] = true
-                                end,
-                                test = function(v, attacker, weapon)
-                                    return enemies[v] == nil
-                                end,
-                            })
-                    end)
-                end
-            end
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.weapon ~= nil
-                and inst.components.wg_action_tool == nil
-        end,
-        function(self, inst, cmp, id)
-            return string.format("[要求:无技能武器]获得技能突刺")
+        cmp.datas[id] = n
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("第3次攻击会额外造成%d风属性伤害(第%d次)",
+        self.data.dmg, cmp.datas[id] or 0)
+end, 
+{dmg=20, atk_spd=.1}, 1),
+Enchantment("with_electric_weapon",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
+        if math.random() < self.data.rate then
+            EntUtil:get_attacked(target, owner, self.data.dmg, inst, 
+                EntUtil:add_stimuli(nil, "electric")
+            )
+            FxManager:MakeFx("lightning", target)
         end
-    ),
-    Enchantment(
-        "fire_lunge",
-        function(self, inst, cmp, id)
-            cmp.datas[id] = { 7, .5 + .3 * cmp.quality, 6 }
-        end,
-        function(self, inst, cmp, id)
-            if inst.components.wg_recharge == nil then
-                inst:AddComponent("wg_recharge")
-                inst.components.wg_recharge:SetCommon(id)
-            end
-            inst:AddComponent("wg_reticule")
-            inst.components.wg_reticule.reticule_prefab = "wg_reticuleline"
-            inst:AddComponent("wg_action_tool")
-            inst.components.wg_action_tool:RegisterSkillInfo({
-                desc = string.format("烈焰突刺:消耗%d魔法,向前突刺,对沿途敌人造成%d%%自身攻击力的伤害并点燃",
-                    cmp.datas[id][3], cmp.datas[id][2] * 100)
-            })
-            inst.components.wg_action_tool.test = function(inst, doer)
-                --检测
-                if inst.components.wg_recharge:IsRecharged() then
-                    if doer.components.tp_mana
-                        and doer.components.tp_mana.current >= cmp.datas[id][3] then
-                        return true
-                    end
-                end
-            end
-            inst.components.wg_action_tool.get_action_fn = function(inst, data)
-                -- 装备后可以收集到的动作 data={doer=doer, pos=pos, target=target}
-                if inst.components.wg_reticule:IsShown() then
-                    if data.pos or data.target then
-                        return ACTIONS.TP_LUNGE
-                    end
-                end
-            end
-            inst.components.wg_action_tool.click_fn = function(inst, doer)
-                -- 技能栏里释放技能会触发的效果，默认会出发get_action_fn的动作
-                inst.components.wg_reticule:Toggle()
-            end
-            inst.components.wg_action_tool.effect_fn = function(inst, doer, target, pos)
-                -- 动作触发时会到达的效果
-                doer.components.tp_mana:DoDelta(-cmp.datas[id][3])
-                inst.components.wg_recharge:SetRechargeTime(cmp.datas[id][1], id)
-                local enemies = {}
-                for i = 1, 3 do
-                    doer:DoTaskInTime(.1 * i, function()
-                        EntUtil:make_area_dmg(doer, 3, doer, 0, inst,
-                            EntUtil:add_stimuli(nil, "pure"), {
-                                calc = true,
-                                mult = cmp.datas[id][2],
-                                fn = function(v, attacker, weapon)
-                                    enemies[v] = true
-                                    EntUtil:ignite(v)
-                                end,
-                                test = function(v, attacker, weapon)
-                                    return enemies[v] == nil
-                                end,
-                            })
-                    end)
-                end
-                if target then
-                    pos = target:GetPosition()
-                end
-                local fx = FxManager:MakeFx("laser_line", doer, { pos = pos })
-                fx:DoTaskInTime(.4, fx.WgRecycle)
-            end
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.weapon ~= nil
-                and inst.components.wg_action_tool == nil
-        end,
-        function(self, inst, cmp, id)
-            return string.format("[要求:无技能武器]获得技能烈焰突刺")
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("攻击时有%d%%几率额外造成%d电属性伤害",
+        self.data.rate*100, self.data.dmg)
+end, 
+{hp=10,san=25,san_rate=.15,dmg=30,rate=.3}, 1),
+Enchantment("add_speed_weapon",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
+        BuffManager:AddBuff(owner, "speed_up", nil, self.data.add_spd)
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("攻击后增加%d移速", 
+        self.data.add_spd)
+end,
+{wp_dmg=10,hp=10,hg=25,add_spd=3}, 1),
+Enchantment("combat_hot",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
+        local n = cmp.datas[id] or 0
+        n = math.min(n + 1, 10)
+        if cmp[id.."_task"] then
+            cmp[id.."_task"]:Cancel()
+            cmp[id.."_task"] = nil
         end
-    ),
-    Enchantment(
-        "mult_blowdart",
-        function(self, inst, cmp, id)
-            cmp.datas[id] = { 10, .1 + .05 * cmp.quality, 10 }
-        end,
-        function(self, inst, cmp, id)
-            if inst.components.wg_recharge == nil then
-                inst:AddComponent("wg_recharge")
-                inst.components.wg_recharge:SetCommon(id)
+        cmp[id.."_task"] = inst:DoTaskInTime(4, function(inst)
+            cmp.datas[id] = nil
+            if cmp[id.."_task"] then
+                cmp[id.."_task"]:Cancel()
+                cmp[id.."_task"] = nil
             end
-            inst:AddComponent("wg_reticule")
-            inst.components.wg_reticule.reticule_prefab = "wg_reticuleline"
-            inst:AddComponent("wg_action_tool")
-            inst.components.wg_action_tool:RegisterSkillInfo({
-                desc = string.format("多重吹箭:消耗%d魔法,射出多个吹箭,每个吹箭对敌人造成%d%%自身攻击力的伤害",
-                    cmp.datas[id][3], cmp.datas[id][2] * 100)
-            })
-            inst.components.wg_action_tool.test = function(inst, doer)
-                --检测
-                if inst.components.wg_recharge:IsRecharged() then
-                    if doer.components.tp_mana
-                        and doer.components.tp_mana.current >= cmp.datas[id][3] then
-                        return true
-                    end
-                end
-            end
-            inst.components.wg_action_tool.get_action_fn = function(inst, data)
-                -- 装备后可以收集到的动作 data={doer=doer, pos=pos, target=target}
-                if inst.components.wg_reticule:IsShown() then
-                    if data.pos or data.target then
-                        return ACTIONS.TP_BLOWDART
-                    end
-                end
-            end
-            inst.components.wg_action_tool.click_fn = function(inst, doer)
-                -- 技能栏里释放技能会触发的效果，默认会出发get_action_fn的动作
-                inst.components.wg_reticule:Toggle()
-            end
-            inst.components.wg_action_tool.effect_fn = function(inst, doer, target, pos)
-                -- 动作触发时会到达的效果
-                doer.components.tp_mana:DoDelta(-cmp.datas[id][3])
-                inst.components.wg_recharge:SetRechargeTime(cmp.datas[id][1], id)
-                if target then
-                    pos = target:GetPosition()
-                end
-                FxManager:MakeFx("mult_blowdart", doer, {
-                    pos = pos, owner = doer, weapon = inst, dmg_mod = cmp.datas[id][2]
-                })
-            end
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.weapon ~= nil
-                and inst.components.wg_action_tool == nil
-        end,
-        function(self, inst, cmp, id)
-            return string.format("[要求:无技能武器]获得技能多重吹箭")
+        end)
+    end)
+    inst.components.weapon:WgAddWeaponDamageFn(function(inst, damage)
+        local n = cmp.datas[id] or 0
+        return damage + n * self.data.dmg
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("攻击会叠加层数,每层增加%d攻击力(%d层)",
+        self.data.dmg, cmp.datas[id] or 0)
+end, 
+{hp=20,hg=30,dmg=3}, 1),
+Enchantment("beefalo_killer",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
+        if target:HasTag("beefalo") then
+            EntUtil:get_attacked(target, owner, self.data.dmg, nil,
+                EntUtil:add_stimuli(nil, inst.components.weapon.dmg_type)
+            )
         end
-    ),
-    Enchantment(
-        "flash_weapon",
-        function(self, inst, cmp, id)
-            cmp.datas[id] = { 5 - .2 * cmp.quality, 5 }
-        end,
-        function(self, inst, cmp, id)
-            if inst.components.wg_recharge == nil then
-                inst:AddComponent("wg_recharge")
-                inst.components.wg_recharge:SetCommon(id)
-            end
-            inst:AddComponent("wg_action_tool")
-            inst.components.wg_action_tool:RegisterSkillInfo({
-                desc = string.format("闪烁:消耗%d魔法,位移到目标位置",
-                    cmp.datas[id][2])
-            })
-            inst.components.wg_action_tool.test = function(inst, doer)
-                --检测
-                if inst.components.wg_recharge:IsRecharged() then
-                    if doer.components.tp_mana
-                        and doer.components.tp_mana.current >= cmp.datas[id][2] then
-                        return true
-                    end
-                end
-            end
-            inst.components.wg_action_tool.click_get_action_fn = function(inst, data)
-                -- 装备后可以收集到的动作 data={doer=doer, pos=pos, target=target}
-                if data.pos then
-                    return ACTIONS.TP_ATK
-                end
-            end
-            -- inst.components.wg_action_tool.click_fn = function(inst, doer)
-            -- 技能栏里释放技能会触发的效果，默认会出发get_action_fn的动作
-            -- end
-            inst.components.wg_action_tool.effect_fn = function(inst, doer, target, pos)
-                -- 动作触发时会到达的效果
-                doer.components.tp_mana:DoDelta(-cmp.datas[id][2])
-                inst.components.wg_recharge:SetRechargeTime(cmp.datas[id][1], id)
-                FxManager:MakeFx("statue_transition", doer)
-                doer.SoundEmitter:PlaySound("dontstarve/common/staff_blink")
-                doer:Hide()
-                if doer.components.health then
-                    doer.components.health:SetInvincible(true, id)
-                end
-                doer:DoTaskInTime(0.25, function()
-                    FxManager:MakeFx("statue_transition_2", pos)
-                    if doer.components.health then
-                        doer.components.health:SetInvincible(false, id)
-                    end
-                    doer.Transform:SetPosition(pos:Get())
-                    doer:Show()
-                    doer.SoundEmitter:PlaySound("dontstarve/common/staff_blink")
-                end)
-            end
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.weapon ~= nil
-                and inst.components.wg_action_tool == nil
-                and cmp.quality and cmp.quality >= 3
-        end,
-        function(self, inst, cmp, id)
-            return string.format("[要求:无技能武器,品质达到3]获得技能闪烁")
-        end
-    ),
-    Enchantment(
-        "dodge_weaopn",
-        function(self, inst, cmp, id)
-            cmp.datas[id] = { 3 - .2 * cmp.quality, 3 }
-        end,
-        function(self, inst, cmp, id)
-            if inst.components.wg_recharge == nil then
-                inst:AddComponent("wg_recharge")
-                inst.components.wg_recharge:SetCommon(id)
-            end
-            inst:AddComponent("wg_action_tool")
-            inst.components.wg_action_tool:RegisterSkillInfo({
-                desc = string.format("滑铲:消耗%d魔法,进行滑铲",
-                    cmp.datas[id][2])
-            })
-            inst.components.wg_action_tool.test = function(inst, doer)
-                --检测
-                if inst.components.wg_recharge:IsRecharged() then
-                    if doer.components.tp_mana
-                        and doer.components.tp_mana.current >= cmp.datas[id][2] then
-                        return true
-                    end
-                end
-            end
-            inst.components.wg_action_tool.click_get_action_fn = function(inst, data)
-                -- 装备后可以收集到的动作 data={doer=doer, pos=pos, target=target}
-                if data.pos or data.target then
-                    return ACTIONS.WG_DODGE
-                end
-            end
-            -- inst.components.wg_action_tool.click_fn = function(inst, doer)
-            -- 技能栏里释放技能会触发的效果，默认会出发get_action_fn的动作
-            -- end
-            inst.components.wg_action_tool.effect_fn = function(inst, doer, target, pos)
-                -- 动作触发时会到达的效果
-                doer.components.tp_mana:DoDelta(-cmp.datas[id][2])
-                inst.components.wg_recharge:SetRechargeTime(cmp.datas[id][1], id)
-            end
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.weapon ~= nil
-                and inst.components.wg_action_tool == nil
-                and cmp.quality and cmp.quality >= 3
-        end,
-        function(self, inst, cmp, id)
-            return string.format("[要求:无技能武器,品质达到3]获得技能滑铲")
-        end
-    ),
-    Enchantment(
-        "counterattack_spiral",
-        function(self, inst, cmp, id)
-            cmp.datas[id] = { 8, cmp.quality * 20, 12 }
-        end,
-        function(self, inst, cmp, id)
-            if inst.components.wg_recharge == nil then
-                inst:AddComponent("wg_recharge")
-                inst.components.wg_recharge:SetCommon(id)
-            end
-            inst:AddComponent("wg_action_tool")
-            inst.components.wg_action_tool:RegisterSkillInfo({
-                desc = string.format("反击螺旋:消耗%d魔法,旋转武器,获得100%%闪避,(闪避攻击增加移速)旋转结束后对周围的敌人造成%d伤害",
-                    cmp.datas[id][3], cmp.datas[id][2])
-            })
-            inst.components.wg_action_tool.test = function(inst, doer)
-                --检测
-                if inst.components.wg_recharge:IsRecharged() then
-                    if doer.components.tp_mana
-                        and doer.components.tp_mana.current >= cmp.datas[id][2] then
-                        return true
-                    end
-                end
-            end
-            inst.components.wg_action_tool.click_get_action_fn = function(inst, data)
-                -- 装备后可以收集到的动作 data={doer=doer, pos=pos, target=target}
-                if data.pos or data.target then
-                    return ACTIONS.TP_SPIRAL
-                end
-            end
-            -- inst.components.wg_action_tool.click_fn = function(inst, doer)
-            -- 技能栏里释放技能会触发的效果，默认会出发get_action_fn的动作
-            -- end
-            inst.components.wg_action_tool.effect_fn = function(inst, doer, target, pos)
-                -- 动作触发时会到达的效果
-                doer.components.tp_mana:DoDelta(-cmp.datas[id][3])
-                inst.components.wg_recharge:SetRechargeTime(cmp.datas[id][1], id)
-                EntUtil:make_area_dmg(doer, 4, doer, cmp.datas[id][2], nil,
-                    EntUtil:add_stimuli(nil, "pure"))
-            end
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.weapon ~= nil
-                and inst.components.wg_action_tool == nil
-                and cmp.quality and cmp.quality >= 2
-        end,
-        function(self, inst, cmp, id)
-            return string.format("[要求:无技能武器,品质达到2]获得技能反击螺旋")
-        end
-    ),
-    Enchantment(
-        "determination",
-        function(self, inst, cmp, id)
-            cmp.datas[id] = { 5, cmp.quality * .15, 5 }
-        end,
-        function(self, inst, cmp, id)
-            if inst.components.wg_recharge == nil then
-                inst:AddComponent("wg_recharge")
-            end
-            inst:AddComponent("wg_action_tool")
-            inst.components.wg_action_tool:RegisterSkillInfo({
-                desc = string.format("决心:消耗%d魔法,下次攻击提升%d%%攻击",
-                    cmp.datas[id][3], cmp.datas[id][2] * 100)
-            })
-            inst.components.wg_action_tool.test = function(inst, doer)
-                --检测
-                if inst.components.wg_recharge:IsRecharged() then
-                    if doer.components.tp_mana
-                        and doer.components.tp_mana.current >= cmp.datas[id][3] then
-                        return true
-                    end
-                end
-            end
-            inst.components.wg_action_tool.click_get_action_fn = function(inst, data)
-                -- 装备后可以收集到的动作 data={doer=doer, pos=pos, target=target}
-                if data.pos or data.target then
-                    return ACTIONS.TP_SAIL
-                end
-            end
-            -- inst.components.wg_action_tool.click_fn = function(inst, doer)
-            --     -- 技能栏里释放技能会触发的效果，默认会出发get_action_fn的动作
-            -- end
-            inst.components.wg_action_tool.effect_fn = function(inst, doer, target, pos)
-                -- 动作触发时会到达的效果
-                FxManager:MakeFx("firework_fx", doer)
-                doer.components.tp_mana:DoDelta(-cmp.datas[id][3])
-                inst.components.wg_recharge:SetRechargeTime(cmp.datas[id][1])
-                BuffManager:AddBuff(doer, id, nil, cmp.datas[id][2])
-            end
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.weapon ~= nil
-                and inst.components.wg_action_tool == nil
-        end,
-        function(self, inst, cmp, id)
-            return string.format("[要求:无技能武器]获得技能决心")
-        end
-    ),
-    Enchantment(
-        "penetrate_up",
-        function(self, inst, cmp, id)
-            cmp.datas[id] = { cmp.quality * .03 + .05 }
-        end,
-        function(self, inst, cmp, id)
-            inst.components.equippable:WgAddEquipFn(function(inst, owner)
-                local key = inst.components.equippable.equipslot .. "_slot"
-                owner.components.combat:AddPenetrateMod(key, cmp.datas[id][1])
-            end)
-            inst.components.equippable:WgAddUnequipFn(function(inst, owner)
-                local key = inst.components.equippable.equipslot .. "_slot"
-                owner.components.combat:RmPenetrateMod(key)
-            end)
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.weapon ~= nil
-        end,
-        function(self, inst, cmp, id)
-            local datas = cmp.datas
-            return string.format("[要求:武器]增加%d%%穿透", datas[id][1] * 100)
-        end
-    ),
-    Enchantment(
-        "hit_rate_up",
-        function(self, inst, cmp, id)
-            cmp.datas[id] = { cmp.quality * .03 + .05 }
-        end,
-        function(self, inst, cmp, id)
-            inst.components.equippable:WgAddEquipFn(function(inst, owner)
-                local key = inst.components.equippable.equipslot .. "_slot"
-                owner.components.combat:AddHitRateMod(key, cmp.datas[id][1])
-            end)
-            inst.components.equippable:WgAddUnequipFn(function(inst, owner)
-                local key = inst.components.equippable.equipslot .. "_slot"
-                owner.components.combat:RmHitRateMod(key)
-            end)
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.weapon ~= nil
-        end,
-        function(self, inst, cmp, id)
-            local datas = cmp.datas
-            return string.format("[要求:武器]增加%d%%命中率", datas[id][1] * 100)
-        end
-    ),
-    Enchantment(
-        "damage",
-        function(self, inst, cmp, id)
-            local min, max = 10 + cmp.quality * 2, 15 + cmp.quality * 3
-            cmp.datas[id] = { math.random(min, max) }
-        end,
-        function(self, inst, cmp, id)
-            if inst.components.weapon then
-                inst.components.weapon:WgAddWeaponDamageFn(function(inst, damage)
-                    local datas = cmp.datas
-                    return damage + (datas[id][1] or 0)
-                end)
-            end
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.weapon ~= nil
-        end,
-        function(self, inst, cmp, id)
-            local datas = cmp.datas
-            return string.format("[要求:武器]增加%d点伤害", datas[id][1] or 0)
-        end
-    ),
-    Enchantment(
-        "damage_percent",
-        function(self, inst, cmp, id)
-            cmp.datas[id] = { .02 + .006 * cmp.quality, 50, 200 }
-        end,
-        function(self, inst, cmp, id)
-            if inst.components.weapon then
-                inst.components.weapon:WgAddWeaponDamageFn(function(inst, damage)
-                    local dmg = math.min(cmp.datas[id][3], damage)
-                    local p = (dmg / cmp.datas[id][2]) * cmp.datas[id][1]
-                    damage = damage + damage * p
-                    return damage
-                end)
-            end
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.weapon ~= nil
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            return string.format("[要求:武器]武器每有%d点攻击(大于%d视为%d),增加%.1f%%攻击",
-                D[2], D[3], D[3], D[1] * 100)
-        end
-    ),
-    Enchantment(
-        "crit_weapon",
-        function(self, inst, cmp, id)
-            cmp.datas[id] = { 100, .02 + .006 * cmp.quality, 300 }
-        end,
-        function(self, inst, cmp, id)
-            if inst.components.weapon then
-                inst.components.weapon:WgAddWeaponDamageFn(function(inst, damage)
-                    local dmg = math.min(damage, cmp.datas[id][3])
-                    local rate = (dmg / cmp.datas[id][1]) * cmp.datas[id][2]
-                    if math.random() < rate then
-                        damage = damage * 2
-                    end
-                    return damage
-                end)
-            end
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.weapon ~= nil
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            return string.format("[要求:武器]武器每有%d攻击(大于%d视为%d),便有%.2f%%的几率造成双倍伤害",
-                D[1], D[3], D[3], D[2] * 100)
-        end
-    ),
-    Enchantment(
-        "frozen_weapon",
-        function(self, inst, cmp, id)
-            local min, max = cmp.quality * 2, cmp.quality * 5
-            cmp.datas[id] = { math.random(min, max) / 100 }
-        end,
-        function(self, inst, cmp, id)
-            inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
-                if math.random() < cmp.datas[id][1] then
-                    EntUtil:frozen(target)
-                end
-            end)
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.weapon ~= nil
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            return string.format("[要求:武器]攻击有%d%%几率对敌人施加1层冰冻效果", D[1] * 100)
-        end
-    ),
-    Enchantment(
-        "ignite_weapon",
-        function(self, inst, cmp, id)
-            local min, max = cmp.quality * 3, cmp.quality * 6
-            cmp.datas[id] = { math.random(min, max) / 100 }
-        end,
-        function(self, inst, cmp, id)
-            inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
-                if math.random() < cmp.datas[id][1] then
-                    EntUtil:ignite(target)
-                end
-            end)
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.weapon ~= nil
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            return string.format("[要求:武器]攻击有%d%%几率点燃敌人", D[1] * 100)
-        end
-    ),
-    Enchantment(
-        "poison_weapon",
-        function(self, inst, cmp, id)
-            local min, max = cmp.quality * 3, cmp.quality * 6
-            cmp.datas[id] = { math.random(min, max) / 100 }
-        end,
-        function(self, inst, cmp, id)
-            inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
-                if math.random() < cmp.datas[id][1] then
-                    EntUtil:poison(target)
-                end
-            end)
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.weapon ~= nil
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            return string.format("[要求:武器]攻击有%d%%几率令敌人中毒", D[1] * 100)
-        end
-    ),
-    Enchantment(
-        "attack_fire",
-        function(self, inst, cmp, id)
-            local arg = cmp.quality
-            local min, max = arg * 3 + 5, arg * 5 + 10
-            cmp.datas[id] = { math.random(min, max) }
-        end,
-        function(self, inst, cmp, id)
-            inst.components.equippable:WgAddEquipFn(function(inst, owner)
-                if cmp[id .. "_fn"] == nil then
-                    cmp[id .. "_fn"] = owner.components.combat:WgAddCalcDamageFn(function(damage, inst, target, weapon)
-                        local data = { damage = damage, inst = inst, target = target, weapon = weapon }
-                        local damage = data.damage
-                        if data.target
-                            and EntUtil:is_burning(data.target) then
-                            damage = damage + cmp.datas[id][1]
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("攻击对牦牛额外造成%d点伤害",
+        self.data.dmg)
+end, 
+{hp=10,hg=30,san=30,dmg=30}, 1),
+Enchantment("dmg_recover",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.weapon:WgAddEquipFn(function(inst, owner)
+        if cmp[id.."_fn"] == nil then
+            cmp[id.."_fn"] = EntUtil:listen_for_event(owner, "onhitother", function(inst, data)
+                if data.target and data.damage then
+                    data.target:DoTaskInTime(3, function(target)
+                        if EntUtil:is_alive(target) then
+                            target.components.health:DoDelta(data.damage)
                         end
-                        return damage
                     end)
                 end
             end)
-            inst.components.equippable:WgAddUnequipFn(function(inst, owner)
-                if cmp[id .. "_fn"] then
-                    owner.components.combat:WgRemoveCalcDamageFn(cmp[id .. "_fn"])
-                    cmp[id .. "_fn"] = nil
-                end
-            end)
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.weapon ~= nil
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            return string.format("[要求:武器]攻击燃烧的敌人额外造成%d点伤害", D[1])
         end
-    ),
-    Enchantment(
-        "attack_frozen",
-        function(self, inst, cmp, id)
-            local arg = cmp.quality
-            local min, max = arg * 3 + 10, arg * 5 + 20
-            cmp.datas[id] = { math.random(min, max) }
-        end,
-        function(self, inst, cmp, id)
-            inst.components.equippable:WgAddEquipFn(function(inst, owner)
-                if cmp[id .. "_fn"] == nil then
-                    cmp[id .. "_fn"] = owner.components.combat:WgAddCalcDamageFn(function(damage, inst, target, weapon)
-                        local data = { damage = damage, inst = inst, target = target, weapon = weapon }
-                        local damage = data.damage
-                        if data.target
-                            and EntUtil:is_frozen(data.target) then
-                            damage = damage + cmp.datas[id][1]
-                        end
-                        return damage
+    end)
+    inst.components.weapon:WgAddUnequipFn(function(inst, owner)
+        if cmp[id.."_fn"] then
+            owner:RemoveEventCallback("onhitother", cmp[id.."_fn"])
+            cmp[id.."_fn"] = nil
+        end
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("攻击的敌人3s后会回复本次受到伤害的生命值")
+end, 
+{wp_dmg=50,hg=80,hp=60,san=70}, 1),
+Enchantment("rose_bloom",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
+        if not inst:HasTag(id) then
+            FxManager:MakeFx("thorns_green", target)
+            EntUtil:make_area_dmg(target, 4, owner, self.data.dmg, inst,
+                EntUtil:add_stimuli(nil, "spike"),
+                {
+                    test = function(v, attacker, weapon)
+                        return v ~= target
+                    end
+                }
+            )
+            inst:AddTag(id)
+            inst:DoTaskInTime(10, function()
+                inst:RemoveTag(id)
+            end)
+        end
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("每隔一段时间,下次攻击会造成%d范围伤害",
+        self.data.dmg)
+end, 
+{dmg=30,hp=20,hg=40}, 1),
+Enchantment("rose_ice_bloom",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
+        if not inst:HasTag(id) then
+            BuffManager:AddBuff(target, "ice")
+            FxManager:MakeFx("thorns_blue", target)
+            EntUtil:make_area_dmg(target, 4, owner, self.data.dmg, inst,
+                EntUtil:add_stimuli(nil, "ice"),
+                {
+                    test = function(v, attacker, weapon)
+                        return v ~= target
+                    end,
+                    fn = function(v, attacker, weapon)
+                        BuffManager:AddBuff(v, "ice")
+                    end
+                }
+            )
+            inst:AddTag(id)
+            inst:DoTaskInTime(10, function()
+                inst:RemoveTag(id)
+            end)
+        end
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("每隔一段时间,下次攻击会造成%d范围伤害,并令伤害对象进入寒冷状态",
+        self.data.dmg)
+end, 
+{hp=20,hg=20,dapper=.01,dmg=10}, 2),
+Enchantment("rose_ice_bloom",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
+        if not inst:HasTag(id) then
+            BuffManager:AddBuff(target, "fce")
+            FxManager:MakeFx("thorns_red", target)
+            EntUtil:make_area_dmg(target, 4, owner, self.data.dmg, inst,
+                EntUtil:add_stimuli(nil, "spike"),
+                {
+                    test = function(v, attacker, weapon)
+                        return v ~= target
+                    end,
+                    fn = function(v, attacker, weapon)
+                        BuffManager:AddBuff(v, "fire")
+                    end
+                }
+            )
+            inst:AddTag(id)
+            inst:DoTaskInTime(15, function()
+                inst:RemoveTag(id)
+            end)
+        end
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("每隔一段时间,下次攻击会造成%d范围伤害,并令伤害对象进入灼烧状态",
+        self.data.dmg)
+end, 
+{hp=20,san=30,finite=50,dmg=10}, 2),
+Enchantment("steal_small_dmg",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
+        if target:HasTag("smallcreature") then
+            BuffManager:AddBuff(owner, "damage_up", nil, self.data.dmg_steal)
+            BuffManager:AddBuff(target, "damage_down", nil, self.data.dmg_steal)
+        end
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("攻击小型生物时,会偷取其%d攻击力",
+        self.data.dmg_steal)
+end, 
+{dmg_steal=20,hp=60}, 2),
+Enchantment("keyboard_dmg",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.equippable:WgAddEquipFn(function(inst, owner)
+        if cmp[id.."_handler"] == nil then
+            cmp[id.."_handler"] = TheInput:AddKeyDownHandler(KEY_F, function()
+                if cmp[id.."_key"] == nil then
+                    cmp[id.."_key"] = true
+                    if cmp[id.."_task"] then
+                        cmp[id.."_task"]:Cancel()
+                        cmp[id.."_task"] = nil
+                    end
+                    cmp[id.."_task"] = inst:DoTaskInTime(.5, function()
+                        cmp[id.."_stack"] = nil
                     end)
+                    local n = cmp[id.."_stack"] or 0
+                    n = math.min(n + 1, 10)
+                    cmp[id.."_stack"] = n
                 end
             end)
-            inst.components.equippable:WgAddUnequipFn(function(inst, owner)
-                if cmp[id .. "_fn"] then
-                    owner.components.combat:WgRemoveCalcDamageFn(cmp[id .. "_fn"])
-                    cmp[id .. "_fn"] = nil
-                end
-            end)
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.weapon ~= nil
-        end,
-        function(self, inst, cmp, id)
-            return string.format("[要求:武器]攻击冰冻的敌人额外造成%d点伤害", cmp.datas[id][1])
         end
-    ),
-    Enchantment(
-        "attack_poison",
-        function(self, inst, cmp, id)
-            local arg = cmp.quality
-            local min, max = arg * 2 + 5, arg * 4 + 10
-            cmp.datas[id] = { math.random(min, max) }
-        end,
-        function(self, inst, cmp, id)
-            inst.components.equippable:WgAddEquipFn(function(inst, owner)
-                if cmp[id .. "_fn"] == nil then
-                    cmp[id .. "_fn"] = owner.components.combat:WgAddCalcDamageFn(function(damage, inst, target, weapon)
-                        local data = { damage = damage, inst = inst, target = target, weapon = weapon }
-                        local damage = data.damage
-                        if data.target
-                            and EntUtil:is_poisoned(data.target) then
-                            damage = damage + cmp.datas[id][1]
-                        end
-                        return damage
-                    end)
-                end
+        if cmp[id.."_handler2"] == nil then
+            cmp[id.."_handler2"] = TheInput:AddKeyUpHandler(KEY_F, function()
+                cmp[id.."_key"] = nil
             end)
-            inst.components.equippable:WgAddUnequipFn(function(inst, owner)
-                if cmp[id .. "_fn"] then
-                    owner.components.combat:WgRemoveCalcDamageFn(cmp[id .. "_fn"])
-                    cmp[id .. "_fn"] = nil
-                end
-            end)
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.weapon ~= nil
-        end,
-        function(self, inst, cmp, id)
-            return string.format("[要求:武器]攻击中毒的敌人额外造成%d点伤害", cmp.datas[id][1])
         end
-    ),
-    Enchantment(
-        "frozen_spread_weapon",
-        function(self, inst, cmp, id)
-            -- cmp.quality = 3
-        end,
-        function(self, inst, cmp, id)
-            inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
-                if EntUtil:is_frozen(target) then
-                    FxManager:MakeFx("thorns_blue", target)
-                    local x, y, z = target:GetPosition():Get()
-                    local ents = TheSim:FindEntities(x, y, z, 6, nil, EntUtil.constants.not_enemy_tags)
-                    for k, v in pairs(ents) do
-                        if v ~= target then
-                            EntUtil:frozen(v)
-                        end
-                    end
-                end
-            end)
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.weapon ~= nil
-                and cmp.quality and cmp.quality >= 3
-        end,
-        function(self, inst, cmp, id)
-            return string.format("[要求:武器,品质达到3]攻击冰冻的敌人会对冰冻周围的敌人施加1层冰冻效果")
+    end)
+    inst.components.equippable:WgAddUnequipFn(function(inst, owner)
+        if cmp[id.."_handler"] then
+            cmp[id.."_handler"]:Remove()
+            cmp[id.."_handler"] = nil
         end
-    ),
-    Enchantment(
-        "fire_spread_weapon",
-        function(self, inst, cmp, id)
-            -- cmp.quality = 3
-        end,
-        function(self, inst, cmp, id)
-            inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
-                if EntUtil:is_burning(target) then
-                    FxManager:MakeFx("firesplash_fx", target)
-                    EntUtil:make_area_dmg2(target, 6, owner, 30, nil,
-                        EntUtil:add_stimuli(nil, "pure"))
-                end
-            end)
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.weapon ~= nil
-                and cmp.quality and cmp.quality >= 3
-        end,
-        function(self, inst, cmp, id)
-            return string.format("[要求:武器,品质达到3]攻击燃烧的敌人会对周围的敌人造成伤害并点燃")
+        if cmp[id.."_handler2"] then
+            cmp[id.."_handler2"]:Remove()
+            cmp[id.."_handler2"] = nil
         end
-    ),
-    Enchantment(
-        "poison_spread_weapon",
-        function(self, inst, cmp, id)
-            -- cmp.quality = 3
-        end,
-        function(self, inst, cmp, id)
-            inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
-                if WARGON:is_poison(target) then
-                    FxManager:MakeFx("thorns_green", target)
-                    EntUtil:make_area_dmg2(target, 6, owner, 10, nil,
-                        EntUtil:add_stimuli(nil, "pure"), {
-                            fn = function(v, attacker, weapon)
-                                EntUtil:poison(v)
-                            end,
-                        })
-                end
-            end)
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.weapon ~= nil
-                and cmp.quality and cmp.quality >= 3
-        end,
-        function(self, inst, cmp, id)
-            return string.format("[要求:武器,品质达到3]攻击中毒的敌人会对周围的敌人造成伤害并令其中毒")
-        end
-    ),
-    Enchantment(
-        "slow_down_weapon",
-        function(self, inst, cmp, id)
-            local min, max = cmp.quality + 15, cmp.quality + 35
-            local min2, max2 = cmp.quality * 3 + 10, cmp.quality * 5 + 15
-            cmp.datas[id] = { math.random(min, max) / 100, math.random(min2, max2) / 100 }
-        end,
-        function(self, inst, cmp, id)
-            inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
-                if math.random() < cmp.datas[id][1] then
-                    EntUtil:add_speed_mod(target, id, -cmp.datas[id][2], 5)
-                end
-            end)
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.weapon ~= nil
-        end,
-        function(self, inst, cmp, id)
-            return string.format("[要求:武器]攻击有%d%%几率令敌人减速%d%%", cmp.datas[id][1] * 100, cmp.datas[id][2] * 100)
-        end
-    ),
-    Enchantment(
-        "speed_weapon",
-        function(self, inst, cmp, id)
-            local min, max = cmp.quality * 2 + 20, cmp.quality * 3 + 35
-            local min2, max2 = cmp.quality * 3 + 5, cmp.quality * 5 + 10
-            cmp.datas[id] = { math.random(min, max) / 100, math.random(min2, max2) / 100 }
-        end,
-        function(self, inst, cmp, id)
-            inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
-                if math.random() < cmp.datas[id][1] then
-                    EntUtil:add_speed_mod(owner, id, cmp.datas[id][2], 5)
-                end
-            end)
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.weapon ~= nil
-        end,
-        function(self, inst, cmp, id)
-            return string.format("[要求:武器]攻击有%d%%几率增加%d%%移速", cmp.datas[id][1] * 100, cmp.datas[id][2] * 100)
-        end
-    ),
-    Enchantment(
-        "blood_weapon",
-        function(self, inst, cmp, id)
-            local min, max = cmp.quality + 10, cmp.quality + 25
-            cmp.datas[id] = { math.random(min, max) / 100, math.random(min, max) }
-        end,
-        function(self, inst, cmp, id)
-            cmp[id .. "_fn"] = function(owner, data)
-                if data and data.damage then
-                    if math.random() < cmp.datas[id][1] and EntUtil:is_alive(owner) then
-                        owner.components.health:DoDelta(cmp.datas[id][2])
-                    end
-                end
+    end)
+    inst.components.weapon:WgAddWeaponDamageFn(function(inst, damage)
+        local n = cmp[id.."_stack"] or 0
+        return damage + n*self.data.dmg
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("每次按下F键,会增加%d攻击力",
+        self.data.dmg)
+end, 
+{dmg=5,hp=40,san=40}, 1),
+Enchantment("assassin_part",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return ""
+end, 
+{dmg=10,pentrt=10}, 1),
+Enchantment("drop_smallmeat",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst:ListenForEvent("wg_owner_killed", function(inst, data)
+        if data.victim and data.victim.components.health then
+            local max = data.victim.components.health:GetMaxHealth()
+            local n = math.max(0, max-100)
+            local rate = (1-500/(500+n))
+            if math.random() < rate then
+                local meat = SpawnPrefab("smallmeat")
+                Kit:throw_item(meat, data.owner)
             end
-            inst.components.equippable:WgAddEquipFn(function(inst, owner)
-                inst:ListenForEvent("onhitother", cmp[id .. "_fn"], owner)
-            end)
-            inst.components.equippable:WgAddUnequipFn(function(inst, owner)
-                inst:RemoveEventCallback("onhitother", cmp[id .. "_fn"], owner)
-            end)
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.weapon ~= nil
-        end,
-        function(self, inst, cmp, id)
-            local data = cmp.datas[id]
-            return string.format("[要求:武器]攻击有%d%%的几率回复%d的血量", data[1] * 100, data[2])
         end
-    ),
-    Enchantment(
-        "sanity_weapon",
-        function(self, inst, cmp, id)
-            local min, max = cmp.quality + 10, cmp.quality + 25
-            cmp.datas[id] = { math.random(min, max) / 100, math.random(min, max) }
-        end,
-        function(self, inst, cmp, id)
-            cmp[id .. "_fn"] = function(owner, data)
-                if data and data.damage then
-                    if math.random() < cmp.datas[id][1] and owner.components.sanity then
-                        owner.components.sanity:DoDelta(cmp.datas[id][2])
-                    end
-                end
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("杀死单位有几率掉落小肉,生命越高的单位掉率越高")
+end, 
+{hp=25,san=10,hg=25}, 1),
+Enchantment("low_finite_dmg_up",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.weapon:WgAddWeaponDamageFn(function(inst, damage)
+        if inst.components.finiteuses then
+            local p = inst.components.finiteuses:GetPercent()
+            if p <= self.data.rate then
+                damage = damage + self.data.dmg
             end
-            inst.components.equippable:WgAddEquipFn(function(inst, owner)
-                inst:ListenForEvent("onhitother", cmp[id .. "_fn"], owner)
-            end)
-            inst.components.equippable:WgAddUnequipFn(function(inst, owner)
-                inst:RemoveEventCallback("onhitother", cmp[id .. "_fn"], owner)
-            end)
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.weapon ~= nil
-        end,
-        function(self, inst, cmp, id)
-            local data = cmp.datas[id]
-            return string.format("[要求:武器]攻击有%d%%的几率回复%d的理智", data[1] * 100, data[2])
         end
-    ),
-    Enchantment(
-        "boom_weapon",
-        function(self, inst, cmp, id)
-            local min, max = cmp.quality + 10, cmp.quality * 2 + 15
-            cmp.datas[id] = { math.random(min, max) / 100, cmp.quality * 15 + 25 }
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
-                if math.random() < D[1] then
-                    local pos = Kit:find_ground_pos(owner, math.random(3, 6))
-                    if pos then
-                        local cannon = SpawnPrefab("tp_cannon_shot")
-                        cannon.Transform:SetPosition(owner.Transform:GetPosition():Get())
-                        cannon.components.explosive.explosivedamage = cmp.datas[id][2]
-                        cannon.components.throwable:Throw(pos, owner)
-                    end
-                end
-            end)
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.weapon ~= nil
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            return string.format("[要求:武器]攻击时有%d%%几率丢出一枚炸弹，造成%d点伤害", D[1] * 100, D[2])
+        return damage
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("耐久低于%d%%时,攻击力增加%d",
+        self.data.rate * 100, self.data.dmg)
+end, 
+{rate=.3,dmg=35,atk_spd=.05,hp=10}, 1),
+-- quality 2
+Enchantment("conqueror",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
+        local n = cmp.datas[id] or 0
+        n = math.min(n + 1, 12)
+        if n == 12 then
+            BuffManager:AddBuff(owner, "life_setal_up", nil, self.data.life_steal2)
         end
-    ),
-    Enchantment(
-        "kill_boom",
-        function(self, inst, cmp, id)
-            local min, max = cmp.quality * 3 + 10, cmp.quality * 6 + 15
-            local min2, max2 = cmp.quality * 3 + 10, cmp.quality * 6 + 15
-            cmp.datas[id] = { math.random(min, max) / 100, math.random(min2, max2) }
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            cmp[id .. "_fn"] = function(owner, data)
-                if math.random() < D[1] and data and data.victim then
-                    if data.victim:RemoveTag("wall") then
-                        FxManager:MakeFx("explodering_fx", data.victim)
-                        EntUtil:make_area_dmg2(data.victim, 4, owner, D[2], nil,
-                            EntUtil:add_stimuli(nil, "pure"))
-                    end
-                end
+        if cmp[id.."_task"] then
+            cmp[id.."_task"]:Cancel()
+            cmp[id.."_task"] = nil
+        end
+        cmp[id.."_task"] = inst:DoTaskInTime(5, function(inst)
+            cmp.datas[id] = nil
+            if cmp[id.."_task"] then
+                cmp[id.."_task"]:Cancel()
+                cmp[id.."_task"] = nil
             end
-            inst.components.equippable:WgAddEquipFn(function(inst, owner)
-                inst:ListenForEvent("killed", cmp[id .. "_fn"], owner)
-            end)
-            inst.components.equippable:WgAddUnequipFn(function(inst, owner)
-                inst:RemoveEventCallback("killed", cmp[id .. "_fn"], owner)
-            end)
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.weapon ~= nil
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            return string.format("[要求:武器]杀死敌人有%d%%几率爆炸造成%d点伤害", D[1] * 100, D[2])
+        end)
+    end)
+    inst.components.weapon:WgAddWeaponDamageFn(function(inst, damage)
+        local n = cmp.datas[id] or 0
+        return damage + n * 2
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("攻击会叠加层数,提升攻击力,叠至最大层时,吸血%+d%%(%d层)",
+        self.data.life_steal2 * 100, cmp.datas[id] or 0)
+end, 
+{hp=20,san=30,hg=30,life_steal2=.2}, 2),
+Enchantment("thunder_weapon2",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
+        if math.random() < self.data.rate then
+            BuffManager:AddBuff(target, "electric")
         end
-    ),
-    -- Enchantment(
-    --     "fire_elem",
-    --     function(self, inst, cmp, id)
-    --         cmp.datas[id] = { 10 + cmp.quality * 10 }
-    --     end,
-    --     function(self, inst, cmp, id)
-    --         local D = cmp.datas[id]
-    --         inst.components.weapon:WgAddWeaponDamageFn(function(inst, damage)
-    --             return math.max(0, damage - D[1])
-    --         end)
-    --         inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
-    --             EntUtil:get_attacked(target, owner, D[1], nil, 
-    --                 EntUtil:add_stimuli(nil, "fire", "pure") )
-    --             if math.random() < .1 then
-    --                 EntUtil:ignite(target)
-    --             end
-    --         end)
-    --     end,
-    --     function(self, inst, cmp, id)
-    --         return inst.components.weapon ~= nil
-    --             and inst.compoents.tp_forge_weapon ~= nil
-    --     end,
-    --     function(self, inst, cmp, id)
-    --         local D = cmp.datas[id]
-    --         return string.format("[要求:武器,锻造]造成%d点火属性伤害,减少%d点伤害;5%%概率点燃敌人", D[1], D[1])
-    --     end
-    -- ),
-    -- Enchantment(
-    --     "ice_elem",
-    --     function(self, inst, cmp, id)
-    --         cmp.datas[id] = { 10 + cmp.quality * 10 }
-    --     end,
-    --     function(self, inst, cmp, id)
-    --         local D = cmp.datas[id]
-    --         inst.components.weapon:WgAddWeaponDamageFn(function(inst, damage)
-    --             return math.max(0, damage - D[1])
-    --         end)
-    --         inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
-    --             EntUtil:get_attacked(target, owner, D[1], nil, 
-    --                 EntUtil:add_stimuli(nil, "ice", "pure") )
-    --             if math.random() < .1 then
-    --                 EntUtil:frozen(target)
-    --             end
-    --         end)
-    --     end,
-    --     function(self, inst, cmp, id)
-    --         return inst.components.weapon ~= nil
-    --             and inst.compoents.tp_forge_weapon ~= nil
-    --     end,
-    --     function(self, inst, cmp, id)
-    --         local D = cmp.datas[id]
-    --         return string.format("[要求:武器,锻造]造成%d点冰属性伤害,减少%d点伤害;10%%概率冰冻敌人", D[1], D[1])
-    --     end
-    -- ),
-    -- Enchantment(
-    --     "electric_elem",
-    --     function(self, inst, cmp, id)
-    --         cmp.datas[id] = { 10 + cmp.quality * 10 }
-    --     end,
-    --     function(self, inst, cmp, id)
-    --         local D = cmp.datas[id]
-    --         inst.components.weapon:WgAddWeaponDamageFn(function(inst, damage)
-    --             return math.max(0, damage - D[1])
-    --         end)
-    --         inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
-    --             EntUtil:get_attacked(target, owner, D[1], nil, 
-    --                 EntUtil:add_stimuli(nil, "electric", "pure") )
-    --             if math.random() < .1 then
-    --                 BuffManager:AddBuff(target, "electric")
-    --             end
-    --         end)
-    --     end,
-    --     function(self, inst, cmp, id)
-    --         return inst.components.weapon ~= nil
-    --             and inst.compoents.tp_forge_weapon ~= nil
-    --     end,
-    --     function(self, inst, cmp, id)
-    --         local D = cmp.datas[id]
-    --         return string.format("[要求:武器,锻造]造成%d点雷属性伤害,减少%d点伤害;10%%概率令敌人导电", D[1], D[1])
-    --     end
-    -- ),
-    -- Enchantment(
-    --     "blood_elem",
-    --     function(self, inst, cmp, id)
-    --         cmp.datas[id] = { 10 + cmp.quality * 10 }
-    --     end,
-    --     function(self, inst, cmp, id)
-    --         local D = cmp.datas[id]
-    --         inst.components.weapon:WgAddWeaponDamageFn(function(inst, damage)
-    --             return math.max(0, damage - D[1])
-    --         end)
-    --         inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
-    --             EntUtil:get_attacked(target, owner, D[1], nil, 
-    --                 EntUtil:add_stimuli(nil, "blood", "pure") )
-    --             if math.random() < .1 then
-    --                 BuffManager:AddBuff(target, "blood")
-    --             end
-    --         end)
-    --     end,
-    --     function(self, inst, cmp, id)
-    --         return inst.components.weapon ~= nil
-    --             and inst.compoents.tp_forge_weapon ~= nil
-    --     end,
-    --     function(self, inst, cmp, id)
-    --         local D = cmp.datas[id]
-    --         return string.format("[要求:武器,锻造]造成%d点冰属性伤害,减少%d点伤害;10%%概率令敌人叠加出血层数", D[1], D[1])
-    --     end
-    -- ),
-    -- Enchantment(
-    --     "shadow_elem",
-    --     function(self, inst, cmp, id)
-    --         cmp.datas[id] = { 10 + cmp.quality * 10 }
-    --     end,
-    --     function(self, inst, cmp, id)
-    --         local D = cmp.datas[id]
-    --         inst.components.weapon:WgAddWeaponDamageFn(function(inst, damage)
-    --             return math.max(0, damage - D[1])
-    --         end)
-    --         inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
-    --             EntUtil:get_attacked(target, owner, D[1], nil, 
-    --                 EntUtil:add_stimuli(nil, "shadow", "pure") )
-    --             if math.random() < .05 then
-    --                 local pt = target:GetPosition()
-    --                 local st_pt =  FindWalkableOffset(pt or owner:GetPosition(), math.random()*2*PI, 2, 3)
-    --                 if st_pt then
-    --                     inst.SoundEmitter:PlaySound("dontstarve/common/shadowTentacleAttack_1")
-    --                     inst.SoundEmitter:PlaySound("dontstarve/common/shadowTentacleAttack_2")            
-    --                     st_pt = st_pt + pt
-    --                     local st = SpawnPrefab("shadowtentacle")
-    --                     --print(st_pt.x, st_pt.y, st_pt.z)
-    --                     st.Transform:SetPosition(st_pt.x, st_pt.y, st_pt.z)
-    --                     st.components.combat:SetTarget(target)
-    --                 end
-    --             end
-    --         end)
-    --     end,
-    --     function(self, inst, cmp, id)
-    --         return inst.components.weapon ~= nil
-    --             and inst.compoents.tp_forge_weapon ~= nil
-    --     end,
-    --     function(self, inst, cmp, id)
-    --         local D = cmp.datas[id]
-    --         return string.format("[要求:武器,锻造]造成%d点暗属性伤害,减少%d点伤害;5%%概率召唤暗影触手", D[1], D[1])
-    --     end
-    -- ),
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("攻击有%d%%几率令敌人进入感电状态",
+        self.data.rate * 100)
+end, 
+{wp_dmg=10,dapper=.01,rate=.33}, 2),
+Enchantment("conductive_ice_weapon",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
+        if target:HasTag("electric") then
+            BuffManager:AddBuff(target, "conductive_ice")
+        end
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("攻击感电状态的敌人会令其进入感电易寒冷状态")
+end,
+{hp=20,san=30,crit=.1}, 2),
+Enchantment("conductive_ice_weapon",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
+        if target:HasTag("electric") then
+            BuffManager:AddBuff(target, "conductive_fire")
+        end
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("攻击感电状态的敌人会令其进入感电易灼烧状态")
+end, 
+{hp=20,hg=30,hit_rate=10}, 2),
+Enchantment("small_aoe",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
+        FxManager:MakeFx("groundpound_fx", target)
+        EntUtil:make_area_dmg(target, 3.5, owner, self.data.dmg, inst,
+            EntUtil:add_stimuli(nil, inst.components.weapon.dmg_type),
+            {
+                test = function(v, attacker, weapon)
+                    return v ~= target
+                end
+            }
+        )
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("攻击对周围单位造成%d伤害",
+        self.data.dmg)
+end, 
+{dmg=20,wp_dmg=5,hp=30}, 2),
+Enchantment("fire_ex_dmg",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
+        if BuffManager:HasBuff(target, "fire") then
+            EntUtil:get_attacked(target, owner, self.data.dmg, nil, 
+                EntUtil:add_stimuli(nil, inst.components.weapon.dmg_type)
+            )
+        end
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("对灼烧状态的单位造成额外伤害")
+end, 
+{dmg=40,finite=10}, 2),
+Enchantment("atk_poison_rcv_down",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
+        if BuffManager:HasBuff(target, "poison") then
+            BuffManager:AddBuff(target, "recover_down", self.data.rate)
+        end
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("攻击毒害状态的目标降低其%d%%生命恢复",
+        self.data.rate * 100)
+end, 
+{rate=.2,atk_spd=.1,wp_dmg=10}, 2),
+Enchantment("atk_ice_def_down",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
+        if BuffManager:HasBuff(target, "ice") then
+            BuffManager:AddBuff(target, "defense_down", self.data.def2)
+        end
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("攻击寒冷状态的敌人,降低其%d防御",
+        self.data.def2)
+end, 
+{def2=30,crit=.1,san_rate=.15}, 2),
+Enchantment("drop_gold",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst:ListenForEvent("wg_owner_killed", function(inst, data)
+        if data.victim and data.victim.components.tp_creature_equip then
+            local max = data.victim.components.health:GetMaxHealth()
+            local level = data.victim.components.tp_creature_equip.level or 1
+            local n = math.max(1,math.floor(level/10))
+            if data.victim:HasTag("world_boss") then
+                n = n*10
+            elseif data.victim:HasTag("epic") then
+                n = n*5
+            elseif data.victim:HasTag("largecreature") then
+                n = n*2
+            end
+            while n > 0 do
+                local dt = math.min(40, n)
+                local reward = SpawnPrefab("oinc")
+                reward.components.stackable:SetStackSize(dt)
+                Kit:throw_item(reward, data.owner)
+                n = n - dt
+            end
+        end
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("杀死生物装备的单位后,会获得赏金,怪物等级越高,体型越大,赏金越多")
+end, 
+{atk_spd=.15,crit=.1}, 2),
+Enchantment("anubis_believer",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst:ListenForEvent("wg_owner_killed", function(inst, data)
+        if data.victim 
+        and data.victim.components.tp_creature_equip then
+            local n = 1
+            if data.victim:HasTag("epic") then
+                n = 4
+            elseif data.victim:HasTag("largecreature") then
+                n = 2
+            end
+            if data.owner.components.tp_recorder then
+                local stk = data.owner.components.tp_recorder.anubis_stack
+                data.owner.components.tp_recorder.anubis_stack = stk+n
+            end
+        end
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("杀死生物装备的单位后,会增加阿努比斯的祭献值")
+end, 
+{wp_dmg=10,san_resist=.1,hp=20}, 2),
+Enchantment("attacking_absorb",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.equippable:WgAddEquipAttackedFn(function(damage, attacker, weapon, owner, item)
+        if owner.sg and owner.sg:HasStateTag("attack")
+        and owner.sg:HasStateTag("busy") then
+            if owner.sg:HasStateTag("abouttoattack") then
+                damage = damage * self.data.rate
+            else
+                damage = damage * self.data.rate/3
+            end
+        end
+        return damage
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.equippable ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("攻击时降低受到的伤害,前摇时降低的伤害较少")
+end, 
+{rate=.6,life_steal=.1,finite=30}, 2),
+-- quality 3
+Enchantment("fire_immune",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
+        BuffManager:AddBuff(owner, "fire_immune")
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("攻击获得buff,免疫燃烧")
+end, 
+{hp=30,pentrt=10,def=10}, 3),
+Enchantment("poison_immune",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
+        BuffManager:AddBuff(owner, "poison_immune")
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("攻击获得buff,免疫中毒")
+end, 
+{hp=30,san=30,spd=1}, 3),
+Enchantment("frozen_immune",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
+        BuffManager:AddBuff(owner, "frozen_immune")
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("攻击获得buff,免疫冰冻")
+end, 
+{hp=30,hg=30,hit_rate=10}, 3),
+Enchantment("lose_finite_up_dmg",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.weapon:WgAddWeaponDamageFn(function(inst, damage)
+        if inst.components.finiteuses then
+            local use = inst.components.finiteuses:GetUses()
+            local total = inst.components.finiteuses.total
+            damage = damage + math.floor((total - use)/self.data.rate)
+        end
+        return damage
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("每损失%d点耐久,攻击力越高",
+        self.data.rate)
+end, 
+{rate=5,hp=50,hit_rate=10}, 3),
+Enchantment("recover_debuff_weapon",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
+        BuffManager:AddBuff(target, "recover_down", self.data.rate)
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("攻击令目标生命恢复降低%d%%",
+        self.data.rate*100)
+end, 
+{rate=.3,finite=100,hp=50}, 3),
+-- quality 4
+Enchantment("drop_one_loot",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
+        if target.components.lootdropper
+        and math.random() < self.rate then
+            target.components.lootdropper:DropSingleLoot()
+        end
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("攻击有几率掉落一个属于目标的战利品")
+end, 
+{spd=2,atk_spd=.15,rate=.1}, 4),
+Enchantment("weapon_from_strengthen",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.weapon:WgAddWeaponDamageFn(function(inst, damage)
+        local owner = inst.components.equippable and inst.components.equippable.owner
+        if owner then
+            local power = owner.components.tp_player_attr.power
+            return damage + power
+        end
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("强壮属性带来的攻击力加成翻倍")
+end, 
+{hp=125,hg=80}, 4),
+-- Enchantment("elem_debuff_immune",
+-- function(self, inst, cmp, id)
+-- end,
+-- function(self, inst, cmp, id)
+--     inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
+--         BuffManager:AddBuff(owner, "fire_immune")
+--         BuffManager:AddBuff(owner, "poison_immune")
+--         BuffManager:AddBuff(owner, "frozen_immune")
+--     end)
+-- end,
+-- function(self, inst, cmp, id)
+--     return inst.components.weapon ~= nil
+-- end,
+-- function(self, inst, cmp, id)
+--     return string.format("攻击获得buff,免疫燃烧,免疫中毒,免疫冰冻")
+-- end, 
+-- {hp=55,san=65,hg=55}, 4),
+Enchantment("shadow_killer",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
+        if target:HasTag("shadowcreature") then
+            EntUtil:get_attacked(target, owner, self.data.dmg, nil,
+                EntUtil:add_stimuli(nil, inst.components.weapon.dmg_type)
+            )
+        end
+    end)
+    -- inst.components.equippable:WgAddEquipFn(function(inst, owner)
+    --     EntUtil:add_speed_amt(owner, id, self.data.spd)
+    --     owner.components.sanity:WgAddNegativeModifier(id, self.data.san_resist)
+    -- end)
+    -- inst.components.equippable:WgAddUnequipFn(function(inst, owner)
+    --     EntUtil:rm_speed_amt(owner, id)
+    --     owner.components.sanity:WgRemoveNegativeModifier(id)
+    -- end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("攻击对暗影生物额外造成%d伤害",
+        self.data.dmg)
+end, 
+{dmg=200,spd=1,san_resist=.2}, 4),
+Enchantment("atk_defense",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
+        BuffManager:AddBuff(target, "defense_up", nil, self.data.def2)
+    end)
+    -- inst.components.weapon:AddWeaponDmgMod(id, self.data.dmg)
+    -- inst.components.equippable:WgAddEquipMaxHealthModifier(id, self.data.hp)
+    -- inst.components.equippable:WgAddEquipMaxSanityModifier(id, self.data.san)
+    -- inst.components.equippable:WgAddEquipMaxHungerModifier(id, self.data.hg)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("攻击提升%d防御", 
+        self.data.def2)
+end, 
+{def2=50,wp_dmg=20,hp=70,san=55,hg=55}, 4),
+Enchantment("low_hp_killer",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
+        if target.components.health:GetPercent() < self.data.rate then
+            EntUtil:get_attacked(target, owner, self.data.dmg, nil,
+                EntUtil:add_stimuli(nil, inst.components.weapon.dmg_type)
+            )
+        end
+    end)
+end,
+function(self, inst, cmp, id)
+    return true
+end,
+function(self, inst, cmp, id)
+    return string.format("对生命值低于%d%%的单位额外造成%d点伤害",
+        self.data.rate*100, self.data.dmg)
+end, 
+{rate=.3,dmg=300,san_resist=.3,pentrt=30}, 4),
+-- quality 6
+Enchantment("kind_aoe",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
+        FxManager:MakeFx("groundpoundring_fx", owner)
+        EntUtil:make_area_dmg(owner, 12, owner, 0, inst,
+            EntUtil:add_stimuli(nil, inst.components.weapon.dmg_type),
+            {
+                calc = true,
+                mult = self.data.dmg_mult,
+                test = function(v, attacker, weapon)
+                    return v ~= target
+                        and EntUtil:check_congeneric(v, target)
+                end,
+            }
+        )
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("攻击会对周围的与目标同类的单位造成伤害")
+end, 
+{dmg_mult=.35,hp=130,hg=125,san=125}, 6),
+Enchantment("hades_weapon",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.weapon:WgAddWeaponAttackFn(function(inst, owner, target)
+        local pos = target:GetPosition()    
+        local foot = SpawnPrefab("tp_hell_guard")	
+        foot.Transform:SetRotation(self:SetFootRotation())
+        foot.Transform:SetPosition(pos:Get())
+        foot:DoTaskInTime(10*FRAMES, function() foot:StartStep() end)
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("攻击暗影生物会召唤冥界守卫,对暗影生物造成毁灭性打击")
+end,
+{life_steal=.33,dapper=.1,hp=100,san=145}, 6),
+Enchantment("up_dmg_by_san_p",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.weapon:WgAddWeaponDamageFn(function(inst, damage)
+        local owner = inst.components.equippable and inst.components.equippable.owner
+        if owner.components.sanity then
+            local p = owner.components.sanity:GetPercent()
+            damage = damage + p*100
+        end
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.weapon ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("你每拥有1%%的理智,你的攻击力增加1点")
+end, 
+{dapper=-.1,spd=1,pentrt=20,hp=120,san=100,hg=130}, 6),
 }
 -- weapon over
-local enchant_all = {
-    Enchantment(
-        "speed_equip",
-        function(self, inst, cmp, id)
-            cmp.datas[id] = { cmp.quality * 0.05 }
-        end,
-        function(self, inst, cmp, id)
-            local slot = inst.components.equippable.equipslot
-            inst.components.equippable:WgAddEquipFn(function(inst, owner)
-                EntUtil:add_speed_mod(owner, id .. slot, cmp.datas[id][1])
-            end)
-            inst.components.equippable:WgAddUnequipFn(function(inst, owner)
-                EntUtil:rm_speed_mod(owner, id .. slot)
-            end)
-        end,
-        function(self, inst, cmp, id)
-            return true
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            return string.format("增加%d%%的移速", D[1] * 100)
-        end
-    ),
-    Enchantment(
-        "max_health_equip",
-        function(self, inst, cmp, id)
-            local min, max = cmp.quality * cmp.quality + 20, cmp.quality * 10 + 50
-            cmp.datas[id] = { math.random(min, max) }
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            inst.components.equippable:WgAddEquipMaxHealthModifier(id, D[1])
-        end,
-        function(self, inst, cmp, id)
-            return true
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            return string.format("增加%d最大生命值", D[1])
-        end
-    ),
-    Enchantment(
-        "max_sanity_equip",
-        function(self, inst, cmp, id)
-            local min, max = cmp.quality * cmp.quality + 20, cmp.quality * 10 + 50
-            cmp.datas[id] = { math.random(min, max) }
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            inst.components.equippable:WgAddEquipMaxSanityModifier(id, D[1])
-        end,
-        function(self, inst, cmp, id)
-            return true
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            return string.format("增加%d最大理智值", D[1])
-        end
-    ),
-    Enchantment(
-        "max_hunger_equip",
-        function(self, inst, cmp, id)
-            local min, max = cmp.quality * cmp.quality + 20, cmp.quality * 10 + 50
-            cmp.datas[id] = { math.random(min, max) }
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            inst.components.equippable:WgAddEquipMaxHungerModifier(id, D[1])
-        end,
-        function(self, inst, cmp, id)
-            return true
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            return string.format("增加%d最大饥饿值", D[1])
-        end
-    ),
-    Enchantment(
-        "lighter",
-        function(self, inst, cmp, id)
-        end,
-        function(self, inst, cmp, id)
-            cmp[id .. "_switch"] = false
-            if cmp[id .. "_fx"] == nil then
-                local fx = CreateEntity()
-                fx.entity:AddTransform()
-                Kit:make_light(fx, "lantern")
-                fx.Light:Enable(cmp[id .. "_switch"])
-                fx:AddTag("FX")
-                cmp.inst:AddChild(fx)
-                cmp[id .. "_fx"] = fx
-            end
-            inst:AddComponent("wg_action_tool")
-            inst.components.wg_action_tool:RegisterSkillInfo({
-                desc = "开关灯",
-            })
-            inst.components.wg_action_tool.test = function(inst, doer)
-                --检测
-                return true
-            end
-            inst.components.wg_action_tool.click_fn = function(inst, doer)
-                local switch = not cmp[id .. "_switch"]
-                cmp[id .. "_fx"].Light:Enable(switch)
-                cmp[id .. "_switch"] = switch
-            end
-            inst:ListenForEvent("equipped", function(inst, data)
-                cmp[id .. "_switch"] = false
-                if cmp[id .. "_fx"] then
-                    cmp[id .. "_fx"].Light:Enable(cmp[id .. "_switch"])
-                end
-            end)
-            -- inst:ListenForEvent("unequipped", function(inst, data)
-            -- end)
-            inst:ListenForEvent("ondropped", function(inst, data)
-                cmp[id .. "_switch"] = false
-                if cmp[id .. "_fx"] then
-                    cmp[id .. "_fx"].Light:Enable(cmp[id .. "_switch"])
-                end
-            end)
-            inst:ListenForEvent("onputininventory", function(inst, data)
-                cmp[id .. "_switch"] = false
-                if cmp[id .. "_fx"] then
-                    cmp[id .. "_fx"].Light:Enable(cmp[id .. "_switch"])
-                end
-            end)
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.wg_action_tool == nil
-                and cmp.quality and cmp.quality >= 3
-        end,
-        function(self, inst, cmp, id)
-            return string.format("[要求:无技能装备,品质达到3]获得技能(开关灯)")
-        end
-    ),
-    Enchantment(
-        "dress",
-        function(self, inst, cmp, id)
-            cmp.datas[id] = { TUNING.DAPPERNESS_SMALL * cmp.quality }
-        end,
-        function(self, inst, cmp, id)
-            local GetDapperness = inst.components.equippable.GetDapperness
-            inst.components.equippable.GetDapperness = function(self, owner)
-                local dapperness = GetDapperness(self, owner)
-                return dapperness + cmp.datas[id][1]
-            end
-        end,
-        function(self, inst, cmp, id)
-            return true
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            return string.format("回复理智效果增加%.2f", D[1])
-        end
-    ),
-}
-
-local enchant_cloth = {
-    Enchantment(
-        "evade_equip",
-        function(self, inst, cmp, id)
-            local min, max = cmp.quality + 10, cmp.quality * 3 + 10
-            cmp.datas[id] = { math.random(min, max)*2 }
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            inst.components.equippable:WgAddEquipFn(function(inst, owner)
-                owner.components.combat:AddEvadeRateMod(id, D[1])
-            end)
-            inst.components.equippable:WgAddUnequipFn(function(inst, owner)
-                owner.components.combat:RmEvadeRateMod(id)
-            end)
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.equippable.equipslot ~= EQUIPSLOTS.HANDS
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            return string.format("[要求:非手持]受到攻击时，有%d几率抵消此攻击", D[1])
-        end
-    ),
-    Enchantment(
-        "summer_insulation",
-        function(self, inst, cmp, id)
-            cmp.datas[id] = { 30 * cmp.quality }
-        end,
-        function(self, inst, cmp, id)
-            if inst.components.insulator == nil then
-                inst:AddComponent("insulator")
-                inst.components.insulator:SetInsulation(0)
-            end
-            inst.components.insulator.summer_insulation = cmp.datas[id][1]
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.equippable.equipslot ~= EQUIPSLOTS.HANDS
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            return string.format("[要求:非手持]增加%ds夏季的降温效果", D[1])
-        end
-    ),
-    Enchantment(
-        "winter_insulation",
-        function(self, inst, cmp, id)
-            cmp.datas[id] = { 30 * cmp.quality }
-        end,
-        function(self, inst, cmp, id)
-            if inst.components.insulator == nil then
-                inst:AddComponent("insulator")
-                inst.components.insulator:SetInsulation(0)
-            end
-            inst.components.insulator.winter_insulation = cmp.datas[id][1]
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.equippable.equipslot ~= EQUIPSLOTS.HANDS
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            return string.format("[要求:非手持]增加%ds冬季的保暖效果", D[1])
-        end
-    ),
-    Enchantment(
-        "umbrella",
-        function(self, inst, cmp, id)
-            cmp.datas[id] = { cmp.quality * .15 }
-        end,
-        function(self, inst, cmp, id)
-            if inst.components.waterproofer == nil then
-                inst:AddComponent("waterproofer")
-            end
-            local GetEffectiveness = inst.components.waterproofer.GetEffectiveness
-            inst.components.waterproofer.GetEffectiveness = function(self)
-                local effectiveness = GetEffectiveness(self)
-                return math.min(1, effectiveness + cmp.datas[id][1])
-            end
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.equippable.equipslot ~= EQUIPSLOTS.HANDS
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            return string.format("[要求:非手持]增加%d%%防雨效果", D[1] * 100)
-        end
-    ),
-    Enchantment(
-        "fire_defence",
-        function(self, inst, cmp, id)
-            cmp.datas[id] = { .1 * cmp.quality }
-        end,
-        function(self, inst, cmp, id)
-            inst.components.equippable:WgAddEquipFn(function(inst, owner)
-                if owner.components.health then
-                    owner.components.health.fire_damage_scale = owner.components.health.fire_damage_scale -
-                    cmp.datas[id][1]
-                end
-            end)
-            inst.components.equippable:WgAddUnequipFn(function(inst, owner)
-                if owner.components.health then
-                    owner.components.health.fire_damage_scale = owner.components.health.fire_damage_scale +
-                    cmp.datas[id][1]
-                end
-            end)
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.equippable.equipslot ~= EQUIPSLOTS.HANDS
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            return string.format("[要求:非手持]降低%d%%火焰伤害", D[1] * 100)
-        end
-    ),
-    Enchantment(
-        "poison_blocker",
-        function(self, inst, cmp, id)
-        end,
-        function(self, inst, cmp, id)
-            inst.components.equippable.poisonblocker = true
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.equippable.equipslot ~= EQUIPSLOTS.HANDS
-        end,
-        function(self, inst, cmp, id)
-            return string.format("[要求:非手持]防毒")
-        end
-    ),
-    Enchantment(
-        "poison_gas_blocker",
-        function(self, inst, cmp, id)
-        end,
-        function(self, inst, cmp, id)
-            inst.components.equippable.poisongasblocker = true
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.equippable.equipslot ~= EQUIPSLOTS.HANDS
-        end,
-        function(self, inst, cmp, id)
-            return string.format("[要求:非手持]防毒气")
-        end
-    ),
-}
 
 local enchant_armor = {
-    Enchantment(
-        "spear_magic_circle",
-        function(self, inst, cmp, id)
-            cmp.datas[id] = { 30, cmp.quality * 5 + 5, 30 }
-        end,
-        function(self, inst, cmp, id)
-            if inst.components.wg_recharge == nil then
-                inst:AddComponent("wg_recharge")
-                inst.components.wg_recharge:SetCommon(id)
+-- quality 1
+Enchantment("life_wood",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.armor:WgAddTakeDamageFn(function(ab_dmg, attacker, weapon, owner, item, stimuli)
+        if cmp.datas[id] == nil then
+            cmp.datas[id] = 0
+        end
+        cmp.datas[id] = cmp.datas[id] + ab_dmg
+        if cmp.datas[id] > self.data.amt then
+            cmp.datas[id] = nil
+            owner.components.health:DoDelta(self.data.rcv_hp)
+        end
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.armor ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("每吸收%d伤害,恢复%d生命值",
+        self.data.amt, self.data.rcv_hp)
+end, 
+{hp=20,amt=200,rcv_hp=30}, 1),
+Enchantment("recover_armor",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    return true
+end,
+function(self, inst, cmp, id)
+    return string.format("")
+end, 
+{recvoer=.15,hp=50}, 1),
+Enchantment("ice_armor",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.armor:WgAddTakeDamageFn(function(ab_dmg, attacker, weapon, owner, item, stimuli)
+        if EntUtil:can_dmg_effect(stimuli) then
+            if math.random() < self.data.rate then
+                BuffManager:AddBuff(attacker, "ice")
             end
-            inst:AddComponent("wg_action_tool")
-            inst.components.wg_action_tool:RegisterSkillInfo({
-                desc = string.format("长矛阵:消耗%d魔法,召唤一阵环绕你的长矛,对周围的敌人周期性造成%d点伤害",
-                    cmp.datas[id][3], cmp.datas[id][2])
-            })
-            inst.components.wg_action_tool.test = function(inst, doer)
-                --检测
-                if inst.components.wg_recharge:IsRecharged() then
-                    if doer.components.tp_mana
-                        and doer.components.tp_mana.current >= cmp.datas[id][3] then
-                        return true
-                    end
-                end
+        end
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.armor ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("受到普通攻击有%d%%几率令敌人进入寒冷状态", 
+        self.data.rate*100)
+end, 
+{rate=.3,hp=20,san=15,hg=15}, 1),
+Enchantment("fire_armor",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.armor:WgAddTakeDamageFn(function(ab_dmg, attacker, weapon, owner, item, stimuli)
+        if EntUtil:can_dmg_effect(stimuli) then
+            if math.random() < self.data.rate then
+                BuffManager:AddBuff(attacker, "fire")
             end
-            inst.components.wg_action_tool.click_get_action_fn = function(inst, data)
-                -- 装备后可以收集到的动作 data={doer=doer, pos=pos, target=target}
-                if data.pos or data.target then
-                    return ACTIONS.TP_BATTLE_CRY
-                end
-            end
-            -- inst.components.wg_action_tool.click_fn = function(inst, doer)
-            --     -- 技能栏里释放技能会触发的效果，默认会出发get_action_fn的动作
-            -- end
-            inst.components.wg_action_tool.effect_fn = function(inst, doer, target, pos)
-                -- 动作触发时会到达的效果
-                doer.components.tp_mana:DoDelta(-cmp.datas[id][3])
-                inst.components.wg_recharge:SetRechargeTime(cmp.datas[id][1], id)
-                local fx = FxManager:MakeFx("spear_magic_circle", doer, {
-                    owner = doer, damage = cmp.datas[id][2]
-                })
-            end
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.armor ~= nil
-                and inst.components.wg_action_tool == nil
-        end,
-        function(self, inst, cmp, id)
-            return string.format("[要求:护甲]获得技能长矛阵")
         end
-    ),
-    Enchantment(
-        "guardian",
-        function(self, inst, cmp, id)
-            cmp.datas[id] = { 20, cmp.quality * 10 + 10, 10 }
-        end,
-        function(self, inst, cmp, id)
-            if inst.components.wg_recharge == nil then
-                inst:AddComponent("wg_recharge")
-                inst.components.wg_recharge:SetCommon(id)
-            end
-            inst:AddComponent("wg_action_tool")
-            inst.components.wg_action_tool:RegisterSkillInfo({
-                desc = string.format("守护者:消耗%d魔法,提升%d防御以抵挡下一次攻击",
-                    cmp.datas[id][3], cmp.datas[id][2])
-            })
-            inst.components.wg_action_tool.test = function(inst, doer)
-                --检测
-                if inst.components.wg_recharge:IsRecharged() then
-                    if doer.components.tp_mana
-                        and doer.components.tp_mana.current >= cmp.datas[id][3] then
-                        return true
-                    end
-                end
-            end
-            inst.components.wg_action_tool.get_action_fn = function(inst, data)
-                -- 装备后可以收集到的动作 data={doer=doer, pos=pos, target=target}
-                if data.pos or data.target then
-                    return ACTIONS.TP_SAIL
-                end
-            end
-            -- inst.components.wg_action_tool.click_fn = function(inst, doer)
-            --     -- 技能栏里释放技能会触发的效果，默认会出发get_action_fn的动作
-            -- end
-            inst.components.wg_action_tool.effect_fn = function(inst, doer, target, pos)
-                -- 动作触发时会到达的效果
-                doer.components.tp_mana:DoDelta(-cmp.datas[id][3])
-                inst.components.wg_recharge:SetRechargeTime(cmp.datas[id][1], id)
-                FxManager:MakeFx("firework_fx", doer)
-                BuffManager:AddBuff(doer, id, nil, cmp.datas[id][2])
-            end
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.armor ~= nil
-                and inst.components.wg_action_tool == nil
-        end,
-        function(self, inst, cmp, id)
-            return string.format("[要求:护甲]获得技能守护者")
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.armor ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("受到普通攻击有%d%%几率令敌人进入灼烧状态", 
+        self.data.rate*100)
+end, 
+{rate=.3,hp=20,san=15,hg=15}, 1),
+Enchantment("electric_wake",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.armor:WgAddTakeDamageFn(function(ab_dmg, attacker, weapon, owner, item, stimuli)
+        if EntUtil:in_stimuli(stimuli, "electric") then
+            BuffManager:AddBuff(owner, "speed_up", nil, self.data.spd2)
         end
-    ),
-    Enchantment(
-        "high_jump",
-        function(self, inst, cmp, id)
-            cmp.datas[id] = { 7.5, 5 }
-        end,
-        function(self, inst, cmp, id)
-            if inst.components.wg_recharge == nil then
-                inst:AddComponent("wg_recharge")
-                inst.components.wg_recharge:SetCommon(id)
-            end
-            inst:AddComponent("wg_action_tool")
-            inst.components.wg_action_tool:RegisterSkillInfo({
-                desc = string.format("跳高:消耗%d魔法,原地起跳,并获得100%%闪避",
-                    cmp.datas[id][2])
-            })
-            inst.components.wg_action_tool.test = function(inst, doer)
-                --检测
-                if inst.components.wg_recharge:IsRecharged() then
-                    if doer.components.tp_mana
-                        and doer.components.tp_mana.current >= cmp.datas[id][2] then
-                        return true
-                    end
-                end
-            end
-            inst.components.wg_action_tool.get_action_fn = function(inst, data)
-                -- 装备后可以收集到的动作 data={doer=doer, pos=pos, target=target}
-                if data.pos or data.target then
-                    return ACTIONS.TP_HIGH_JUMP
-                end
-            end
-            -- inst.components.wg_action_tool.click_fn = function(inst, doer)
-            --     -- 技能栏里释放技能会触发的效果，默认会出发get_action_fn的动作
-            -- end
-            inst.components.wg_action_tool.effect_fn = function(inst, doer, target, pos)
-                -- 动作触发时会到达的效果
-                doer.components.tp_mana:DoDelta(-cmp.datas[id][2])
-                inst.components.wg_recharge:SetRechargeTime(cmp.datas[id][1], id)
-                -- FxManager:MakeFx("firework_fx", doer)
-                -- BuffManager:AddBuff(doer, id, nil, cmp.datas[id][2])
-            end
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.armor ~= nil
-                and inst.components.wg_action_tool == nil
-                and cmp.quality and cmp.quality >= 2
-        end,
-        function(self, inst, cmp, id)
-            return string.format("[要求:护甲,品质达到2]获得技能跳高")
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.armor ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("受到雷属性伤害会增加%d速度", self.data.spd2)
+end, 
+{spd2=3,hp=15,hg=20,san=20}, 1),
+Enchantment("evade_armor",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    return true
+end,
+function(self, inst, cmp, id)
+    return string.format("")
+end, 
+{evade=20,hp=20}, 1),
+Enchantment("def_armor",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    return true
+end,
+function(self, inst, cmp, id)
+    return string.format("")
+end, 
+{def=20,hp=15}, 1),
+-- quality 2
+Enchantment("rock_break",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.armor:WgAddTakeDamageFn(function(ab_dmg, attacker, weapon, owner, item, stimuli)
+        local n = cmp.datas[id] or 0
+        n = math.min(n + ab_dmg, self.data.max)
+        cmp.datas[id] = n
+        if cmp[id.."_task"] then
+            cmp[id.."_task"]:Cancel()
+            cmp[id.."_task"] = nil
         end
-    ),
-    Enchantment(
-        "ice_armor",
-        function(self, inst, cmp, id)
-            local min, max = cmp.quality * 2 + 10, cmp.quality * 4 + 15
-            cmp.datas[id] = { math.random(min, max) / 100 }
-        end,
-        function(self, inst, cmp, id)
-            inst.components.equippable:WgAddEquipAttackedFn(function(data)
-                local attacker = data.attacker
-                local damage = data.damage
-                local owner = data.owner
-                if EntUtil:can_thorns({ damage = damage, attacker = attacker })
-                    and math.random() < cmp.datas[id][1] then
-                    EntUtil:frozen(attacker)
-                end
-            end)
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.armor ~= nil
-        end,
-        function(self, inst, cmp, id)
-            return string.format("[要求:护甲]受到攻击有%d%%几率冰冻敌人", cmp.datas[id][1] * 100)
+        cmp[id.."_task"] = inst:DoTaskInTime(10, function()
+            cmp.datas[id] = nil
+        end)
+    end)
+    inst.components.equippable:WgAddEquipAttackedFn(function(damage, attacker, weapon, owner, item, stimuli)
+        local n = cmp.datas[id] or 0
+        if n > self.data.max then
+            damage = damage - self.data.amt
         end
-    ),
-    Enchantment(
-        "fire_armor",
-        function(self, inst, cmp, id)
-            local min, max = cmp.quality * 2 + 15, cmp.quality * 4 + 20
-            cmp.datas[id] = { math.random(min, max) / 100 }
-        end,
-        function(self, inst, cmp, id)
-            inst.components.equippable:WgAddEquipAttackedFn(function(data)
-                local attacker = data.attacker
-                local damage = data.damage
-                local owner = data.owner
-                if EntUtil:can_thorns({ damage = damage, attacker = attacker })
-                    and math.random() < cmp.datas[id][1] then
-                    EntUtil:ignite(attacker)
-                end
-            end)
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.armor ~= nil
-        end,
-        function(self, inst, cmp, id)
-            return string.format("[要求:护甲]受到攻击有%d%%几率点燃敌人", cmp.datas[id][1] * 100)
+        return damage
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.armor ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("吸收超过%d点伤害后,受到的伤害减少%d点(已吸收%d)",
+        self.data.max, self.data.amt, cmp.datas[id] or 0)
+end, 
+{max=50,amt=10,def=10,evade=10,hp=20}, 2),
+Enchantment("big_rock",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    return inst.components.armor ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("")
+end, 
+{spd=-2,def=50,hp=100,san=50,hg=50}, 2),
+Enchantment("fire_resist_armor",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    return inst.components.armor ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("")
+end, 
+{dmg_resist={fire=-.15},evade=10,hp=20,hg=20}, 2),
+Enchantment("spike_resist_armor",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    return inst.components.armor ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("")
+end, 
+{dmg_resist={spike=-.1},evade=10,hp=15,hg=15}, 2),
+Enchantment("shadow_resist_armor",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    return inst.components.armor ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("")
+end, 
+{dmg_resist={shadow=-.25},hp=-75,san=-30}, 2),
+Enchantment("rain_charge_armor",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    return true
+end,
+function(self, inst, cmp, id)
+    return string.format("")
+end, 
+{rain=.2,spd=1,def=20,san_rate=.15}, 2),
+-- quality 3
+Enchantment("san_hg_evade_armor",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.amror:WgAddTakeDamageFn(function(ab_dmg, attacker, weapon, owner, item, stimuli)
+        if owner.components.sanity then
+            owner.components.sanity:DoDelta(-ab_dmg*self.data.rate)
         end
-    ),
-    Enchantment(
-        "poison_armor",
-        function(self, inst, cmp, id)
-            local min, max = cmp.quality * 2 + 15, cmp.quality * 4 + 20
-            cmp.datas[id] = { math.random(min, max) / 100 }
-        end,
-        function(self, inst, cmp, id)
-            inst.components.equippable:WgAddEquipAttackedFn(function(data)
-                local attacker = data.attacker
-                local damage = data.damage
-                local owner = data.owner
-                if EntUtil:can_thorns({ damage = damage, attacker = attacker })
-                    and math.random() < cmp.datas[id][1] then
-                    EntUtil:poison(attacker)
-                end
-            end)
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.armor ~= nil
-        end,
-        function(self, inst, cmp, id)
-            return string.format("[要求:护甲]受到攻击有%d%%几率令敌人中毒", cmp.datas[id][1] * 100)
+        if owner.components.hunger then
+            owner.components.hunger:DoDelta(-ab_dmg*self.data.rate)
         end
-    ),
-    Enchantment(
-        "area_ice_armor",
-        function(self, inst, cmp, id)
-            local min, max = cmp.quality + 10, cmp.quality * 2 + 15
-            cmp.datas[id] = { math.random(min, max) / 100 }
-        end,
-        function(self, inst, cmp, id)
-            inst.components.equippable:WgAddEquipAttackedFn(function(data)
-                local D = cmp.datas[id]
-                if math.random() < D[1] then
-                    local owner = data.owner
-                    FxManager:MakeFx("thorns_blue", owner)
-                    local x, y, z = owner:GetPosition():Get()
-                    local ents = TheSim:FindEntities(x, y, z, 6, nil, EntUtil.constants.not_enemy_tags)
-                    for k, v in pairs(ents) do
-                        EntUtil:frozen(v)
-                    end
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.armor ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("吸收伤害时会减少%d%%此伤害的理智和饥饿", 
+        self.data.rate*100)
+end, 
+{rate=.3,evade=80}, 3),
+Enchantment("firm_armor",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.equippable:WgAddEquipFn(function(inst, owner)
+        owner:AddTag("not_hit_stunned")
+    end)
+    inst.components.equippable:WgAddUnequipFn(function(inst, owner)
+        owner:RemoveTag("not_hit_stunned")
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.armor ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("受到攻击不会硬直")
+end, 
+{hp=55,san=60,hg=50}, 3),
+Enchantment("against_armor",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.equippable:WgAddEquipAttackedFn(function(damage, attacker, weapon, owner, item, stimuli)
+        inst.components.armor:WgAddTakeDamageFn(function(ab_dmg, attacker, weapon, owner, item, stimuli)
+            local n = cmp.datas[id] or 0
+            n = math.min(n + ab_dmg, self.data.max)
+            cmp.datas[id] = n
+        end)
+    end)
+
+    inst.components.equippable:WgAddEquipFn(function(inst, owner)
+        if cmp[id.."_fn"] == nil then
+            cmp[id.."_fn"] = owner.components.combat:WgAddCalcDamageFn(function(damage, owner, target, weapon, stimuli)
+                local n = cmp.datas[id] or 0
+                if n >= self.data.max then
+                    cmp.datas[id] = nil
+                    damage = damage - self.data.dmg
                 end
             end)
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.armor ~= nil
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            return string.format("[要求:护甲]受到攻击有%d%%几率冰冻周围的敌人", D[1] * 100)
         end
-    ),
-    Enchantment(
-        "area_fire_armor",
-        function(self, inst, cmp, id)
-            local min, max = cmp.quality + 10, cmp.quality * 3 + 15
-            cmp.datas[id] = { math.random(min, max) / 100 }
-        end,
-        function(self, inst, cmp, id)
-            inst.components.equippable:WgAddEquipAttackedFn(function(data)
-                local D = cmp.datas[id]
-                if math.random() < D[1] then
-                    local owner = data.owner
-                    FxManager:MakeFx("firesplash_fx", owner)
-                    local x, y, z = owner:GetPosition():Get()
-                    local ents = TheSim:FindEntities(x, y, z, 6, nil, EntUtil.constants.not_enemy_tags)
-                    for k, v in pairs(ents) do
-                        EntUtil:ignite(v)
-                    end
-                end
+    end)
+    inst.components.equippable:WgAddUnequipFn(function(inst, owner)
+        if cmp[id.."_fn"] then
+            owner.components.combat:WgRemoveCalcDamageFn(cmp[id.."_fn"])
+            cmp[id.."_fn"] = nil
+        end
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.armor ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("吸收%d伤害后,下次攻击%+d,(已吸收%d)",
+        self.data.max, self.data.dmg, cmp.datas[id] or 0)
+end, 
+{max=150,dmg=50,armor=200}, 3),
+-- quality 4
+Enchantment("periodic_block",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst:DoTaskInTime(self.data.time, function()
+        inst:AddTag(id)
+    end)
+    inst.components.equippable:WgAddEquipAttackedFn(function(damage, attacker, weapon, owner, item, stimuli)
+        if inst:HasTag(id) then
+            inst:RemoveTag(id)
+            inst:DoTaskInTime(self.data.time, function()
+                inst:AddTag(id)
             end)
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.armor ~= nil
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            return string.format("[要求:护甲]受到攻击有%d%%几率点燃周围的敌人", D[1] * 100)
+            return 0
         end
-    ),
-    Enchantment(
-        "area_poison_armor",
-        function(self, inst, cmp, id)
-            local min, max = cmp.quality + 10, cmp.quality * 3 + 15
-            cmp.datas[id] = { math.random(min, max) / 100 }
-        end,
-        function(self, inst, cmp, id)
-            inst.components.equippable:WgAddEquipAttackedFn(function(data)
-                local D = cmp.datas[id]
-                if math.random() < D[1] then
-                    local owner = data.owner
-                    FxManager:MakeFx("thorns_green", owner)
-                    local x, y, z = owner:GetPosition():Get()
-                    local ents = TheSim:FindEntities(x, y, z, 6, nil, EntUtil.constants.not_enemy_tags)
-                    for k, v in pairs(ents) do
-                        EntUtil:poison(v)
-                    end
-                end
-            end)
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.armor ~= nil
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            return string.format("[要求:护甲]受到攻击有%d%%几率令周围的敌人中毒", D[1] * 100)
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.armor ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("每过%d秒,免疫一次攻击(%s)", 
+        self.data.time, inst:HasTag(id) and "已准备" or "冷却中")
+end, 
+{time=60,attrs={strengthen=2,health=2,faith=2}}, 4),
+-- quality 6
+Enchantment("giant_blocker",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.equippable:WgAddEquipAttackedFn(function(damage, attacker, weapon, owner, item, stimuli)
+        local max = attacker.components.health:GetMaxHealth()
+        local max2 = owner.components.health:GetMaxHealth()
+        if max - max2 >= self.data.dt then
+            damage = damage * (1-self.data.rate)
         end
-    ),
-    Enchantment(
-        "speed_armor",
-        function(self, inst, cmp, id)
-            local min, max = cmp.quality * 3 + 10, cmp.quality * 5 + 15
-            local min2, max2 = cmp.quality * 5, cmp.quality * 6 + 10
-            cmp.datas[id] = { math.random(min, max) / 100, math.random(min2, max2) / 100 }
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            inst.components.equippable:WgAddEquipAttackedFn(function(data)
-                local owner = data.owner
-                if math.random() < D[1] then
-                    EntUtil:add_speed_mod(owner, id, D[2], 5)
-                end
-            end)
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.armor ~= nil
-        end,
-        function(self, inst, cmp, id)
-            local data = cmp.datas[id]
-            return string.format("[要求:护甲]受到攻击有%d%%几率增加%d%%移速", data[1] * 100, data[2] * 100)
-        end
-    ),
-    Enchantment(
-        "slow_down_armor",
-        function(self, inst, cmp, id)
-            local min, max = cmp.quality * 3 + 10, cmp.quality * 5 + 15
-            local min2, max2 = cmp.quality * 3 + 10, cmp.quality * 6 + 20
-            cmp.datas[id] = { math.random(min, max) / 100, math.random(min2, max2) / 100 }
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            inst.components.equippable:WgAddEquipAttackedFn(function(data)
-                local attacker = data.attacker
-                if attacker and math.random() < D[1] then
-                    EntUtil:add_speed_mod(attacker, id, D[2], 5)
-                end
-            end)
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.armor ~= nil
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            return string.format("[要求:护甲]受到攻击有%d%%几率减低敌人%d%%移速", D[1] * 100, D[2] * 100)
-        end
-    ),
-    Enchantment(
-        "absorb_amount",
-        function(self, inst, cmp, id)
-            local min, max = cmp.quality + 5, cmp.quality * 2 + 5
-            cmp.datas[id] = { math.random(min, max) }
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            inst.components.equippable:WgAddEquipAttackedFn(function(data)
-                local damage = data.damage - D[1]
-                return math.max(1, damage)
-            end)
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.armor ~= nil
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            return string.format("[要求:护甲]降低%d点伤害", D[1])
-        end
-    ),
-    Enchantment(
-        "absorb_percent",
-        function(self, inst, cmp, id)
-            local min, max = cmp.quality * 0.5 + 3, cmp.quality + 5
-            cmp.datas[id] = { math.random(min, max) / 100 }
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            inst.components.equippable:WgAddEquipAttackedFn(function(data)
-                local damage = data.damage - data.damage * D[1]
-                return damage
-            end)
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.armor ~= nil
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            return string.format("[要求:护甲]降低%d%%受到的伤害", D[1] * 100)
-        end
-    ),
-    Enchantment(
-        "absorb_random",
-        function(self, inst, cmp, id)
-            local min, max = cmp.quality * 2 + 10, cmp.quality * 5 + 10
-            local min2, max2 = cmp.quality + 5, cmp.quality * 3 + 15
-            cmp.datas[id] = { math.random(min, max) / 100, math.random(min2, max2) / 100 }
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            inst.components.equippable:WgAddEquipAttackedFn(function(data)
-                local damage = data.damage
-                if math.random() < D[2] then
-                    damage = damage - damage * D[1]
-                end
-                return damage
-            end)
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.armor ~= nil
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            return string.format("[要求:护甲]有%d%%的几率降低%d%%的伤害", D[2] * 100, D[1] * 100)
-        end
-    ),
-    Enchantment(
-        "thorns_amount_armor",
-        function(self, inst, cmp, id)
-            local min, max = cmp.quality * 3 + 15, cmp.quality * 5 + 20
-            local min2, max2 = cmp.quality * 2, cmp.quality * 5 + 10
-            cmp.datas[id] = { math.random(min, max) / 100, math.random(min2, max2) }
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            inst.components.equippable:WgAddEquipAttackedFn(function(data)
-                local attacker = data.attacker
-                local damage = data.damage
-                local owner = data.owner
-                if math.random() < D[1] then
-                    if EntUtil:can_thorns({ damage = damage, attacker = attacker }) then
-                        FxManager:MakeFx("thorns", owner)
-                        BuffManager:AddBuff(attacker, "not_reflection")
-                        EntUtil:get_attacked(attacker, owner, D[2], nil,
-                            EntUtil:add_stimuli(nil, "pure"))
-                    end
-                end
-            end)
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.armor ~= nil
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            return string.format("[要求:护甲]受到攻击有%d%%几率返还%d点伤害", D[1] * 100, D[2])
-        end
-    ),
-    Enchantment(
-        "thorns_percent_armor",
-        function(self, inst, cmp, id)
-            local min, max = cmp.quality * 3 + 15, cmp.quality * 5 + 20
-            local min2, max2 = cmp.quality + 5, cmp.quality * 2 + 5
-            cmp.datas[id] = { math.random(min, max) / 100, math.random(min2, max2) / 100 }
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            inst.components.equippable:WgAddEquipAttackedFn(function(data)
-                local attacker = data.attacker
-                local damage = data.damage
-                local owner = data.owner
-                if math.random() < D[1] then
-                    if EntUtil:can_thorns(data) then
-                        FxManager:MakeFx("thorns", owner)
-                        BuffManager:AddBuff(attacker, "not_reflection")
-                        EntUtil:get_attacked(attacker, owner, damage * D[2], nil,
-                            EntUtil:add_stimuli(nil, "pure"))
-                    end
-                end
-            end)
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.armor ~= nil
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            return string.format("[要求:护甲]受到攻击有%d%%几率返还伤害的%d%%", D[1] * 100, D[2] * 100)
-        end
-    ),
-    Enchantment(
-        "reduce_damage_armor",
-        function(self, inst, cmp, id)
-            local min, max = cmp.quality * 3 + 15, cmp.quality * 5 + 20
-            local min2, max2 = cmp.quality + 10, cmp.quality * 2 + 10
-            cmp.datas[id] = { math.random(min, max) / 100, math.random(min2, max2) / 100 }
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            inst.components.equippable:WgAddEquipAttackedFn(function(data)
-                local attacker = data.attacker
-                if attacker and math.random() < D[1] then
-                    EntUtil:add_damage_mod(attacker, id, D[2], 6)
-                end
-            end)
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.armor ~= nil
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            return string.format("[要求:护甲]受到攻击有%d%%几率降低敌人%d%%攻击力", D[1] * 100, D[2] * 100)
-        end
-    ),
-    Enchantment(
-        "armor_max",
-        function(self, inst, cmp, id)
-            local arg = cmp.quality
-            local min, max = arg * 5 + 10, arg * 15 + 25
-            cmp.datas[id] = { math.random(min, max) }
-            local D = cmp.datas[id]
-            local max = inst.components.armor.maxcondition
-            inst.components.armor.maxcondition = max + math.floor(max * D[1])
-            inst.components.armor:SetCondition(max + math.floor(max * D[1]))
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            local max = inst.components.armor.maxcondition
-            inst.components.armor.maxcondition = max + math.floor(max * D[1])
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.finiteuses ~= nil
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            return string.format("[要求:护甲]增加%d%%最大护甲值", D[1])
-        end
-    ),
+        return damage
+    end)
+end,
+function(self, inst, cmp, id)
+    return inst.components.armor ~= nil
+end,
+function(self, inst, cmp, id)
+    return string.format("如果攻击你的单位生命上限比你高%d,那么此伤害降低%d%%",
+        self.data.dt, self.data.rate*100)
+end, 
+{4000, .3}, 6),
 }
 -- armor over
-local enchant_tool = {
-    Enchantment(
-        "finite_use_recycle",
-        function(self, inst, cmp, id)
-            local min, max = cmp.quality * 3 + 10, cmp.quality * 5 + 25
-            cmp.datas[id] = { math.random(min, max) / 100 }
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            -- inst:ListenForEvent("percentusedchange", function(inst, data)
-            --     inst.components.finiteuses:DoDelta(1)
-            -- end)  -- 会导致死循环
-            local Use = inst.components.finiteuses.Use
-            inst.components.finiteuses.Use = function(self, num)
-                if math.random() < D[1] then
-                else
-                    Use(self, num)
-                end
-            end
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.finiteuses ~= nil
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            return string.format("[要求:耐久]有%d%%几率不消耗耐久度", D[1] * 100)
-        end
-    ),
-    Enchantment(
-        "finite_use_regen",
-        function(self, inst, cmp, id)
-            local time = 480
-            local arg = cmp.quality * 3 + 10
-            local min, max = time / (arg), time / (arg * 3)
-            cmp.datas[id] = { math.random(min, max) }
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            cmp[id .. "_task"] = inst:DoPeriodicTask(D[1], function()
-                local p = inst.components.finiteuses:GetPercent()
-                inst.components.finiteuses:SetPercent(math.min(1, p + .01))
-            end)
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.finiteuses ~= nil
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            return string.format("[要求:耐久]每%ds回复1%%的耐久", D[1])
-        end
-    ),
-    Enchantment(
-        "max_finite_use",
-        function(self, inst, cmp, id)
-            local arg = cmp.quality
-            local min, max = (arg * 5 + 10), (arg * 15 + 25)
-            cmp.datas[id] = { math.random(min, max) * 0.01 }
-            local D = cmp.datas[id]
-            local max = inst.components.finiteuses.total
-            inst.components.finiteuses:SetUses(max + math.floor(max * D[1]))
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            local max = inst.components.finiteuses.total
-            inst.components.finiteuses:SetMaxUses(max + math.floor(max * D[1]))
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.finiteuses ~= nil
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            return string.format("[要求:耐久]增加%d%%最大耐久", D[1] * 100)
-        end
-    ),
-    Enchantment(
-        "more_work",
-        function(self, inst, cmp, id)
-            local min, max = cmp.quality * 3 + 15, cmp.quality * 5 + 20
-            cmp.datas[id] = { math.random(min, max) / 100 }
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            local GetEffectiveness = inst.components.tool.GetEffectiveness
-            inst.components.tool.GetEffectiveness = function(self, act)
-                local n = GetEffectiveness(self, act)
-                if n > 0 and math.random() < D[1] then
-                    n = n + 1
-                end
-                return n
-            end
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.tool ~= nil
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            return string.format("[要求:工具]有%d几率令工作效率+1", D[1] * 100)
-        end
-    ),
-    Enchantment(
-        "happy_work",
-        function(self, inst, cmp, id)
-            local min, max = cmp.quality * 3 + 15, cmp.quality * 5 + 20
-            local min2, max2 = 1, cmp.quality
-            cmp.datas[id] = { math.random(min, max) / 100, math.random(min2, max2) }
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            cmp[id .. "_fn"] = function(owner, data)
-                if owner.components.sanity and math.random() < D[1] then
-                    owner.components.sanity:DoDelta(D[2])
-                end
-            end
-            inst.components.equippable:WgAddEquipFn(function(inst, owner)
-                inst:ListenForEvent("working", cmp[id .. "_fn"], owner)
-            end)
-            inst.components.equippable:WgAddUnequipFn(function(inst, owner)
-                inst:RemoveEventCallback("working", cmp[id .. "_fn"], owner)
-            end)
-        end,
-        function(self, inst, cmp, id)
-            return inst.components.tool ~= nil
-        end,
-        function(self, inst, cmp, id)
-            local D = cmp.datas[id]
-            return string.format("[要求:工具]工作时有%d几率回复%d点理智", D[1] * 100, D[2])
-        end
-    ),
+
+local enchant_all = {
+Enchantment("warm_equip",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    return true
+end,
+function(self, inst, cmp, id)
+    return string.format("")
+end, 
+{winter=120,attrs={endurance=2}}, 1),
+Enchantment("cool_equip",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    return true
+end,
+function(self, inst, cmp, id)
+    return string.format("")
+end, 
+{summer=120,attrs={health=2}}, 1),
+Enchantment("rain_equip",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    return true
+end,
+function(self, inst, cmp, id)
+    return string.format("")
+end, 
+{rain=.3,attrs={stamina=2}}, 1),
+-- quality 2
+Enchantment("poisonblocker_equip",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id)
+    inst.components.equippable.poisonblocker = true
+end,
+function(self, inst, cmp, id)
+    return true
+end,
+function(self, inst, cmp, id)
+    return string.format("防毒")
+end, 
+{attrs={health=2}}, 2),
 }
+
+local enchant_cloth = {}
+
+local enchant_tool = {}
 
 local DataManager = require "extension.lib.data_manager"
 local EnchantmentManager = DataManager("EnchantmentManager")

@@ -3,6 +3,7 @@ local Kit = require "extension.lib.wargon"
 local Sounds = require "extension.datas.sounds"
 local FxManager = Sample.FxManager
 local BuffManager = Sample.BuffManager
+local SmearManager = Sample.SmearManager
 local Info = Sample.Info
 
 local EquipSkillData = Class(function(self)
@@ -469,6 +470,20 @@ function(self, inst, cmp, id, doer, target, pos)
 end,
 "电磁炮:发射一个电磁炮"
 ),
+EquipSkill("bulb_bullet", 
+{pos=true, target=true},
+"TP_CHOP",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id, doer, target, pos)
+    local fx = FxManager:MakeFx("bulb_bullet", doer, {
+        angle= doer.Transform:GetRotation(),
+        owner = doer,
+        weapon = inst,
+    })
+end,
+"发射荧光果:发射一个荧光果"
+),
 EquipSkill("lunging_shadow", 
 {pos=true, target=true},
 "TP_ATK",
@@ -499,6 +514,35 @@ function(self, inst, cmp, id, doer, target, pos)
 end,
 "多重吹箭:挥动武器,并暗中射出多个吹箭"
 ),
+EquipSkill("shoot_tornado", 
+{pos=true, target=true},
+"TP_ATK",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id, doer, target, pos)
+    local function getspawnlocation(inst, pos)
+        local tarPos = pos
+        local pos = inst:GetPosition()
+        local vec = tarPos - pos
+        vec = vec:Normalize()
+        local dist = pos:Dist(tarPos)
+        return pos + (vec * (dist * .15))
+    end
+    if target then
+        pos = target:GetPosition()
+    end
+    if pos then
+        local tornado = SpawnPrefab("tornado")
+        tornado.WINDSTAFF_CASTER = doer
+        tornado:ListenForEvent("death", tornado.Remove, doer)
+        local totalRadius = tornado.Physics:GetRadius() + 0.5
+        local targetPos = pos + (TheCamera:GetDownVec() * totalRadius)
+        tornado.Transform:SetPosition(getspawnlocation(inst, pos):Get())
+        tornado.components.knownlocations:RememberLocation("target", targetPos)
+    end
+end,
+"唤风者:召唤一个旋风,对其周围的敌人造成伤害"
+),
 }
 
 local summon_skills = {
@@ -513,6 +557,21 @@ function(self, inst, cmp, id, doer, target, pos)
     st.components.combat:SetTarget(target)
 end,
 "暗影触手:选择一个敌人,召唤暗影触手对其进行攻击"
+),
+EquipSkill("summon_turret",
+{target=true, pos=true},
+"TP_CAST_SPELL",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id, doer, target, pos)
+    if target then
+        pos = target:GetPosition()
+    end
+    local turret = SpawnPrefab("eyeturret")
+    turret.Transform:SetPosition(pos:Get())
+    BuffManager:AddBuff(turret, "summon", 60)
+end,
+"召唤眼球塔:召唤一个眼球塔"
 ),
 }
 
@@ -680,38 +739,116 @@ end,
 "破碎重击:跃向空中,举起武器朝目标方向砸去,对周围的敌人造成伤害,并降低其防御",
 {skill_type = "move"}
 ),
+EquipSkill("lantern",
+nil,
+nil,
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id, doer, target, pos)
+    if BuffManager:HasBuff(doer, "lantern") then
+        BuffManager:ClearBuff(doer, "lantern")
+    else
+        BuffManager:AddBuff(doer, "lantern")
+    end
+end,
+"发光开关"
+),
+EquipSkill("spear_magic_circle",
+nil,
+"TP_BATTLE_CRY",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id, doer, target, pos)
+    local fx = FxManager:MakeFx("spear_magic_circle", doer, {
+        owner = doer, damage = 35
+    })
+end,
+"护身长矛:召唤一阵环绕你的长矛,对周围的敌人周期性造成伤害"
+),
+EquipSkill("guardian",
+nil,
+"TP_SAIL",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id, doer, target, pos)
+    FxManager:MakeFx("firework_fx", doer)
+    BuffManager:AddBuff(doer, id, nil, 100)
+end,
+"守护者:提升防御以抵挡下一次攻击"
+),
+EquipSkill("high_jump",
+nil,
+"TP_HIGH_JUMP",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id, doer, target, pos)
+end,
+"高跳:原地起跳,并获得巨额闪避"
+),
+EquipSkill("random_smear",
+nil,
+"TP_BATTLE_CRY",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id, doer, target, pos)
+    local ids = SmearManager:GetRandomIds(10)
+    for _, id in pairs(ids) do
+        if inst.components.tp_smearable:CanSmearId(id) then
+            inst.components.tp_smearable:Smear(id)
+            break
+        end
+    end
+end,
+"随身刀油:令武器随机获得一个buff"
+),
+EquipSkill("drop_smallmeat", 
+nil,
+"TP_BATTLE_CRY",
+function(self, inst, cmp, id)
+end,
+function(self, inst, cmp, id, doer, target, pos)
+    local id = "drop_smallmeat"
+    if inst.components.tp_smearable:CanSmearId(id) then
+        inst.components.tp_smearable:Smear(id)
+    end
+end,
+"肉制武器:攻击有几率掉落小肉"
+),
 }
 
 local passive_skills = {
+
 EquipSkill("drop_smallmeat", 
 nil,
 nil,
 function(self, inst, cmp, id)
-    inst:AddTag("wg_equip_skill")
-    inst:ListenForEvent("wg_owner_killed", function(inst, data)
-        -- if inst:HasTag("skill_wake") then
-        --     return
-        -- end
-        if data.victim and data.victim.components.health then
-            local max = data.victim.components.health:GetMaxHealth()
-            local n = math.max(0, max-100)
-            local rate = (1-500/(500+n))
-            if math.random() < rate then
-                local meat = SpawnPrefab("smallmeat")
-                Kit:throw_item(meat, data.owner)
-            end
+    inst.components.equippable:WgAddEquipFn(function(inst, owner)
+        if cmp[id.."_fn"] == nil then
+            cmp[id.."_fn"] = EntUtil:listen_for_event(owner, "onhitother", function(owner, data)
+                local stimuli, target = data.stimuli, data.target
+                if target.components.lootdropper 
+                and EntUtil:can_extra_dmg(stimuli) then
+                    target.components.lootdropper:DropSingleLoot()
+                end
+            end)
+        end
+    end)
+    inst.components.equippable:WgAddUnequipFn(function(inst, owner)
+        if cmp[id.."_fn"] then
+            owner:RemoveEventCallback("onhitother", cmp[id.."_fn"])
+            cmp[id.."_fn"] = nil
         end
     end)
 end,
 function(self, inst, cmp, id, doer, target, pos)
-    local meat = SpawnPrefab("smallmeat")
-    Kit:throw_item(meat, doer)
+    local loot = SpawnPrefab("goldnugget")
+    Kit:throw_item(loot, doer)
 end,
-"肉制武器:击杀敌人有几率掉落小肉"
+"赫尔墨斯之赐:攻击敌人有几率掉落1个属于其的战利品"
 ),
 }
 
-local scrolls = {
+local scroll_skills = {
 EquipSkill("tp_scroll_hollow",
 {target=true,pos=true},
 "TP_SCROLL_WEAPON",
@@ -1337,8 +1474,7 @@ EquipSkillManager:AddDatas(cyclone_slash_skills, "cyclone_slash")
 EquipSkillManager:AddDatas(shooter_skills, "shooter")
 EquipSkillManager:AddDatas(summon_skills, "summon")
 EquipSkillManager:AddDatas(other_skills, "other")
-EquipSkillManager:AddDatas(passive_skills, "passive")
-EquipSkillManager:AddDatas(scrolls, "scroll")
+EquipSkillManager:AddDatas(scroll_skills, "scroll")
 
 Sample.EquipSkillManager = EquipSkillManager
 

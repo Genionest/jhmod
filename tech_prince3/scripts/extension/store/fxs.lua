@@ -1787,6 +1787,49 @@ fxs.bishop_attack = {
     end,
 }
 
+fxs.bulb_bullet = {
+    init = function(inst)
+        inst.entity:AddSoundEmitter()
+        inst.AnimState:SetBuild("bulb")
+        inst.AnimState:SetBank("bulb")
+        inst.AnimState:PlayAnimation("idle")
+        MakeInventoryPhysics(inst)
+        RemovePhysicsColliders(inst)
+        Kit:make_light(inst, "lighter")
+        inst.Light:Enable(false)
+    end,
+    wake = function(inst, data)
+        if data.angle then
+            inst.Transform:SetRotation(data.angle)
+        elseif data.pos then
+            inst:ForceFacePoint(data.pos)
+        end
+        inst.Light:Enable(true)
+        inst.Physics:SetMotorVel(25, 0, 0)
+        inst.task = inst:DoPeriodicTask(.1, function()
+            local ent = FindEntity(inst, 2, function(target, inst)
+                if EntUtil:check_combat_target(data.owner, target) then
+                    return true
+                end
+            end, nil, EntUtil.not_enemy_tags)
+            if ent then
+                EntUtil:get_attacked(ent, data.owner, 0, data.weapon, 
+                    EntUtil:add_stimuli(nil, "electric"), true, .7)
+                inst:WgRecycle()
+            end
+        end)
+        inst:DoTaskInTime(1, inst.WgRecycle)
+    end,
+    recycle = function(inst)
+        inst.Light:Enable(false)
+        inst.Physics:Stop()
+        if inst.task then
+            inst.task:Cancel()
+            inst.task = nil
+        end
+    end,
+}
+
 fxs.spear_magic_circle = {
     init = function(inst)
         fxs.magic_center.init(inst)
@@ -2017,6 +2060,38 @@ fxs.forest_dragon_acorn = {
         inst:DoTaskInTime(.4, inst.WgRecycle)
     end,
     recycle = function(inst)
+    end,
+}
+
+fxs.miner_hat = {
+    init = function(inst)
+        Kit:make_light(inst, "miner_hat")
+        inst.Light:Enable(false)
+    end,
+    wake = function(inst, data)
+        inst.Light:Enable(true)
+    end,
+    recycle = function(inst)
+        if inst.parent then
+            inst.parent:RemoveChild(inst)
+        end
+        inst.Light:Enable(false)
+    end,
+}
+
+fxs.lantern = {
+    init = function(inst)
+        Kit:make_light(inst, "lantern")
+        inst.Light:Enable(false)
+    end,
+    wake = function(inst, data)
+        inst.Light:Enable(true)
+    end,
+    recycle = function(inst)
+        if inst.parent then
+            inst.parent:RemoveChild(inst)
+        end
+        inst.Light:Enable(false)
     end,
 }
 
@@ -3837,6 +3912,7 @@ local some_fxs = {
     blast5 = "the_fx40",
     armor_broken = "the_fx42",
     armor_broken2 = "the_fx43",
+    guardian = "the_fx58",
     blood_tooth = "the_fxc18",
     green_emitter2 = {"the_fxr46", 2},
 }

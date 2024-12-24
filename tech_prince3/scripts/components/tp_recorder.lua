@@ -8,6 +8,7 @@ local TpRecorder = Class(function(self, inst)
         equip = {},
         use_scroll = {},
         weapon_use = {},
+        anubis_stack = 0,
     }
     self.inst:ListenForEvent("onhitother", function(inst, data)
         if data.damage and data.stimuli then

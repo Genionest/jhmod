@@ -69,16 +69,18 @@ local function fn(self)
 							local sanitydamage = absorbed * self.bonussanitydamage
 							if self.inst.components.equippable and self.inst.components.equippable:IsEquipped() and self.inst.components.equippable.equipper then
 								self.inst.components.equippable.equipper.components.sanity:DoDelta(-sanitydamage)
-							end                
+							end
 						end
 						-- 降低护甲损失
-						local owner = self.inst.components.equippable and self.inst.components.equippable.owner
-						if owner then
-							owner:PushEvent("armor_absorb", {armor=self.inst, amount = absorbed, stimuli = dmg_type})
-						end
-						if self.inst.components.tp_forge_armor then
-							local level = self.inst.components.tp_forge_armor.level
-							absorbed = absorbed / level
+						owner:PushEvent("armor_absorb", {armor=self.inst, amount = absorbed, stimuli = dmg_type})
+						-- if self.inst.components.tp_forge_armor then
+						-- 	local level = self.inst.components.tp_forge_armor.level
+						-- 	absorbed = absorbed / level
+						-- end
+						if self.wg_take_dmg_fns then
+							for _, fn in pairs(self.wg_take_dmg_fns) do
+								fn(absorbed, attacker, weapon, owner, self.inst, stimuli)
+							end
 						end
 						self:SetCondition(self.condition - absorbed)
 						if self.ontakedamage then
@@ -137,24 +139,46 @@ local function fn(self)
 		-- end
 		-- return TakeDamage(self, damage_amount, attacker, weapon)
 	end
+
+	function self:WgAddTakeDamageFn(fn)
+		if self.wg_take_dmg_fns == nil then
+			self.wg_take_dmg_fns = {}
+		end
+		table.insert(self.wg_take_dmg_fns, fn)
+	end
+
 	-- 任何时候都返回护甲值
 	-- 保存最大护甲值
+	-- 保存护甲最大值修改值
 	local OnSave = self.OnSave
 	function self:OnSave()
 		local data = OnSave(self)
 		if data == nil then
 			data = {condition = self.condition}
 		end
-		data.maxcondition = self.maxcondition
+		-- data.maxcondition = self.maxcondition
+		data.max_modifier = self.max_modifier
 		return data
 	end
 	
 	local OnLoad = self.OnLoad
 	function self:OnLoad(data)
-		if data and data.maxcondition then
-			self.maxcondition = data.maxcondition
+		-- if data and data.maxcondition then
+		-- 	self.maxcondition = data.maxcondition
+		-- end
+		if data.max_modifier then
+			self.max_modifier = data.max_modifier
+			self.maxcondition = self.maxcondition + self.max_modifier
 		end
 		OnLoad(self, data)
+	end
+	
+	function self:AddMaxModifier(val)
+		if self.max_modifier == nil then
+			self.max_modifier = 0
+		end
+		self.max_modifier = self.max_modifier + val
+		self.maxcondition = self.maxcondition + val
 	end
 	
 	function self:GetWargonString()

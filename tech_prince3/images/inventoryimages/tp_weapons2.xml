@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Atlas>
+	<Texture filename="tp_weapons2.tex" />
+	<Elements>
+		<Element name="tp_bat_r1_iron.tex" u1="0.001" u2="0.0615" v2="0.999" v1="0.876" variant="" />
+		<Element name="tp_bat_r1_purplegem.tex" u1="0.0635" u2="0.124" v2="0.999" v1="0.876" variant="" />
+		<Element name="tp_bat_r1_yellowgem.tex" u1="0.001" u2="0.0615" v2="0.874" v1="0.751" variant="" />
+		<Element name="tp_bat_r2_greengem.tex" u1="0.0635" u2="0.124" v2="0.874" v1="0.751" variant="" />
+		<Element name="tp_bat_r2_iron.tex" u1="0.126" u2="0.1865" v2="0.999" v1="0.876" variant="" />
+		<Element name="tp_bat_r2_redgem.tex" u1="0.126" u2="0.1865" v2="0.874" v1="0.751" variant="" />
+		<Element name="tp_bat_r3_bluegem.tex" u1="0.1885" u2="0.249" v2="0.999" v1="0.876" variant="" />
+		<Element name="tp_bat_r3_iron.tex" u1="0.1885" u2="0.249" v2="0.874" v1="0.751" variant="" />
+		<Element name="tp_bat_r3_orangegem.tex" u1="0.001" u2="0.0615" v2="0.749" v1="0.626" variant="" />
+		<Element name="tp_big_axe.tex" u1="0.001" u2="0.0615" v2="0.624" v1="0.501" variant="" />
+		<Element name="tp_big_axe2.tex" u1="0.0635" u2="0.124" v2="0.749" v1="0.626" variant="" />
+		<Element name="tp_big_hammer.tex" u1="0.126" u2="0.1865" v2="0.749" v1="0.626" variant="" />
+		<Element name="tp_blade.tex" u1="0.0635" u2="0.124" v2="0.624" v1="0.501" variant="" />
+		<Element name="tp_blade2.tex" u1="0.126" u2="0.1865" v2="0.624" v1="0.501" variant="" />
+		<Element name="tp_blade3.tex" u1="0.1885" u2="0.249" v2="0.749" v1="0.626" variant="" />
+		<Element name="tp_blade4.tex" u1="0.1885" u2="0.249" v2="0.624" v1="0.501" variant="" />
+		<Element name="tp_blade5.tex" u1="0.251" u2="0.3115" v2="0.999" v1="0.876" variant="" />
+		<Element name="tp_blade6.tex" u1="0.3135" u2="0.374" v2="0.999" v1="0.876" variant="" />
+		<Element name="tp_demon_strike.tex" u1="0.251" u2="0.3115" v2="0.874" v1="0.751" variant="" />
+		<Element name="tp_flower_dark.tex" u1="0.376" u2="0.4365" v2="0.999" v1="0.876" variant="" />
+		<Element name="tp_flower_fire.tex" u1="0.3135" u2="0.374" v2="0.874" v1="0.751" variant="" />
+		<Element name="tp_forest_staff.tex" u1="0.251" u2="0.3115" v2="0.749" v1="0.626" variant="" />
+		<Element name="tp_holly_gun.tex" u1="0.3135" u2="0.374" v2="0.749" v1="0.626" variant="" />
+		<Element name="tp_holly_hammer.tex" u1="0.251" u2="0.3115" v2="0.624" v1="0.501" variant="" />
+		<Element name="tp_ice_sword.tex" u1="0.376" u2="0.4365" v2="0.874" v1="0.751" variant="" />
+		<Element name="tp_moon_blade.tex" u1="0.4385" u2="0.499" v2="0.999" v1="0.876" variant="" />
+		<Element name="tp_scroll_holly_sword.tex" u1="0.4385" u2="0.499" v2="0.874" v1="0.751" variant="" />
+		<Element name="tp_sliver_spear.tex" u1="0.376" u2="0.4365" v2="0.749" v1="0.626" variant="" />
+		<Element name="tp_spear_cactus.tex" u1="0.3135" u2="0.374" v2="0.624" v1="0.501" variant="" />
+		<Element name="tp_spear_durian.tex" u1="0.376" u2="0.4365" v2="0.624" v1="0.501" variant="" />
+		<Element name="tp_spear_gold.tex" u1="0.4385" u2="0.499" v2="0.749" v1="0.626" variant="" />
+		<Element name="tp_spear_iron.tex" u1="0.4385" u2="0.499" v2="0.624" v1="0.501" variant="" />
+		<Element name="tp_spear_thulecite.tex" u1="0.001" u2="0.0615" v2="0.499" v1="0.376" variant="" />
+		<Element name="tp_spear1_banana.tex" u1="0.0635" u2="0.124" v2="0.499" v1="0.376" variant="" />
+		<Element name="tp_spear1_feather.tex" u1="0.001" u2="0.0615" v2="0.374" v1="0.251" variant="" />
+		<Element name="tp_spear1_iron.tex" u1="0.0635" u2="0.124" v2="0.374" v1="0.251" variant="" />
+		<Element name="tp_spear1_leafs.tex" u1="0.001" u2="0.0615" v2="0.249" v1="0.126" variant="" />
+		<Element name="tp_spear2_cactus.tex" u1="0.126" u2="0.1865" v2="0.499" v1="0.376" variant="" />
+		<Element name="tp_spear2_feather.tex" u1="0.0635" u2="0.124" v2="0.249" v1="0.126" variant="" />
+		<Element name="tp_spear2_iron.tex" u1="0.001" u2="0.0615" v2="0.124" v1="0.001" variant="" />
+		<Element name="tp_spear2_vest.tex" u1="0.126" u2="0.1865" v2="0.374" v1="0.251" variant="" />
+		<Element name="tp_spear3_coin.tex" u1="0.1885" u2="0.249" v2="0.499" v1="0.376" variant="" />
+		<Element name="tp_spear3_feather.tex" u1="0.251" u2="0.3115" v2="0.499" v1="0.376" variant="" />
+		<Element name="tp_spear3_iron.tex" u1="0.126" u2="0.1865" v2="0.249" v1="0.126" variant="" />
+		<Element name="tp_spear3_wyvern.tex" u1="0.0635" u2="0.124" v2="0.124" v1="0.001" variant="" />
+		<Element name="tp_spear4_green.tex" u1="0.1885" u2="0.249" v2="0.374" v1="0.251" variant="" />
+		<Element name="tp_spear4_moon.tex" u1="0.126" u2="0.1865" v2="0.124" v1="0.001" variant="" />
+		<Element name="tp_spear4_purple.tex" u1="0.251" u2="0.3115" v2="0.374" v1="0.251" variant="" />
+		<Element name="tp_spear4_red.tex" u1="0.1885" u2="0.249" v2="0.249" v1="0.126" variant="" />
+		<Element name="tp_spear5_iron.tex" u1="0.3135" u2="0.374" v2="0.499" v1="0.376" variant="" />
+		<Element name="tp_spear5_orchid.tex" u1="0.251" u2="0.3115" v2="0.249" v1="0.126" variant="" />
+		<Element name="tp_spear5_rose.tex" u1="0.1885" u2="0.249" v2="0.124" v1="0.001" variant="" />
+		<Element name="tp_spear5_tulip.tex" u1="0.376" u2="0.4365" v2="0.499" v1="0.376" variant="" />
+		<Element name="tp_sword.tex" u1="0.3135" u2="0.374" v2="0.374" v1="0.251" variant="" />
+		<Element name="tp_sword_n1_heart.tex" u1="0.376" u2="0.4365" v2="0.374" v1="0.251" variant="" />
+		<Element name="tp_sword_n1_magic.tex" u1="0.3135" u2="0.374" v2="0.249" v1="0.126" variant="" />
+		<Element name="tp_sword_n2_magic.tex" u1="0.251" u2="0.3115" v2="0.124" v1="0.001" variant="" />
+		<Element name="tp_sword_n2_ruins.tex" u1="0.4385" u2="0.499" v2="0.499" v1="0.376" variant="" />
+		<Element name="tp_sword_n3_magic.tex" u1="0.3135" u2="0.374" v2="0.124" v1="0.001" variant="" />
+		<Element name="tp_sword_n3_nightmare.tex" u1="0.4385" u2="0.499" v2="0.374" v1="0.251" variant="" />
+		<Element name="tp_sword2.tex" u1="0.376" u2="0.4365" v2="0.249" v1="0.126" variant="" />
+		<Element name="tp_sword3.tex" u1="0.4385" u2="0.499" v2="0.249" v1="0.126" variant="" />
+		<Element name="tp_sword4.tex" u1="0.376" u2="0.4365" v2="0.124" v1="0.001" variant="" />
+		<Element name="tp_sword5.tex" u1="0.4385" u2="0.499" v2="0.124" v1="0.001" variant="" />
+		<Element name="tp_sword6.tex" u1="0.501" u2="0.5615" v2="0.999" v1="0.876" variant="" />
+	</Elements>
+</Atlas>

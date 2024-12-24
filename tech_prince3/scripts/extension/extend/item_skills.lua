@@ -13,8 +13,8 @@ AddPrefabPostInit("torch", fn)
 
 local function fn(inst)
     inst:AddComponent("wg_action_tool")
-    inst.components.wg_action_tool:SetSkillId("lunge_gungnir")
-    -- inst.components.wg_action_tool:SetSkillId("lunge")
+    -- inst.components.wg_action_tool:SetSkillId("lunge_gungnir")
+    inst.components.wg_action_tool:SetSkillId("lunge")
     inst.components.wg_action_tool:RegisterSkillInfo({
         cd = 5,
         mana = 15,

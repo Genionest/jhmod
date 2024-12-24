@@ -35,18 +35,16 @@
 		<Element name="tp_spear_perseus.tex" u1="0.870140625" u2="0.98728125" v2="0.754859375" v1="0.63771875" variant="" />
 		<Element name="tp_spear_poison.tex" u1="0.8681875" u2="0.9911875" v2="0.63571875" v1="0.51271875" variant="" />
 		<Element name="tp_spear_potion.tex" u1="0.001" u2="0.124" v2="0.499" v1="0.376" variant="" />
-		<Element name="tp_spear_ripper.tex" u1="0.001" u2="0.124" v2="0.374" v1="0.251" variant="" />
-		<Element name="tp_spear_shadow.tex" u1="0.126" u2="0.249" v2="0.499" v1="0.376" variant="" />
-		<Element name="tp_spear_shell.tex" u1="0.251" u2="0.374" v2="0.5068125" v1="0.3838125" variant="" />
-		<Element name="tp_spear_shine.tex" u1="0.126" u2="0.24509375" v2="0.374" v1="0.25490625" variant="" />
-		<Element name="tp_spear_single.tex" u1="0.001" u2="0.124" v2="0.249" v1="0.126" variant="" />
-		<Element name="tp_spear_speed.tex" u1="0.376" u2="0.49509375" v2="0.514625" v1="0.39553125" variant="" />
-		<Element name="tp_spear_thunder.tex" u1="0.251" u2="0.374" v2="0.3818125" v1="0.2588125" variant="" />
-		<Element name="tp_spear_tornado.tex" u1="0.126" u2="0.24509375" v2="0.25290625" v1="0.1338125" variant="" />
-		<Element name="tp_spear_turret.tex" u1="0.001" u2="0.124" v2="0.124" v1="0.001" variant="" />
-		<Element name="tp_spear_valkyrie.tex" u1="0.376" u2="0.493140625" v2="0.39353125" v1="0.276390625" variant="" />
-		<Element name="tp_spear_wind.tex" u1="0.126" u2="0.243140625" v2="0.1318125" v1="0.014671875" variant="" />
-		<Element name="tp_spear_wrestle.tex" u1="0.24709375" u2="0.37009375" v2="0.2568125" v1="0.1338125" variant="" />
-		<Element name="tp_spear_zeus.tex" u1="0.49709375" u2="0.614234375" v2="0.499" v1="0.381859375" variant="" />
+		<Element name="tp_spear_shadow.tex" u1="0.001" u2="0.124" v2="0.374" v1="0.251" variant="" />
+		<Element name="tp_spear_shell.tex" u1="0.126" u2="0.249" v2="0.499" v1="0.376" variant="" />
+		<Element name="tp_spear_shine.tex" u1="0.251" u2="0.37009375" v2="0.5068125" v1="0.38771875" variant="" />
+		<Element name="tp_spear_single.tex" u1="0.126" u2="0.249" v2="0.374" v1="0.251" variant="" />
+		<Element name="tp_spear_speed.tex" u1="0.001" u2="0.12009375" v2="0.249" v1="0.12990625" variant="" />
+		<Element name="tp_spear_thunder.tex" u1="0.251" u2="0.374" v2="0.38571875" v1="0.26271875" variant="" />
+		<Element name="tp_spear_tornado.tex" u1="0.376" u2="0.49509375" v2="0.514625" v1="0.39553125" variant="" />
+		<Element name="tp_spear_valkyrie.tex" u1="0.001" u2="0.118140625" v2="0.12790625" v1="0.010765625" variant="" />
+		<Element name="tp_spear_wind.tex" u1="0.12209375" u2="0.239234375" v2="0.249" v1="0.131859375" variant="" />
+		<Element name="tp_spear_wrestle.tex" u1="0.376" u2="0.499" v2="0.39353125" v1="0.27053125" variant="" />
+		<Element name="tp_spear_zeus.tex" u1="0.251" u2="0.368140625" v2="0.26071875" v1="0.143578125" variant="" />
 	</Elements>
 </Atlas>
